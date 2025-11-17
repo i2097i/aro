@@ -1,0 +1,21 @@
+#! /usr/bin/env ruby
+
+# require :rake.to_s
+require :aro.to_s
+
+def usage
+  puts(Aro::Cli::USAGE_TEXT)
+end
+
+
+case ARGV[0]
+when :init.to_s
+  Aro::Init.init
+when :console.to_s
+  # Rake::Task[:console].invoke
+  system("rake console")
+else
+  usage
+end
+
+exit(0)
