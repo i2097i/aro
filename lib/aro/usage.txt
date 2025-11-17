@@ -1,0 +1,5 @@
+cd ../ && rm -rf aaa
+aro create aaa
+cd aaa
+aro deck
+aro deck create rider_waite

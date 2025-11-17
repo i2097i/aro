@@ -2,9 +2,9 @@
 
 require :i18n.to_s
 
-module I18n
+module Aro
   # ...
 end
 
-I18n.load_path += Dir["#{Dir.pwd}/locale/*.yml"]
+I18n.load_path += Dir["#{Gem.loaded_specs[:aro.to_s]&.full_gem_path}/locale/*.yml"]
 I18n.default_locale = :en

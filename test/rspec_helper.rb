@@ -1,13 +1,19 @@
-require 'aro'
+require :aro.to_s
+
+# rspec cheat sheet:
+# https://devhints.io/rspec
 
 RSpec.configure do |config|
-
-   # Use color in STDOUT
+  ENV[:ARO_ENV.to_s] = :test.to_s
+  # use color in stdout
   config.color = true
 
-  # Use color not only in STDOUT but also in pagers and files
+  # use color not only in stdout but also in pagers and files
   config.tty = true
 
-  # Use the specified formatter
+  # use the specified formatter
   config.formatter = :documentation
+
+  # suppress stdout
+  # config.before { allow($stdout).to receive(:puts) }
 end

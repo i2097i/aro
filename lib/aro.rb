@@ -1,8 +1,12 @@
-require "aro/cli"
-require "aro/database"
-require "aro/i18n"
-require "aro/init"
-require "aro/version"
+require 'aro/c'
+require 'aro/create'
+require 'aro/database'
+require 'aro/environment'
+require 'aro/prompt'
+require 'aro/i18n'
+require 'aro/version'
+
+require_relative './models/deck'
 
 module Aro
 

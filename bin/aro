@@ -1,19 +1,88 @@
 #! /usr/bin/env ruby
 
-# require :rake.to_s
 require :aro.to_s
 
+# set environment variable
+ENV[:ARO_ENV.to_s] = :production.to_s
+# ENV[:ARO_ENV.to_s] = :development.to_s
+
+FLAGS = {
+  HELP: ["-h", "--help"],
+  LIST: ["-l", "--list"],
+}
+
 def usage
-  puts(Aro::Cli::USAGE_TEXT)
+  Aro::P.p.say(I18n.t("messages.usage"))
 end
 
+def create
+  if ["-h", "--help"].include?(ARGV[1])
+    Aro::P.p.say("display create usage here")
+    exit(0)
+  end
 
+  Aro::Create.new(ARGV[1])
+end
+
+def deck
+  if FLAGS[:HELP].include?(ARGV[1])
+    Aro::P.p.say("display deck usage here")
+    exit(0)
+  elsif FLAGS[:LIST].include?(ARGV[1]) || ARGV[1].nil?
+    Aro::Create.new(Aro::Database.get_name_from_namefile)
+    Deck.list
+  elsif ARGV[1] == :create.to_s
+    if ARGV[2].nil?
+      Aro::P.p.say("display deck create usage here")
+      exit(0)
+    end
+    Aro::Create.new(Aro::Database.get_name_from_namefile)
+    new_deck = Deck.create(name: ARGV[2])
+    if Deck.current_deck.nil?
+      File.open(Deck::DECK_FILE, "w") do |file|
+        file.write(new_deck.id)
+      end
+    end
+    Aro::P.p.say("#{ARGV[2]} deck created successfully")
+    Deck.list
+  elsif ['show', 'shuffle', 'explore'].include?(ARGV[1])
+    Aro::Create.new(Aro::Database.get_name_from_namefile)
+    deck = nil
+    if ARGV[2].nil?
+      # assume current deck
+      deck = Deck.current_deck
+    else
+      deck = Deck.find_by(name: ARGV[2])
+      deck = Deck.find_by(id: ARGV[2]) if deck.nil?
+    end
+
+    if deck.nil?
+      raise "something went wrong"
+    end
+
+    if ARGV[1] == :explore.to_s
+      cards = deck.cards.split(",").map{|c| [I18n.t("cards.#{c}.name"), c]}.to_h
+      answer = Aro::P.p.select("choose a card.", cards, per_page: 7, cycle: true, default: 1)
+
+      Aro::P.p.say(I18n.t("cards.#{answer}"))
+    else
+      if ARGV[1] == :shuffle.to_s
+        deck.shuffle
+      end
+      deck.show
+    end
+  else
+    usage
+  end
+
+end
+
+# cli parser
 case ARGV[0]
-when :init.to_s
-  Aro::Init.init
-when :console.to_s
-  # Rake::Task[:console].invoke
-  system("rake console")
+when :create.to_s
+  create
+when :deck.to_s
+  deck
 else
   usage
 end

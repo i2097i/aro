@@ -1,3 +1,513 @@
 en:
-  aro:
-    name: "aro"
+  cards:
+    index: ["TO", "TI", "TII", "TIII", "TIV", "TV", "TVI", "TVII", "TVIII", "TIX", "TX", "TXI", "TXII", "TXIII", "TXIV", "TXV", "TXVI", "TXVII", "TXVIII", "TXIX", "TXX", "TXXI", "CI", "CII", "CIII", "CIV", "CV", "CVI", "CVII", "CVIII", "CIX", "CX", "CXI", "CXII", "CXIII", "CXIV", "SI", "SII", "SIII", "SIV", "SV", "SVI", "SVII", "SVIII", "SIX", "SX", "SXI", "SXII", "SXIII", "SXIV", "PI", "PII", "PIII", "PIV", "PV", "PVI", "PVII", "PVIII", "PIX", "PX", "PXI", "PXII", "PXIII", "PXIV", "WI", "WII", "WIII", "WIV", "WV", "WVI", "WVII", "WVIII", "WIX", "WX", "WXI", "WXII", "WXIII", "WXIV"]
+    TO:
+      name: "the fool"
+      tag_list: ["the spirit of the ether", "uranus", "adventure", "beginnings", "innocence", "newness", "openness", "opportunity"]
+      reversed_tag_list: ["the spirit of the ether", "uranus", "boredom", "ill-founded", "impulsive", "joker", "restless", "stagnation", "trickster"]
+      summary: ""
+      reversed_summary: ""
+
+    TI:
+      name: "the magician"
+      tag_list: ["the magnus of power", "mercury", "creative harmony", "creativity", "divine connection", "gifts", "inner guidance", "intuition", "manifestation"]
+      reversed_tag_list: ["the magnus of power", "mercury", "illusion", "loneliness", "not quite there", "power struggle", "spiritually depleted"]
+      summary: ""
+      reversed_summary: ""
+    TII:
+      name: "the high priestess"
+      tag_list: ["the priestess of the silver star", "moon", "deep emotions", "divine feminine", "imagination", "inner world", "intuition", "pisces", "spiritual growth", "subtle power"]
+      reversed_tag_list: ["the priestess of the silver star", "moon", "avoiding shadow", "ego bound", "insecurity", "pisces", "spiritual disconnect", "still searching", "unauthentic"]
+      summary: ""
+      reversed_summary: ""
+    TIII:
+      name: "the empress"
+      tag_list: ["daughter of the mighty ones", "venus", "abundance", "creativity", "divine feminine", "harmony", "kindness"]
+      reversed_tag_list: ["daughter of the mighty ones", "venus", "delay", "disinterest", "indulgence", "over emotional", "self-neglect"]
+      summary: ""
+      reversed_summary: ""
+    TIV:
+      name: "the emperor"
+      tag_list: ["son of the morning", "aries", "divine masculine", "intelligence", "masculine authority", "material power", "order", "responsibility"]
+      reversed_tag_list: ["son of the morning", "aries", "conflict", "immaturity", "lack of balance", "lack of commitment", "overbearing", "self-righteous"]
+      summary: ""
+      reversed_summary: ""
+    TV:
+      name: "the hierophant"
+      tag_list: ["magnus of the eternal gods", "cooperation", "good morals", "inner guide", "spiritual connection", "spiritual structure", "taurus", "tradition"]
+      reversed_tag_list: ["magnus of the eternal gods", "breaking free", "judgemental", "old tradition", "oppression", "taurus", "unprincipled"]
+      summary: ""
+      reversed_summary: ""
+    TVI:
+      name: "the lovers"
+      tag_list: ["children of the voice divine", "attraction", "balance", "connection", "cooperation", "gemini", "love", "yin-yang"]
+      reversed_tag_list: ["children of the voice divine", "avoidant", "disconnected", "disorder", "distance", "gemini", "obligation", "separation"]
+      summary: ""
+      reversed_summary: ""
+    TVII:
+      name: "the chariot"
+      tag_list: ["lord of the triumph of light", "ability", "balanced action", "cancer", "confidence", "harmony with instinct", "positive force", "self-reliance"]
+      reversed_tag_list: ["lord of the triumph of light", "cancer", "brute force", "confusion", "defensive", "directionless", "jealousy", "unmotivated"]
+      summary: ""
+      reversed_summary: ""
+    TVIII:
+      name: "strength"
+      tag_list: ["daughter of the flaming sword", "confidence", "gentleness", "inner harmony", "inner source", "leo", "patience", "persistence", "self-acceptance"]
+      reversed_tag_list: ["daughter of the flaming sword", "delayed", "egotism", "insecurity", "leo", "overwhelmed", "rushing", "unbalanced"]
+      summary: ""
+      reversed_summary: ""
+    TIX:
+      name: "the hermit"
+      tag_list: ["magnus of the voice of light", "divine guidance", "inner work", "perspective", "search for truth", "self care", "self knowledge", "solitude", "virgo"]
+      reversed_tag_list: ["magnus of the voice of light", "avoidant", "disappointment", "ignorance", "isolation", "loneliness", "overly cautious", "virgo"]
+      summary: ""
+      reversed_summary: ""
+    TX:
+      name: "wheel of fortune"
+      tag_list: ["lord of the forces of life", "jupiter", "change", "destiny", "divine intervention", "good circumstances", "karma"]
+      reversed_tag_list: ["lord of the forces of life", "jupiter", "forcing outcome", "loss", "rejecting change", "stagnation", "wrong timing"]
+      summary: ""
+      reversed_summary: ""
+    TXI:
+      name: "justice"
+      tag_list: ["daughter of the lord of truth", "divine justice", "feminine authority", "karma", "legal balance", "legal matter", "libra"]
+      reversed_tag_list: ["daughter of the lord of truth", "bad fortune", "imbalance", "karma", "powerless", "unfairness", "libra"]
+      summary: ""
+      reversed_summary: ""
+    TXII:
+      name: "the hanged man"
+      tag_list: ["spirit of the mighty waters", "neptune", "enlightenment", "inner knowledge", "inner peace", "patient detachment", "perspective", "pisces", "surrender"]
+      reversed_tag_list: ["spirit of the mighty waters", "neptune", "frustration", "impatient", "pisces", "spiritual disconnect", "stuck in the past", "unwilling to change"]
+      summary: ""
+      reversed_summary: ""
+    TXIII:
+      name: "death"
+      tag_list: ["child of the great transformers", "mourning", "natural cycles", "natural ending", "release what is dead", "scorpio", "shadow work", "spiritual death"]
+      reversed_tag_list: ["child of the great transformers", "clinging to past", "rejecting nature", "scorpio", "stuck", "trauma"]
+      summary: ""
+      reversed_summary: ""
+    TXIV:
+      name: "temperance"
+      tag_list: ["daughter of the reconcilers", "acceptance", "connectedness", "harmony", "inner purification", "peace", "sagittarius"]
+      reversed_tag_list: ["daughter of the reconcilers", "discord", "ego", "need patience", "rushing", "sagittarius", "waiting"]
+      summary: ""
+      reversed_summary: ""
+    TXV:
+      name: "the devil"
+      tag_list: ["lord of the gates of matter", "capricorn", "egotism", "indulgence", "maya", "self limitation", "spiritual disconnect"]
+      reversed_tag_list: ["lord of the gates of matter", "bondage", "capricorn", "dysfunction", "helpless", "limitation", "trapped"]
+      summary: ""
+      reversed_summary: ""
+    TXVI:
+      name: "the tower"
+      tag_list: ["lord of the hosts of the mighty", "mars", "aries", "divine intervention", "face reality", "karma", "new perspective", "sudden change", "weakened ego"]
+      reversed_tag_list: ["lord of the hosts of the mighty", "mars", "aries", "denial", "rotting", "stagnation", "stubborn", "unexpected loss"]
+      summary: ""
+      reversed_summary: ""
+    TXVII:
+      name: "the star"
+      tag_list: ["the daughter of the firmament", "aquarius", "confidence", "divine feminine", "inner guidance", "inspiration", "intuition"]
+      reversed_tag_list: ["the daughter of the firmament", "aquarius", "disillusionment", "introverted", "lack of clarity", "spiritual work"]
+      summary: ""
+      reversed_summary: ""
+    TXVIII:
+      name: "the moon"
+      tag_list: ["ruler of the flux and reflux", "dreams", "illusion", "imagination", "inner clarity", "moon", "mystery", "pisces", "unconscious"]
+      reversed_tag_list: ["ruler of the flux and reflux", "emotional", "emotional substitute", "inner turmoil", "moon", "pisces", "self-deception"]
+      summary: ""
+      reversed_summary: ""
+    TXIX:
+      name: "the sun"
+      tag_list: ["lord of the fire of the world", "creativity", "goodness", "light", "productivity", "prosperity", "self-expression", "shine bright", "success", "sun"]
+      reversed_tag_list: ["lord of the fire of the world", "delayed abundance", "good enough", "mediocre", "sun", "waiting"]
+      summary: ""
+      reversed_summary: ""
+    TXX:
+      name: "judgement"
+      tag_list: ["the spirit of the primal fire", "pluto", "alignment", "authenticity", "removing negative", "self-acceptance", "self-awareness"]
+      reversed_tag_list: ["the spirit of the primal fire", "pluto", "critical", "denial", "judgemental", "self-debasing"]
+      summary: ""
+      reversed_summary: ""
+    TXXI:
+      name: "the world"
+      tag_list: ["the great one of the night of time", "saturn", "beginning of new cycle", "celebration", "completion", "enlightenment", "mastery"]
+      reversed_tag_list: ["the great one of the night of time", "saturn", "attachment to material", "final stretch", "need for inner work", "perseverance", "slow progress"]
+      summary: ""
+      reversed_summary: ""
+    CI:
+      name: "ace of cups"
+      tag_list: ["lord of the root of the powers of water", "beginnings", "creative activity", "emotional high", "gift of love"]
+      reversed_tag_list: ["lord of the root of the powers of water", "delay", "limitation", "uninspired", "wrong timing"]
+      summary: ""
+      reversed_summary: ""
+    CII:
+      name: "two of cups"
+      tag_list: ["lord of love", "cancer", "venus", "balance", "common interest", "harmony", "mutual respect", "partnership"]
+      reversed_tag_list: ["lord of love", "cancer", "venus", "disharmony", "inequality", "lack of balance", "lack of support"]
+      summary: ""
+      reversed_summary: ""
+    CIII:
+      name: "three of cups"
+      tag_list: ["lord of abundance", "cancer", "mercury", "celebration", "fulfillment", "relaxation", "togetherness"]
+      reversed_tag_list: ["lord of abundance", "cancer", "mercury", "aloneness", "hyper-social", "longing", "small wins"]
+      summary: ""
+      reversed_summary: ""
+    CIV:
+      name: "four of cups"
+      tag_list: ["lord of blended pleasure", "cancer", "moon", "boredom", "ignoring blessings", "stagnation", "uninspired", "withdrawn"]
+      reversed_tag_list: ["lord of blended pleasure", "cancer", "moon", "inner guidance", "regroup", "reprieve", "rest", "worn out"]
+      summary: ""
+      reversed_summary: ""
+    CV:
+      name: "five of cups"
+      tag_list: ["lord of loss in pleasure", "scorpio", "mars", "disappointment", "heartbreak", "loneliness", "loss", "sadness", "self-pity", "setback", "stuck in the past"]
+      reversed_tag_list: ["lord of loss in pleasure", "scorpio", "mars", "count blessings", "healing", "let go of the past", "moving away from hurt", "recovery"]
+      summary: ""
+      reversed_summary: ""
+    CVI:
+      name: "six of cups"
+      tag_list: ["lord of pleasure", "scorpio", "sun", "contentment", "happiness", "harmony", "re-connection", "renewal"]
+      reversed_tag_list: ["lord of pleasure", "scorpio", "sun", "emotional growth", "nostalgia", "stuck in the past", "grow up"]
+      summary: ""
+      reversed_summary: ""
+    CVII:
+      name: "seven of cups"
+      tag_list: ["lord of illusionary success", "scorpio", "venus", "day-dreaming", "fantasy", "illusion", "intuitive guidance", "possibilities"]
+      reversed_tag_list: ["lord of illusionary success", "scorpio", "venus", "illusive", "indecision", "lack of perspective", "overwhelmed", "self-deception"]
+      summary: ""
+      reversed_summary: ""
+    CVIII:
+      name: "eight of cups"
+      tag_list: ["lord of abandoned success", "pisces", "saturn", "cutting losses", "leaving quietly", "moving on", "needing more", "new direction"]
+      reversed_tag_list: ["lord of abandoned success", "pisces", "saturn", "non-committal", "sticking it out", "stuck in the past", "uncertain"]
+      summary: ""
+      reversed_summary: ""
+    CIX:
+      name: "nine of cups"
+      tag_list: ["lord of material happiness", "pisces", "jupiter", "abundance", "comfort", "generosity", "good luck", "wish card"]
+      reversed_tag_list: ["lord of material happiness", "pisces", "jupiter", "dishonest gain", "frivolous", "indulgence", "smugness"]
+      summary: ""
+      reversed_summary: ""
+    CX:
+      name: "ten of cups"
+      tag_list: ["lord of perfected success", "pisces", "mars", "comfort", "completion", "contentment", "fulfillment", "happy home", "harmony", "life is good", "love", "openness"]
+      reversed_tag_list: ["lord of perfected success", "pisces", "mars", "disappointment", "discord", "hidden cost", "loss of happiness", "reduction"]
+      summary: ""
+      reversed_summary: ""
+    CXI:
+      name: "page of cups"
+      tag_list: ["princess of the palace of the floods", "cancer", "earth", "pisces", "potential", "scorpio", "socially naive", "trusting", "undeveloped gifts", "youthful"]
+      reversed_tag_list: ["princess of the palace of the floods", "cancer", "closed off", "insecurity", "misplaced trust", "pisces", "earth", "scorpio", "unaccepted", "victimization"]
+      summary: ""
+      reversed_summary: ""
+    CXII:
+      name: "knight of cups"
+      tag_list: ["lord of the waves and waters", "air", "cancer", "communication", "imagination", "invitation", "pisces", "relationship", "scorpio"]
+      reversed_tag_list: ["lord of the waves and waters", "air", "cancer", "broken promises", "head in the clouds", "immaturity", "incompetence", "insecurity", "pisces", "scorpio"]
+      summary: ""
+      reversed_summary: ""
+    CXIII:
+      name: "queen of cups"
+      tag_list: ["queen of the thrones of waters", "cancer", "compassion", "creativity", "emotional depth", "feelings", "fertility", "heart", "intuition", "pisces", "scorpio", "strong emotion", "water"]
+      reversed_tag_list: ["queen of the thrones of waters", "cancer", "closed off", "hyper-sensitive", "idealism", "instability", "over emotional", "water", "pisces", "scorpio"]
+      summary: ""
+      reversed_summary: ""
+    CXIV:
+      name: "king of cups"
+      tag_list: ["prince of the chariot of waters", "benevolence", "cancer", "creativity", "cultured", "emotionally available", "fire", "kindness", "pisces", "scorpio"]
+      reversed_tag_list: ["prince of the chariot of waters", "cancer", "dissatisfaction", "hyper-sensitive", "jealousy", "power struggle", "fire", "pisces", "scorpio"]
+      summary: ""
+      reversed_summary: ""
+    SI:
+      name: "ace of swords"
+      tag_list: ["lord of the root of the powers of air", "clarity", "driven", "famous", "purpose", "sharp focus"]
+      reversed_tag_list: ["lord of the root of the powers of air", "half-hearted", "insincere", "mistakes", "nonrecognition", "obscurity"]
+      summary: ""
+      reversed_summary: ""
+    SII:
+      name: "two of swords"
+      tag_list: ["lord of peace restored", "libra", "moon", "balance", "confidence", "faith", "intuitive guidance", "yin-yang"]
+      reversed_tag_list: ["lord of peace restored", "libra", "moon", "conflict", "confusion", "intellectualization", "worry"]
+      summary: ""
+      reversed_summary: ""
+    SIII:
+      name: "three of swords"
+      tag_list: ["lord of sorrow", "libra", "saturn", "grieving", "heartbreak", "loss", "suffering", "move on"]
+      reversed_tag_list: ["lord of sorrow", "libra", "saturn", "acceptance", "letting go", "pull yourself together", "temporary disappointment"]
+      summary: ""
+      reversed_summary: ""
+    SIV:
+      name: "four of swords"
+      tag_list: ["lord of rest from strife", "libra", "jupiter", "introspection", "recuperation", "regain strength", "rest", "solitude", "stability"]
+      reversed_tag_list: ["lord of rest from strife", "libra", "jupiter", "burnt out", "inundated", "need a break", "overwhelmed"]
+      summary: ""
+      reversed_summary: ""
+    SV:
+      name: "five of swords"
+      tag_list: ["lord of defeat", "aquarius", "venus", "adjustment", "after the battle", "change", "cost of winning", "indecision"]
+      reversed_tag_list: ["lord of defeat", "aquarius", "venus", "cleaning up", "conflict", "losses", "repairing damage"]
+      summary: ""
+      reversed_summary: ""
+    SVI:
+      name: "six of swords"
+      tag_list: ["lord of earned success", "aquarius", "mercury", "away from bad", "bygones be bygones", "movement", "new path", "putting troubles behind"]
+      reversed_tag_list: ["lord of earned success", "aquarius", "mercury", "dead end", "need for perspective", "stuck", "unwilling"]
+      summary: ""
+      reversed_summary: ""
+    SVII:
+      name: "seven of swords"
+      tag_list: ["lord of unstable effort", "aquarius", "moon", "cautious", "challenge", "illusion", "impetuous", "uncertain"]
+      reversed_tag_list: ["lord of unstable effort", "aquarius", "moon", "controlled by fear", "deception", "trickster", "vulnerability"]
+      summary: ""
+      reversed_summary: ""
+    SVIII:
+      name: "eight of swords"
+      tag_list: ["lord of shortened force", "gemini", "jupiter", "bondage", "denial", "illusion", "self-imprisonment", "unfulfilled"]
+      reversed_tag_list: ["lord of shortened force", "gemini", "jupiter", "bad advice", "deception", "playing the victim", "procrastination"]
+      summary: ""
+      reversed_summary: ""
+    SIX:
+      name: "nine of swords"
+      tag_list: ["lord of despair and cruelty", "gemini", "mars", "dark night of the soul", "despair", "grief", "isolation", "sadness", "shame"]
+      reversed_tag_list: ["lord of despair and cruelty", "gemini", "mars", "distrust", "end of despair", "isolation", "owning up", "self knowledge", "solitude"]
+      summary: ""
+      reversed_summary: ""
+    SX:
+      name: "ten of swords"
+      tag_list: ["lord of ruin", "gemini", "sun", "betrayal", "end to suffering", "exhaustion", "release the past"]
+      reversed_tag_list: ["lord of ruin", "gemini", "sun", "addicted to suffering", "perspective", "stalling", "willful deception"]
+      summary: ""
+      reversed_summary: ""
+    SXI:
+      name: "page of swords"
+      tag_list: ["princess of the rushing winds", "aquarius", "challenge", "eager", "earth", "gemini", "ideals", "learning", "libra", "studious"]
+      reversed_tag_list: ["princess of the rushing winds", "aquarius", "directionless", "disadvantage", "gemini", "idealism", "immature", "naive", "earth", "libra"]
+      summary: ""
+      reversed_summary: ""
+    SXII:
+      name: "knight of swords"
+      tag_list: ["lord of the winds and breezes", "air", "aquarius", "gemini", "intellectual action", "intensity", "libra", "passionate", "straightforward", "urgency"]
+      reversed_tag_list: ["lord of the winds and breezes", "air","aquarius", "apathy", "dishonest", "evasive", "gemini", "indifference", "libra"]
+      summary: ""
+      reversed_summary: ""
+    SXIII:
+      name: "queen of swords"
+      tag_list: ["queen of the thrones of air", "aries", "aquarius", "gemini", "libra", "authority", "good communication", "independence", "intelligence", "water"]
+      reversed_tag_list: ["queen of the thrones of air", "aries", "aquarius", "gemini", "libra", "coldness", "disappointment", "limitation", "underappreciated", "water"]
+      summary: ""
+      reversed_summary: ""
+    SXIV:
+      name: "king of swords"
+      tag_list: ["prince of the chariots of the winds", "aquarius", "clarity", "fire", "gemini", "good communication", "good judgement", "intelligence", "libra", "objectivity"]
+      reversed_tag_list: ["prince of the chariots of the winds", "aquarius", "coldness", "gemini", "gossipy", "insensitive", "judgemental", "poor judgement", "fire", "libra"]
+      summary: ""
+      reversed_summary: ""
+    PI:
+      name: "ace of pentacles"
+      tag_list: ["lord of the root of the powers of earth", "abundance", "ambition", "beginnings", "financial blessings"]
+      reversed_tag_list: ["lord of the root of the powers of earth", "delays", "greed", "materialism", "missed opportunity"]
+      summary: ""
+      reversed_summary: ""
+    PII:
+      name: "two of pentacles"
+      tag_list: ["lord of harmonious change", "capricorn", "jupiter", "balance", "choices", "financial partnership", "work and play"]
+      reversed_tag_list: ["lord of harmonious change", "capricorn", "jupiter", "instability", "overwhelmed", "unbalanced"]
+      summary: ""
+      reversed_summary: ""
+    PIII:
+      name: "three of pentacles"
+      tag_list: ["lord of material work", "capricorn", "mars", "creativity", "practicality", "satisfied", "self-expression"]
+      reversed_tag_list: ["lord of material work", "capricorn", "mars", "develop new skills", "disappointment", "lack of confidence", "unappreciated"]
+      summary: ""
+      reversed_summary: ""
+    PIV:
+      name: "four of pentacles"
+      tag_list: ["lord of earthly power", "capricorn", "sun", "creative block", "hoarding", "materialism", "seeking stability"]
+      reversed_tag_list: ["lord of earthly power", "capricorn", "sun", "inadequate", "insecurity", "rigid", "stagnation"]
+      summary: ""
+      reversed_summary: ""
+    PV:
+      name: "five of pentacles"
+      tag_list: ["lord of material trouble", "taurus", "mercury", "desperation", "hardship", "health issues", "loss", "poverty"]
+      reversed_tag_list: ["lord of material trouble", "taurus", "mercury", "persistence", "recovery", "regroup", "spirituality"]
+      summary: ""
+      reversed_summary: ""
+    PVI:
+      name: "six of pentacles"
+      tag_list: ["lord of material success", "taurus", "moon", "balance", "giving", "harmony", "working together"]
+      reversed_tag_list: ["lord of material success", "taurus", "moon", "dissatisfaction", "power struggle", "taking advantage", "unfairness"]
+      summary: ""
+      reversed_summary: ""
+    PVII:
+      name: "seven of pentacles"
+      tag_list: ["lord of success unfulfilled", "taurus", "saturn", "advancement", "great beginnings", "nurture", "work paying off"]
+      reversed_tag_list: ["lord of success unfulfilled", "taurus", "saturn", "anxiety", "debase", "second guessing", "stagnation"]
+      summary: ""
+      reversed_summary: ""
+    PVIII:
+      name: "eight of pentacles"
+      tag_list: ["lord of prudence", "virgo", "sun", "craftsmanship", "determination", "flow", "focused", "hard work", "skill"]
+      reversed_tag_list: ["lord of prudence", "virgo", "sun", "going nowhere", "lack of focus", "laziness", "slow progress"]
+      summary: ""
+      reversed_summary: ""
+    PIX:
+      name: "nine of pentacles"
+      tag_list: ["lord of material gain", "virgo", "venus", "abundance", "achievement", "comfort", "content", "material stability", "pleasant"]
+      reversed_tag_list: ["lord of material gain", "virgo", "venus", "constraint", "dependence", "squander", "tied down", "unequal"]
+      summary: ""
+      reversed_summary: ""
+    PX:
+      name: "ten of pentacles"
+      tag_list: ["lord of wealth", "virgo", "mercury", "abundance", "completion", "family wealth", "fulfillment", "good fortune"]
+      reversed_tag_list: ["lord of wealth", "virgo", "mercury", "disagreement", "obligation", "stagnation"]
+      summary: ""
+      reversed_summary: ""
+    PXI:
+      name: "page of pentacles"
+      tag_list: ["princess of the echoing hills", "ambition", "attention to detail", "capricorn", "curiosity", "development", "earth", "study", "taurus", "virgo"]
+      reversed_tag_list: ["princess of the echoing hills", "avoidant", "capricorn", "distracted", "idealism", "laziness", "earth", "taurus", "virgo"]
+      summary: ""
+      reversed_summary: ""
+    PXII:
+      name: "knight of pentacles"
+      tag_list: ["lord of the wild and fertile land", "air", "capricorn", "dedicated", "dependable", "loyal", "practical", "taurus", "virgo"]
+      reversed_tag_list: ["lord of the wild and fertile land", "air", "boredom", "capricorn", "lack of vision", "limitation", "stagnation", "stubborn", "taurus", "virgo"]
+      summary: ""
+      reversed_summary: ""
+    PXIII:
+      name: "queen of pentacles"
+      tag_list: ["queen of the thrones of earth", "capricorn", "comfort", "generosity", "mother earth", "natural", "security", "taurus", "virgo", "water"]
+      reversed_tag_list: ["queen of the thrones of earth", "capricorn", "power struggle", "reckless", "unauthentic", "unreliable", "water", "taurus", "virgo"]
+      summary: ""
+      reversed_summary: ""
+    PXIV:
+      name: "king of pentacles"
+      tag_list: ["prince of the chariot of earth", "capricorn", "fire", "material success", "security", "stability", "taurus", "virgo", "worldly power"]
+      reversed_tag_list: ["prince of the chariot of earth", "capricorn", "delay", "excuses", "insecurity", "stuck", "fire", "taurus", "virgo"]
+      summary: ""
+      reversed_summary: ""
+    WI:
+      name: "ace of wands"
+      tag_list: ["lord of the root of the power of fire", "beginnings", "creativity", "inspiration", "opportunity"]
+      reversed_tag_list: ["lord of the root of the power of fire", "complications", "delays", "need patience", "procrastination"]
+      summary: ""
+      reversed_summary: ""
+    WII:
+      name: "two of wands"
+      tag_list: ["lord of dominion", "mars", "aries", "choices", "confidence", "development", "taking action"]
+      reversed_tag_list: ["lord of dominion", "mars", "aries", "cautious progress", "dependence", "difficulty", "disappointment"]
+      summary: ""
+      reversed_summary: ""
+    WIII:
+      name: "three of wands"
+      tag_list: ["lord of established strength", "aries", "sun", "confidence", "creativity", "manifestation", "self-expression"]
+      reversed_tag_list: ["lord of established strength", "aries", "sun", "delays", "lack of support", "more development needed", "wrong timing"]
+      summary: ""
+      reversed_summary: ""
+    WIV:
+      name: "four of wands"
+      tag_list: ["lord of perfected work", "aries", "venus", "celebration", "comfort", "financial security", "reaping rewards", "recognition"]
+      reversed_tag_list: ["lord of perfected work", "aries", "venus", "cautious progress", "slow pace", "small wins", "temporary delay"]
+      summary: ""
+      reversed_summary: ""
+    WV:
+      name: "five of wands"
+      tag_list: ["lord of strife", "leo", "saturn", "competition", "confusion", "disagreement", "ego battle", "power struggle", "stubborn"]
+      reversed_tag_list: ["lord of strife", "leo", "saturn", "adapt to challenge", "impractical", "selfish", "stalemate"]
+      summary: ""
+      reversed_summary: ""
+    WVI:
+      name: "six of wands"
+      tag_list: ["lord of victory", "leo", "jupiter", "cooperation", "fulfillment", "good fortune", "recovery", "respect", "triumph", "victory"]
+      reversed_tag_list: ["lord of victory", "leo", "jupiter", "delayed success", "frustration", "getting bearings", "lack of recognition", "reassess goals"]
+      summary: ""
+      reversed_summary: ""
+    WVII:
+      name: "seven of wands"
+      tag_list: ["lord of valour", "leo", "mars", "courage", "hold firm", "remain focused", "stand up for beliefs", "stay strong"]
+      reversed_tag_list: ["lord of valour", "leo", "mars","choose battles", "confusion", "giving up", "lack of clarity"]
+      summary: ""
+      reversed_summary: ""
+    WVIII:
+      name: "eight of wands"
+      tag_list: ["lord of swiftness", "sagittarius", "mercury", "action", "new change", "speed", "sudden"]
+      reversed_tag_list: ["lord of swiftness", "sagittarius", "mercury","anxiety", "inconvenience", "overwhelm", "unexpected"]
+      summary: ""
+      reversed_summary: ""
+    WIX:
+      name: "nine of wands"
+      tag_list: ["lord of great strength", "sagittarius", "moon", "courage", "overcoming", "recovery", "self-growth"]
+      reversed_tag_list: ["lord of great strength", "sagittarius", "moon","cutting losses", "missed opportunity", "setback", "move on"]
+      summary: ""
+      reversed_summary: ""
+    WX:
+      name: "ten of wands"
+      tag_list: ["lord of oppression", "sagittarius", "saturn", "burdens", "completion", "exhaustion", "follow-through", "responsibility"]
+      reversed_tag_list: ["lord of oppression", "sagittarius", "saturn", "delegation", "releasing burdens", "relief", "reprieve"]
+      summary: ""
+      reversed_summary: ""
+    WXI:
+      name: "page of wands"
+      tag_list: ["princess of the shining flame", "curiosity", "eager", "earth", "leo", "openness", "playful", "sagittarius", "willing to learn"]
+      reversed_tag_list: ["princess of the shining flame", "disappointment", "earth", "leo", "incapable", "under-qualified", "unrealistic", "sagittarius"]
+      summary: ""
+      reversed_summary: ""
+    WXII:
+      name: "knight of wands"
+      tag_list: ["lord of the flame and lightening", "activity", "adventure", "air", "enthusiasm", "generosity", "leo", "movement", "sagittarius"]
+      reversed_tag_list: ["lord of the flame and lightening", "air", "delay", "lack of trust", "leo", "postponed", "restless", "unreliable", "sagittarius"]
+      summary: ""
+      reversed_summary: ""
+    WXIII:
+      name: "queen of wands"
+      tag_list: ["queen of the thrones of flame", "creativity", "feminine authority", "generosity", "leo", "passionate", "sagittarius", "warmth", "water"]
+      reversed_tag_list: ["queen of the thrones of flame", "coldness", "delay", "jealousy", "leo", "power struggle", "uninspired", "water", "sagittarius"]
+      summary: ""
+      reversed_summary: ""
+    WXIV:
+      name: "king of wands"
+      tag_list: ["prince of the chariot of fire", "aries", "fire", "leo", "sagittarius", "trust", "loyalty", "positive authority", "honesty", "intelligence"]
+      reversed_tag_list: ["prince of the chariot of fire", "aries", "self-serving", "not helpful", "distracted", "decreased interest", "bully", "fire", "leo", "sagittarius"]
+      summary: ""
+      reversed_summary: ""
+  messages:
+    usage: |
+
+      aro cli usage:
+
+      NAME
+
+        aro - a cli for tarot.
+
+      SYNOPSIS
+
+        aro [-v | --version] [-h | --help] <command> [<args>]
+
+      COMMANDS
+
+        create
+          create an aro directory named <name>. if directory already exists, abort.
+
+          aro create [-h | --help] <name> [<args>]
+
+          examples:
+
+            $ aro create <name>
+
+        deck
+          perform operations on the deck(s) in current aro instance
+
+          aro deck [-h | --help] <command> [<args>]
+
+          available commands:
+            - create
+            - show
+            - shuffle
+            - explore
+
+        reading
+
+
+
+      .
+
