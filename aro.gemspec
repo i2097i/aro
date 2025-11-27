@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'aro/version'
+require_relative 'lib/aro'
 
 Gem::Specification.new do |spec|
   spec.name          = "aro"
@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.bindir        = "bin"
   spec.executables   = ["aro"]
   spec.require_paths = ["lib"]
-  spec.files         = Dir["lib/**/*.rb"] +
-    Dir["db/**/*.rb"] +
+  spec.files         = ["lib", "db", "bin/cli"].map{|d|Dir["#{d}/**/*.rb"]}.flatten! +
+    Dir["bin/*"] +
     Dir["locale/**/*.yml"]
 
   # development gems
@@ -33,6 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency     "i18n",         "~> 1.14", ">= 1.14.7"
   spec.add_runtime_dependency     "activerecord", "~> 8.1", ">= 8.1.1"
   spec.add_runtime_dependency     "sqlite3",      "~> 2.8", ">= 2.8.0"
-  spec.add_runtime_dependency     "tty-prompt"
+  spec.add_runtime_dependency     "tty-prompt",   "~> 0.23.1", ">= 0.23.1"
   # spec.add_runtime_dependency "require_all",  "~> 3.0", ">= 3.0.0"
 end

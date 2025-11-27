@@ -21,10 +21,10 @@ class Deck < ActiveRecord::Base
     end
   end
 
-  def self.list
+  def self.display_selection_menu
     unless Deck.any?
-      Aro::P.p.say("no decks created yet.")
-      exit(1)
+      Aro::P.p.say(I18n.t("cli.messages.no_decks"))
+      exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
     selection = Aro::P.p.select("choose a deck:") do |menu|
@@ -47,20 +47,39 @@ class Deck < ActiveRecord::Base
     end
   end
 
-  def show
-    Aro::P.p.say(Deck.current_deck.name.center(7*7) + "\n")
-    show_str = ""
-    cards.split(",").each_with_index{|c, i|
+  def history
+    history_text = I18n.t("cli.messages.history_title", deck: name)
+    history_text += "\n"
+    logs.reverse.each_with_index{|l, i|
+      n_of_text = "#{logs.count - i} of #{logs.count}"
+      timestamp = "#{l.created_at.strftime("[%Y:%m:%d:%H:%M:%S]")}"
+      history_text += display_cards(
+        "(#{n_of_text})\t#{timestamp}",
+        Base64::decode64(l.data)
+      )
+    }
+
+    IO.popen("less -X", "w") { |f| f.puts history_text }
+  end
+
+  def shuffle
+    update(cards: cards.split(",").shuffle.join(","))
+  end
+
+  def display_cards(_title = nil, _cards = nil)
+    # default to showing this deck instance's cards
+    _title = name if _title.nil?
+    _cards = cards if _cards.nil?
+
+    show_str = _title.ljust(7*7) + "\n"
+    _cards.split(",").each_with_index{|c, i|
       if i == 77
         show_str += c.center(7*7)
       else
         show_str += c.center(7) + ((i + 1) % 7 == 0 ? "\n" : "")
       end
     }
-    Aro::P.p.say show_str
-  end
-
-  def shuffle
-    update(cards: cards.split(",").shuffle.join(","))
+    show_str += "\n"
+    show_str
   end
 end

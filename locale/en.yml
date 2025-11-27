@@ -1,4 +1,75 @@
 en:
+  cli:
+    errors:
+      missing_args: "[cmd %{cmd}] missing required argument(s)"
+    messages:
+      choose_card: "choose a card."
+      creating: "creating %{name}..."
+      deck_created_sucessfully: "[%{name}] deck created successfully"
+      history_title: "history for the %{deck} deck:"
+      no_decks: "no decks created yet."
+    usage: |
+      NAME
+
+        aro - a cli for tarot.
+
+      SYNOPSIS
+
+        aro [-v | --version] [-h | --help] <command> [<args>]
+
+      COMMANDS
+
+        create
+          create an aro directory named <name>. if directory already exists, abort.
+
+          aro create [-h | --help] <name> [<args>]
+
+          examples:
+
+            $ aro create <name>
+
+        deck
+          perform operations on the deck(s) in current aro instance
+
+          aro deck [-h | --help] <command> [<args>]
+
+          running `aro deck` with no arguments prompts user to select a deck.
+
+            $ aro deck
+
+          deck commands:
+            - create
+
+              creates a new deck with the specified name.
+
+                example:
+
+                  $ aro deck create <name_of_new_deck>
+
+            - show
+
+              displays the current deck's cards in their current disorder.
+
+            - shuffle
+
+              shuffles the current deck and generates a log record.
+
+            - explore
+
+              allows user to browse each card in the current deck.
+
+            - draw
+
+              draw a random card from the current deck
+            
+            - history
+
+              display history for the current deck
+
+
+
+
+      aro by i2097i is copyright (2025)
   cards:
     index: ["TO", "TI", "TII", "TIII", "TIV", "TV", "TVI", "TVII", "TVIII", "TIX", "TX", "TXI", "TXII", "TXIII", "TXIV", "TXV", "TXVI", "TXVII", "TXVIII", "TXIX", "TXX", "TXXI", "CI", "CII", "CIII", "CIV", "CV", "CVI", "CVII", "CVIII", "CIX", "CX", "CXI", "CXII", "CXIII", "CXIV", "SI", "SII", "SIII", "SIV", "SV", "SVI", "SVII", "SVIII", "SIX", "SX", "SXI", "SXII", "SXIII", "SXIV", "PI", "PII", "PIII", "PIV", "PV", "PVI", "PVII", "PVIII", "PIX", "PX", "PXI", "PXII", "PXIII", "PXIV", "WI", "WII", "WIII", "WIV", "WV", "WVI", "WVII", "WVIII", "WIX", "WX", "WXI", "WXII", "WXIII", "WXIV"]
     TO:
@@ -470,44 +541,3 @@ en:
       reversed_tag_list: ["prince of the chariot of fire", "aries", "self-serving", "not helpful", "distracted", "decreased interest", "bully", "fire", "leo", "sagittarius"]
       summary: ""
       reversed_summary: ""
-  messages:
-    usage: |
-
-      aro cli usage:
-
-      NAME
-
-        aro - a cli for tarot.
-
-      SYNOPSIS
-
-        aro [-v | --version] [-h | --help] <command> [<args>]
-
-      COMMANDS
-
-        create
-          create an aro directory named <name>. if directory already exists, abort.
-
-          aro create [-h | --help] <name> [<args>]
-
-          examples:
-
-            $ aro create <name>
-
-        deck
-          perform operations on the deck(s) in current aro instance
-
-          aro deck [-h | --help] <command> [<args>]
-
-          available commands:
-            - create
-            - show
-            - shuffle
-            - explore
-
-        reading
-
-
-
-      .
-

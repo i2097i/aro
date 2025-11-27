@@ -1,29 +1,55 @@
 # aro
+>__a cli for tarot__ - follow the way of the aro eht.
 
 ##### __current version:__
 [![gem version](https://badge.fury.io/rb/aro.svg)](https://badge.fury.io/rb/aro)
 
-aro is a cli for tarot.
-
-## installation
-
-> `gem install aro`
-
-## usage
-
-### todo1:
+aro is a command line interface that allows you to manage multiple tarot decks.
 
 
-### todo2:
+### install
 
-> NOTE: take note of this
+```bash
+$ gem install aro
+```
 
-## contributing
+### use
 
-bug reports and pull requests are welcome on github at https://github.com/i2097i/aro.
-> feel free to send any comments/improvements suggestions.
+```bash
+$ aro -h
+```
 
-## license
+### develop
 
-the gem is available as open source under the terms of the [mit license](http://opensource.org/licenses/MIT).
+```ruby
+# the Rakefile contains bundler's gem_tasks,
+# which are used for gem development.
+
+# Rakefile
+require "bundler/gem_tasks"
+```
+
+```bash
+# list tasks
+$ rake --tasks
+
+# build gem
+$ rake build
+
+# build and install
+$ rake install
+```
+
+### test
+
+```bash
+$ rspec test
+```
+>aro by i2097i is copyright (2025)
+
+>[rubygems.org guides](https://guides.rubygems.org)
+
+>[license](http://opensource.org/licenses/MIT)
+
+>[issues](https://github.com/i2097i/aro/issues)
 
