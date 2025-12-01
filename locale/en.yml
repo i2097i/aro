@@ -1,13 +1,26 @@
 en:
   cli:
     errors:
-      missing_args: "[cmd %{cmd}] missing required argument(s)"
+      header: |
+        error! something is out of place.
+      missing_args: "the command you entered, '%{cmd}', is missing required argument(s)"
     messages:
       choose_card: "choose a card."
+      confirmation_prompt: "enter 'aroyes' to continue or anything else to cancel (aroyes): "
       creating: "creating %{name}..."
       deck_created_sucessfully: "[%{name}] deck created successfully"
-      history_title: "history for the %{deck} deck:"
-      no_decks: "no decks created yet."
+      history_title: "displaying history for the %{deck} deck (desc):"
+      history_drawn: "drawn cards"
+      no_decks: |
+
+        no decks created yet.
+
+        use the following command to create one:
+          $ aro deck create <deck_name>
+
+        see aro --help for usage.
+      understood: "understood."
+
     usage: |
       NAME
 
@@ -48,7 +61,7 @@ en:
 
             - show
 
-              displays the current deck's cards in their current disorder.
+              displays the current deck's cards in their current order.
 
             - shuffle
 
@@ -60,11 +73,17 @@ en:
 
             - draw
 
-              draw a random card from the current deck
-            
-            - history
+              draw a random card from the current deck.
 
-              display history for the current deck
+            - replace
+
+              replaces all drawn cards FIFO and puts them on the bottom of
+              the deck. this will preserve all card orientations.
+            
+            - reset
+
+              completely reset the deck. replace all drawn and reset order.
+              all orientations will be set to upright.
 
 
 

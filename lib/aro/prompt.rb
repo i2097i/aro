@@ -1,4 +1,4 @@
-require 'tty-prompt'
+require :"tty-prompt".to_s
 
 module Aro
   class P
@@ -12,6 +12,10 @@ module Aro
 
     def self.p
       P.instance.prompt
+    end
+
+    def self.less(display_text = "")
+      IO.popen("less -X", "w") { |f| f.puts display_text }
     end
   end
 end

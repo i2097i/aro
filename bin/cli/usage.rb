@@ -1,15 +1,15 @@
 =begin
-	
-	usage.rb
+  
+  usage.rb
 
-	display aro usage.
+  display aro usage.
 
-	by i2097i
+  by i2097i
 
 =end
 
 module CLI
-	def self.usage
-  	IO.popen("less", "w") { |f| f.puts I18n.t("cli.usage") }
-	end
+  def self.usage
+    Aro::P.less(I18n.t("cli.usage"))
+  end
 end

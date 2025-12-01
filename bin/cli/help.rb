@@ -1,18 +1,18 @@
 =begin
-	
-	constants.rb
+  
+  constants.rb
 
-	process aro creation commands
+  process aro creation commands
 
-	by i2097i
+  by i2097i
 
 =end
 
 module CLI
-	def self.help
-		if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
-		  CLI::usage
-		  exit(CLI::EXIT_CODES[:SUCCESS])
-		end
-	end
+  def self.help
+    if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
+      CLI::usage
+      exit(CLI::EXIT_CODES[:SUCCESS])
+    end
+  end
 end

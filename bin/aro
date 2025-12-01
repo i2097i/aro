@@ -27,7 +27,7 @@ end
 ENV[:ARO_ENV.to_s] = :production.to_s
 # ENV[:ARO_ENV.to_s] = :development.to_s
 
-# TODO: add tab completion using abbrev gem
+# todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
 
 # cli parser

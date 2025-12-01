@@ -4,6 +4,7 @@ class CreateDecks < ActiveRecord::Migration[8.1]
     create_table :decks do |t|
       t.string :name
       t.string :cards
+      t.string :drawn
 
       t.timestamps
     end

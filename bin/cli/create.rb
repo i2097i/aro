@@ -1,15 +1,15 @@
 =begin
-	
-	constants.rb
+  
+  constants.rb
 
-	process aro creation commands
+  process aro creation commands
 
-	by i2097i
+  by i2097i
 
 =end
 
 module CLI
-	def self.create
-	  Aro::Create.new(CLI::ARGV1)
-	end
+  def self.create
+    Aro::Create.new(CLI::ARGV1)
+  end
 end

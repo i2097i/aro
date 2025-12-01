@@ -2,7 +2,8 @@ class CreateLogs < ActiveRecord::Migration[8.1]
 
   def self.up
     create_table :logs do |t|
-      t.string :data
+      t.string :card_data
+      t.string :drawn_data
 
       t.timestamps
     end

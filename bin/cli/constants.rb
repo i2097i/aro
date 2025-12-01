@@ -1,38 +1,41 @@
 =begin
-	
-	constants.rb
+  
+  constants.rb
 
-	define constants for the aro cli.
+  define constants for the aro cli.
 
-	by i2097i
+  by i2097i
 
 =end
 
 module CLI
-	FLAGS = {
-	  HELP: 		["-h", "--help"],
-	  VERSION: 	["-v", "--version"],
-	}
 
-	EXIT_CODES = {
-		SUCCESS: 0,
-		GENERAL_ERROR: 1,
-		INVALID_ARG: 3
-	}
+  ARGV0 = ARGV[0]
+  ARGV1 = ARGV[1]
+  ARGV2 = ARGV[2]
 
-	ARGV0 = ARGV[0]
-	ARGV1 = ARGV[1]
-	ARGV2 = ARGV[2]
+  FLAGS = {
+    HELP:     ["-h", "--help"],
+    VERSION:  ["-v", "--version"],
+  }
 
-	CREATE_DECK_ACTIONS = {
-		CREATE: :CREATE
-	}
+  EXIT_CODES = {
+    SUCCESS: 0,
+    GENERAL_ERROR: 1,
+    INVALID_ARG: 3
+  }
 
-	LOAD_DECK_ACTIONS = {
-		EXPLORE: :EXPLORE,
-		HISTORY: :HISTORY,
-		SHOW: :SHOW,
-		SHUFFLE: :SHUFFLE,
-		DRAW: :DRAW,
-	}
+  CREATE_DECK_ACTIONS = {
+    CREATE: :CREATE
+  }
+
+  LOAD_DECK_ACTIONS = {
+    DRAW:     :DRAW,
+    EXPLORE:  :EXPLORE,
+    REPLACE:  :REPLACE,
+    RESET:    :RESET,
+    SHOW:     :SHOW,
+    SHUFFLE:  :SHUFFLE,
+  }
+  
 end
