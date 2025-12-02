@@ -21,7 +21,7 @@ module CLI
       Aro::Deck.display_selection_menu
     elsif action == CLI::CREATE_DECK_ACTIONS[:CREATE]
       Aro::Mancy.exit_error_missing_args! if CLI::ARGV2.nil?
-      deck = Aro::Deck.make(CLI::ARGV1)
+      deck = Aro::Deck.make(CLI::ARGV2.to_s)
       Aro::P.p.say(I18n.t("cli.messages.deck_created_sucessfully", name: deck.name))
       Aro::Deck.display_selection_menu
     elsif CLI::LOAD_DECK_ACTIONS.include?(action)
@@ -70,7 +70,7 @@ module CLI
     end
 
     if deck.nil?
-      Aro::P.p.say(I18n.t("cli.errors.missing_deck", cmd: "#{ARGV0} #{ARGV1} #{ARGV2}"))
+      Aro::P.p.say(I18n.t("cli.errors.missing_deck", cmd: "#{CLI::ARGV0} #{CLI::ARGV1} #{CLI::ARGV2}"))
       exit(CLI::EXIT_CODES[:GENERAL_ERROR])
     end
 
