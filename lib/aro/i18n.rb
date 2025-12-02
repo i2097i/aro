@@ -6,5 +6,9 @@ module Aro
   # ...
 end
 
-I18n.load_path += Dir["#{Gem.loaded_specs[:aro.to_s]&.full_gem_path}/locale/*.yml"]
+locale_path = Gem.loaded_specs[:aro.to_s]&.full_gem_path
+if Aro::IS_TEST.call
+  locale_path = Dir.pwd
+end
+I18n.load_path += Dir["#{locale_path}/locale/*.yml"]
 I18n.default_locale = :en

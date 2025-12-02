@@ -30,14 +30,38 @@ ENV[:ARO_ENV.to_s] = :production.to_s
 # todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
 
-# cli parser
-case CLI::ARGV0
-when :create.to_s
-  CLI::create
-when :deck.to_s
-  CLI::deck
-else
-  CLI::usage
-end
+# todo: response formats 
+# text (default)
+# json
+# 
 
-exit(CLI::EXIT_CODES[:SUCCESS])
+module CLI
+  if CLI::LOAD_DECK_ACTIONS.keys.map{|k| k.downcase.to_sym}.include?(ARGV[0]&.to_sym)
+    # enable deck shortcut (skip typing deck while in-game)
+    ARGV0 = :deck
+    ARGV1 = ARGV[0]&.to_sym
+    ARGV2 = ARGV[1]&.to_sym
+  else
+    # default
+    ARGV0 = ARGV[0]&.to_sym
+    ARGV1 = ARGV[1]&.to_sym
+    ARGV2 = ARGV[2]&.to_sym
+  end
+
+  # cli parser
+  case CLI::ARGV0
+  when :create
+    CLI::create
+  when :deck
+    CLI::deck
+  else
+    unless Aro::Mancy.game.nil?
+      Aro::P.p.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game.show"))
+      Aro::Mancy.game.show
+      exit(CLI::EXIT_CODES[:SUCCESS])
+    end
+
+    CLI::usage
+    exit(CLI::EXIT_CODES[:SUCCESS])
+  end
+end

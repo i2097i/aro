@@ -1,10 +1,10 @@
+ENV[:ARO_ENV.to_s] = :test.to_s
 require :aro.to_s
 
 # rspec cheat sheet:
 # https://devhints.io/rspec
 
 RSpec.configure do |config|
-  ENV[:ARO_ENV.to_s] = :test.to_s
   # use color in stdout
   config.color = true
 
@@ -15,5 +15,13 @@ RSpec.configure do |config|
   config.formatter = :documentation
 
   # suppress stdout
-  # config.before { allow($stdout).to receive(:puts) }
+  config.before { allow($stdout).to receive(:puts) }
+end
+
+def rmrf(dir_path)
+  if File.exist?(dir_path)
+    rm_cmd = "rm -rf #{dir_path}"
+    # Aro::P.p.say(rm_cmd)
+    system(rm_cmd)
+  end
 end

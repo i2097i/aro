@@ -10,10 +10,6 @@
 
 module CLI
 
-  ARGV0 = ARGV[0]
-  ARGV1 = ARGV[1]
-  ARGV2 = ARGV[2]
-
   FLAGS = {
     HELP:     ["-h", "--help"],
     VERSION:  ["-v", "--version"],

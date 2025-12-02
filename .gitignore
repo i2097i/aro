@@ -3,3 +3,4 @@
 .aro_test
 .name
 *.sql
+*.log

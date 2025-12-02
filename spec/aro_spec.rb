@@ -3,14 +3,8 @@ require_relative :rspec_helper.to_s
 describe Aro do
   NAME = :success
 
-  before :all do
-  end
-
   after :each do
     rmrf(NAME.to_s)
-  end
-
-  after :all do
   end
 
   context "create" do
@@ -45,23 +39,5 @@ describe Aro do
       a = Aro::Create.new(name)
       expect(ActiveRecord::Base.connection.database_exists?).to be true
     end
-  end
-
-  context "deck" do
-    it 'should list all decks' do
-      # name = NAME.to_s
-      # Aro::Create.new(name)
-      # Dir.chdir(name) do
-      #   Deck.list
-      # end
-    end
-  end
-end
-
-def rmrf(dir_path)
-  if File.exist?(dir_path)
-    rm_cmd = "rm -rf #{dir_path}"
-    # Aro::P.p.say(rm_cmd)
-    system(rm_cmd)
   end
 end

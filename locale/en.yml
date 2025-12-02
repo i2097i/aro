@@ -1,16 +1,25 @@
 en:
   cli:
     errors:
-      header: |
-        error! something is out of place.
+      header: "error! something is out of place."
       missing_args: "the command you entered, '%{cmd}', is missing required argument(s)"
     messages:
       choose_card: "choose a card."
-      confirmation_prompt: "enter 'aroyes' to continue or anything else to cancel (aroyes): "
+      confirmation_prompt: "input 'aroyes' to reset %{name}, or enter to cancel (cancel): "
       creating: "creating %{name}..."
+      creation_attempt: "attepting to create aro table named %{name}"
       deck_created_sucessfully: "[%{name}] deck created successfully"
-      history_title: "displaying history for the %{deck} deck (desc):"
+      drawing: "drawing a card from %{name}..."
+      history_title: "%{deck} deck stream (desc.):$"
       history_drawn: "drawn cards"
+      invalid_name: "-TO"
+      showing: "showing %{name}..."
+      shuffling: "shuffling %{name}'s cards..."
+      replacing_drawn: "all drawn cards to %{name}..."
+      resetting: "resetting %{name}'s cards..."
+      understood: "%{name} says: 'understood.'"
+      welcome: "welcome.to.the.%{name}."
+
       no_decks: |
 
         no decks created yet.
@@ -19,7 +28,7 @@ en:
           $ aro deck create <deck_name>
 
         see aro --help for usage.
-      understood: "understood."
+        
 
     usage: |
       NAME
@@ -28,14 +37,21 @@ en:
 
       SYNOPSIS
 
-        aro [-v | --version] [-h | --help] <command> [<args>]
+        aro [-v | --version] [-h | --help] <command1> <command2>
+
+        to pick up where you left off, simply enter the following command:
+        
+          $ aro 
 
       COMMANDS
+
+        there are two primary commands in the aro. one is to create and the
+        other is to play.
 
         create
           create an aro directory named <name>. if directory already exists, abort.
 
-          aro create [-h | --help] <name> [<args>]
+          aro create [-h | --help] <name>
 
           examples:
 
@@ -44,13 +60,14 @@ en:
         deck
           perform operations on the deck(s) in current aro instance
 
-          aro deck [-h | --help] <command> [<args>]
+          aro deck [-h | --help] <command>
 
           running `aro deck` with no arguments prompts user to select a deck.
 
             $ aro deck
 
           deck commands:
+
             - create
 
               creates a new deck with the specified name.

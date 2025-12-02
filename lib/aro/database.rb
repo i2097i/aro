@@ -12,13 +12,13 @@ module Aro
 
     def initialize(name = nil)
       # show queries in stout
-      ActiveRecord::Base.logger = Logger.new(STDOUT) if ENV[:ARO_ENV.to_s] != :production.to_s
+      ActiveRecord::Base.logger = Logger.new(STDOUT) if ENV[:ARO_ENV.to_s] == :development.to_s
 
       # generate .name file
-      if name.nil? && is_aro_dir?
+      if name.nil? && Aro::Database.is_aro_dir?
         # pwd is in aro directory, use name file
         name = get_name_from_namefile
-      elsif !name.nil? && !Database.is_aro_dir?
+      elsif !name.nil? && !Aro::Database.is_aro_dir?
         # first use, pwd is not in aro directory yet
         echo_cmd = "echo #{name} >> #{name}/#{NAME_FILE}"
         Aro::P.p.say(echo_cmd)
@@ -42,7 +42,7 @@ module Aro
     end
 
     def base_aro_dir(name)
-      "#{Database.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}"
+      "#{Aro::Database.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}"
     end
 
     def db_config_filepath(name)
@@ -58,7 +58,7 @@ module Aro
     end
 
     def self.get_name_from_namefile
-      Database.is_aro_dir? ? File.read(NAME_FILE).strip : nil
+      Aro::Database.is_aro_dir? ? File.read(NAME_FILE).strip : nil
     end
 
     def setup_local_aro(name = nil, force = false)
@@ -78,7 +78,7 @@ module Aro
       # create database config yaml file
       c = {
         adapter: :sqlite3.to_s,
-        database: "#{Database.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}/#{SQL_FILE}",
+        database: "#{Aro::Database.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}/#{SQL_FILE}",
         username: name,
         password: name
       }.to_yaml
