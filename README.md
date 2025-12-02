@@ -19,6 +19,12 @@ $ gem install aro
 $ aro -h
 ```
 
+[usage documentation](https://raw.githubusercontent.com/i2097i/aro/refs/heads/master/locale/en.usage.yml)
+
+
+[card definitions](https://raw.githubusercontent.com/i2097i/aro/refs/heads/master/locale/en.cards.yml)
+
+
 ### develop
 
 [rubygems.org guides](https://guides.rubygems.org)
@@ -58,6 +64,7 @@ echo "exec rspec -f d -o ./spec/spec.log"
 exec rspec -f d -o ./spec/spec.log
 ```
 
-[license](http://opensource.org/licenses/MIT) [issues](https://github.com/i2097i/aro/issues)
+[license](http://opensource.org/licenses/MIT)
+[issues](https://github.com/i2097i/aro/issues)
 
 >aro by i2097i is copyright (2025)

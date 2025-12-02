@@ -1,0 +1,78 @@
+en: 
+  cli:
+    usage: |
+      NAME
+
+        aro - a cli for tarot.
+
+      SYNOPSIS
+
+        aro [-v | --version] [-h | --help] <command1> <command2>
+
+        to pick up where you left off, simply enter the following command:
+        
+          $ aro 
+
+      COMMANDS
+
+        there are two primary commands in the aro. one is to create and the
+        other is to play.
+
+        create
+          create an aro directory named <name>. if directory already exists, abort.
+
+          aro create [-h | --help] <name>
+
+          examples:
+
+            $ aro create <name>
+
+        deck
+          perform operations on the deck(s) in current aro instance
+
+          aro deck [-h | --help] <command>
+
+          running `aro deck` with no arguments prompts user to select a deck.
+
+            $ aro deck
+
+          deck commands:
+
+            - create
+
+              creates a new deck with the specified name.
+
+                example:
+
+                  $ aro deck create <name_of_new_deck>
+
+            - show
+
+              displays the current deck's cards in their current order.
+
+            - shuffle
+
+              shuffles the current deck and generates a log record.
+
+            - explore
+
+              allows user to browse each card in the current deck.
+
+            - draw
+
+              draw a random card from the current deck.
+
+            - replace
+
+              replaces all drawn cards FIFO and puts them on the bottom of
+              the deck. this will preserve all card orientations.
+            
+            - reset
+
+              completely reset the deck. replace all drawn and reset order.
+              all orientations will be set to upright.
+
+
+
+
+      aro by i2097i is copyright (2025)

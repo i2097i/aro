@@ -36,6 +36,7 @@ ENV[:ARO_ENV.to_s] = :production.to_s
 # 
 
 module CLI
+  
   if CLI::LOAD_DECK_ACTIONS.keys.map{|k| k.downcase.to_sym}.include?(ARGV[0]&.to_sym)
     # enable deck shortcut (skip typing deck while in-game)
     ARGV0 = :deck
@@ -69,4 +70,5 @@ module CLI
     CLI::usage
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
+  
 end

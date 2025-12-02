@@ -179,12 +179,24 @@ class Aro::Deck < ActiveRecord::Base
 
     # find a card that is not already drawn
     while dev_tarot.nil? do
-      dev_tarot = Aro::Deck.read_dev_tarot&.strip&.split("")
-      if dev_tarot.nil?
-        # todo: local randomness here
-      end
+      # preferred randomness
+      dev_tarot = nil # Aro::Deck.read_dev_tarot&.strip&.split("")
+      
       cards_arr = cards.split(Aro::Deck::CARD_DELIM) || []
       cards_arr_stripped = cards_arr.map{|c| Aro::Deck.card_strip(c)}
+
+      if dev_tarot.nil?
+        # assume user does not have /dev/tarot device.
+        # generate random facade
+        facade = cards_arr.sample.split("")
+        dev_tarot = (
+          facade.first(2).join("") + 
+          Aro::NUMERALS[
+            facade.select{|c| !facade.first(2).include?(c)}.join("").to_sym
+          ].to_s
+        ).split("")
+      end
+
       dev_tarot_converted = dev_tarot[1] + Aro::NUMERALS.key(
         dev_tarot.select{|c| !dev_tarot.first(2).include?(c)}.join("").to_i
       ).to_s
