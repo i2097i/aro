@@ -48,6 +48,11 @@ module CLI
     ARGV2 = ARGV[2]&.to_sym
   end
 
+  if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
+    Aro::P.p.say(Aro::VERSION)
+    exit(CLI::EXIT_CODES[:SUCCESS])
+  end
+
   # cli parser
   case CLI::ARGV0
   when :create
@@ -55,7 +60,7 @@ module CLI
   when :deck
     CLI::deck
   else
-    unless Aro::Mancy.game.nil?
+    unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
       Aro::P.p.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game.show"))
       Aro::Mancy.game.show
       exit(CLI::EXIT_CODES[:SUCCESS])

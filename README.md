@@ -21,6 +21,8 @@ $ aro -h
 
 ### develop
 
+[rubygems.org guides](https://guides.rubygems.org)
+
 ```ruby
 # the Rakefile contains bundler's gem_tasks,
 # which are used for gem development.
@@ -43,13 +45,19 @@ $ rake install
 ### test
 
 ```bash
-$ rspec test
+$ rspec
 ```
+
+#### pre-commit hook:
+```bash
+: cat .git/hooks/pre-commit
+#!/bin/sh
+
+echo "running pre-commit hooks"
+echo "exec rspec -f d -o ./spec/spec.log"
+exec rspec -f d -o ./spec/spec.log
+```
+
+[license](http://opensource.org/licenses/MIT) [issues](https://github.com/i2097i/aro/issues)
+
 >aro by i2097i is copyright (2025)
-
->[rubygems.org guides](https://guides.rubygems.org)
-
->[license](http://opensource.org/licenses/MIT)
-
->[issues](https://github.com/i2097i/aro/issues)
-
