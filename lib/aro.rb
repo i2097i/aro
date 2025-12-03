@@ -17,20 +17,16 @@ module Aro
     attr_accessor :game
 
     def initialize
-      Aro::Create.new(Aro::Database.get_name_from_namefile)
+      Aro::Create.new(Aro::Db.get_name_from_namefile)
       self.game = Aro::Deck.current_deck
-    end
-
-    def self.exit_error_missing_args!
-      Aro::P.p.say(I18n.t("cli.errors.header"))
-      Aro::P.p.say(I18n.t("cli.errors.missing_args", cmd: "#{CLI::ARGV0} #{CLI::ARGV1} #{CLI::ARGV2}"))
-      exit(CLI::EXIT_CODES[:INVALID_ARG])
     end
 
     def self.game
       Mancy.instance.game
     end
   end
+
+  ARO_PS1 = "#{Aro::Mancy.name}"
 end
 
 # TODO: this doesn't work

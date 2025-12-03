@@ -10,22 +10,7 @@
 
 =end
 
-require :aro.to_s
-[
-  :cli,
-].each do |dir|
-  Dir[
-    File.join(
-      __dir__,
-      dir.to_s,
-      :"**/*.rb".to_s
-    )
-  ].each { |file| require file}
-end
-
-# set environment variable
-ENV[:ARO_ENV.to_s] = :production.to_s
-# ENV[:ARO_ENV.to_s] = :development.to_s
+require_relative :cli.to_s
 
 # todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
@@ -36,21 +21,8 @@ ENV[:ARO_ENV.to_s] = :production.to_s
 # 
 
 module CLI
-  
-  if CLI::LOAD_DECK_ACTIONS.keys.map{|k| k.downcase.to_sym}.include?(ARGV[0]&.to_sym)
-    # enable deck shortcut (skip typing deck while in-game)
-    ARGV0 = :deck
-    ARGV1 = ARGV[0]&.to_sym
-    ARGV2 = ARGV[1]&.to_sym
-  else
-    # default
-    ARGV0 = ARGV[0]&.to_sym
-    ARGV1 = ARGV[1]&.to_sym
-    ARGV2 = ARGV[2]&.to_sym
-  end
-
   if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
-    Aro::P.p.say(Aro::VERSION)
+    Aro::P.say(Aro::VERSION)
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
 
@@ -62,7 +34,7 @@ module CLI
     CLI::deck
   else
     unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
-      Aro::P.p.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game.show"))
+      Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game.show"))
       Aro::Mancy.game.show
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
@@ -70,5 +42,5 @@ module CLI
     CLI::usage
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
-  
+
 end

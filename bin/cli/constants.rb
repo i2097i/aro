@@ -11,8 +11,10 @@
 module CLI
 
   FLAGS = {
-    HELP:     [:"-h", :"--help"],
-    VERSION:  [:"-v", :"--version"],
+    HELP:         [:"-h", :"--help"],
+    SHOW_COUNT:   [:"-n", :"--count"],
+    SHOW_ORDER:   [:"-o", :"--order"],
+    VERSION:      [:"-v", :"--version"],
   }
 
   EXIT_CODES = {
