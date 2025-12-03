@@ -9,19 +9,18 @@ module Aro
     SQL_FILE = "database.sql"
     SCHEMA_FILE = "schema.rb"
     MIGRATIONS_DIR = "db/migrate"
-    NAME_FILE = ".name"
 
     def initialize(name = nil)
       # show queries in stout
       ActiveRecord::Base.logger = Logger.new(STDOUT) if ENV[:ARO_ENV.to_s] == :development.to_s
 
       # generate .name file
-      if name.nil? && Aro::Db.is_aro_dir?
+      if name.nil? && Aro::Mancy.is_aro_dir?
         # pwd is in aro directory, use name file
         name = get_name_from_namefile
-      elsif !name.nil? && !Aro::Db.is_aro_dir?
+      elsif !name.nil? && !Aro::Mancy.is_aro_dir?
         # first use, pwd is not in aro directory yet
-        echo_cmd = "echo #{name} >> #{name}/#{NAME_FILE}"
+        echo_cmd = "echo #{name} >> #{name}/#{Aro::Mancy::NAME_FILE}"
         Aro::P.say("#{echo_cmd} (result: #{system(echo_cmd)})")
       end
 
@@ -42,7 +41,7 @@ module Aro
     end
 
     def self.base_aro_dir(name)
-      "#{Aro::Db.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}"
+      "#{Aro::Mancy.is_aro_dir? ? "." : name}/#{Aro::DIRS[:ARO].call}"
     end
 
     def db_config_filepath(name)
@@ -53,12 +52,8 @@ module Aro
       "#{Aro::Db.base_aro_dir(name)}/#{SQL_FILE}"
     end
 
-    def self.is_aro_dir?
-      File.exist?(NAME_FILE)
-    end
-
     def self.get_name_from_namefile
-      Aro::Db.is_aro_dir? ? File.read(NAME_FILE).strip : nil
+      Aro::Mancy.is_aro_dir? ? File.read(Aro::Mancy::NAME_FILE).strip : nil
     end
 
     def setup_local_aro(name = nil, force = false)

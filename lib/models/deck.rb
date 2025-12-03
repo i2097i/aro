@@ -171,7 +171,6 @@ class Aro::Deck < ActiveRecord::Base
       default: 1
     )
 
-    # TODO: display this nicer
     Aro::P.say(I18n.t("cards.#{Aro::Deck.card_strip(answer)}"))
   end
 

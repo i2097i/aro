@@ -1,0 +1,15 @@
+# helper script for consistency when doing releases
+
+# start on latest develop branch
+
+# 1) update version and release notes (manually)
+# 2) test and build
+#   $ rake make
+# 3) create a commit
+# 4) generate tag
+#   $ gitaga vx.x.x
+# 5) push develop
+# 6) pull request develop -> master & merge
+# 7) checkout and pull master
+# 8) publish to rubygems
+#   $ gem push pkg/aro-x.x.x.gem

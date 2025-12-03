@@ -16,6 +16,9 @@ module Aro
 
     attr_accessor :game
 
+    PS1 = Aro::Mancy.name
+    NAME_FILE = ".name"
+
     def initialize
       Aro::Create.new(Aro::Db.get_name_from_namefile)
       self.game = Aro::Deck.current_deck
@@ -24,9 +27,11 @@ module Aro
     def self.game
       Mancy.instance.game
     end
-  end
 
-  ARO_PS1 = "#{Aro::Mancy.name}"
+    def self.is_aro_dir?
+      File.exist?(Aro::Mancy::NAME_FILE)
+    end
+  end
 end
 
 # TODO: this doesn't work

@@ -15,7 +15,7 @@ module Aro
     end
 
     def self.say(message)
-      Aro::P::p.say("[#{ARO_PS1}@#{Time.now.to_i}]: #{message}")
+      Aro::P::p.say("[#{Aro::Mancy::PS1}@#{Time.now.to_i}]: #{message}")
     end
 
     def self.less(display_text = "")
