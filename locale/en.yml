@@ -1,30 +1,46 @@
 en:
   cli:
+    config:
+      json_format_description: "show aro responses in json format."
+      possible_values: "possible values"
+      text_format_description: "show aro responses in text format (default)"
     errors:
       header: "error! something is out of place."
       missing_args: "the command you entered, '%{cmd}', is missing required argument(s)"
+      missing_deck: "no deck selected. use 'aro deck' to select one or 'aro deck create deck_name' to create one."
+    warnings:
+      invalid_order: "the order specified for displaying logs in invalid. using default (desc)."
     messages:
       choose_card: "choose a card."
       confirmation_prompt: "input 'aroyes' to reset %{name}, or enter to cancel (cancel): "
       creating: "creating %{name}..."
-      creation_attempt: "attepting to create aro table named %{name}"
-      deck_created_sucessfully: "[%{name}] deck created successfully"
+      creation_attempt: "attempting to create aro table named %{name}..."
+      creation_failure: "%{name} creation failed!"
+      creation_success: |
+        %{name} created successfully!
+
+        to get started navigate to the %{name} directory:
+        
+          $ cd %{name}
+
+        see aro --help for usage.
+      deck_created_sucessfully: "%{name} deck created successfully"
       drawing: "drawing a card from %{name}..."
-      history_title: "%{deck} deck stream (desc.):$"
+      generating_default_config: "generating default config: %{name}"
       history_drawn: "drawn cards"
-      invalid_name: "-TO"
-      showing: "showing %{name}..."
+      no_decks: |
+        no decks created yet.
+
+        use the following command to create one:
+
+          $ aro deck create <deck_name>
+
+        see aro --help for usage.
+      showing: "%{name}: (count: [%{count}], order: [%{order}])..."
       shuffling: "shuffling %{name}'s cards..."
+      source_config_result: "result: %{result}"
+      sourcing_config: "sourcing config: %{name}"
       replacing_drawn: "all drawn cards to %{name}..."
       resetting: "resetting %{name}'s cards..."
       understood: "%{name} says: 'understood.'"
       welcome: "welcome.to.the.%{name}."
-
-      no_decks: |
-
-        no decks created yet.
-
-        use the following command to create one:
-          $ aro deck create <deck_name>
-
-        see aro --help for usage.

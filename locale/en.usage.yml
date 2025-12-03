@@ -21,7 +21,7 @@ en:
         create
           create an aro directory named <name>. if directory already exists, abort.
 
-          aro create [-h | --help] <name>
+          aro create <name>
 
           examples:
 
@@ -36,9 +36,9 @@ en:
 
             $ aro deck
 
-          deck commands:
+          COMMANDS
 
-            - create
+            create
 
               creates a new deck with the specified name.
 
@@ -46,28 +46,48 @@ en:
 
                   $ aro deck create <name_of_new_deck>
 
-            - show
+            show
 
-              displays the current deck's cards in their current order.
+              displays the current deck's log record(s).
 
-            - shuffle
+              the default behavior is to display only the most recent log record.
+
+              note: 
+              
+                'less' is automatically used to display records if --count > 1
+
+              OPTIONS
+
+                [-n | --count]  specify number of deck logs to show.
+
+                                  default is 1 (latest/current state)
+
+                                  passing 'all' display all logs
+
+                [-o | --order]  specify the output order of the log records.
+
+                                  default is 'desc'
+
+                                  possible values: ['asc', 'desc']
+
+            shuffle
 
               shuffles the current deck and generates a log record.
 
-            - explore
+            explore
 
               allows user to browse each card in the current deck.
 
-            - draw
+            draw
 
               draw a random card from the current deck.
 
-            - replace
+            replace
 
               replaces all drawn cards FIFO and puts them on the bottom of
               the deck. this will preserve all card orientations.
             
-            - reset
+            reset
 
               completely reset the deck. replace all drawn and reset order.
               all orientations will be set to upright.

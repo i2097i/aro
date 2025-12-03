@@ -1,29 +1,28 @@
 module Aro
   class Create
-    def initialize(name = nil)
-      name = name&.strip
+    attr_accessor :initialized
 
-      error_msg = nil
+    def initialize(name)
+      self.initialized = false
 
-      # is a non-empty string
-      error_msg = I18n.t("cli.errors.missing_args", cmd: "aro create") if name.nil? || !name.kind_of?(String) || name.empty?
+      if !name.nil? && (
+        name.kind_of?(String) ||
+        name.kind_of?(Symbol)
+      )
+        # explicitly only allow String/Symbol types for name
+        name = name.to_s.strip
 
-      # display error and abort
-      unless error_msg.nil?
-        Aro::P.p.say(error_msg)
-        Aro::Mancy.exit_error_missing_args!
+        # create the new aro directory and database
+        if Aro::Db.get_name_from_namefile.nil? && !Dir.exist?(name)
+          Aro::P.say(I18n.t("cli.messages.no_decks"))
+          create_cmd = "mkdir #{name}"
+          Aro::P.say("#{create_cmd} (result: #{system(create_cmd)})")
+        end
+
+        # create database
+        Aro::Db.new(name) 
+        self.initialized = true       
       end
-
-      # create the new aro directory and database
-      if Aro::Database.get_name_from_namefile.nil? && !Dir.exist?(name)
-        Aro::P.p.say(I18n.t("cli.messages.no_decks"))
-        create_cmd = "mkdir #{name}"
-        Aro::P.p.say(create_cmd)
-        system(create_cmd)
-      end
-
-      # create database
-      Aro::Database.new(name)
     end
 
   end

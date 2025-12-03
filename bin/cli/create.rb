@@ -10,8 +10,13 @@
 
 module CLI
   def self.create
-    name = CLI::ARGV1.to_s || I18n.t("cli.messages.invalid_name")
-    Aro::P.p.say(I18n.t("cli.messages.creation_attempt", name: name))
-    Aro::Create.new(name)
+    CLI.exit_error_missing_args! if CLI::ARGV1.nil?
+    name = CLI::ARGV1&.to_s
+    Aro::P.say(I18n.t("cli.messages.creation_attempt", name: name))
+    if Aro::Create.new(name).initialized
+      Aro::P.say(I18n.t("cli.messages.creation_success", name: name))
+    else
+      Aro::P.say(I18n.t("cli.messages.creation_failure", name: name))
+    end
   end
 end

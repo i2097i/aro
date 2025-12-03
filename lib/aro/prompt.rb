@@ -14,6 +14,10 @@ module Aro
       P.instance.prompt
     end
 
+    def self.say(message)
+      Aro::P::p.say("[#{ARO_PS1}@#{Time.now.to_i}]: #{message}")
+    end
+
     def self.less(display_text = "")
       IO.popen("less -X", "w") { |f| f.puts display_text }
     end

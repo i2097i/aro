@@ -9,7 +9,7 @@ class Aro::Deck < ActiveRecord::Base
   DEV_TAROT_FILE = "/dev/tarot"
 
   # update this for # of cards you will draw
-  DRAW_COUNT = 10
+  DRAW_COUNT = 7
   
   # do not modify
   DISPLAY_WIDTH = Aro::Deck::DRAW_COUNT*Aro::Deck::DRAW_COUNT
@@ -52,7 +52,7 @@ class Aro::Deck < ActiveRecord::Base
 
   def self.display_selection_menu
     unless Aro::Deck.any?
-      Aro::P.p.say(I18n.t("cli.messages.no_decks"))
+      Aro::P.say(I18n.t("cli.messages.no_decks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
@@ -87,16 +87,36 @@ class Aro::Deck < ActiveRecord::Base
     card.gsub(/[+-]/, "").strip
   end
 
-  def show
-    # displays the current deck's cards in their current order.
-    h_text = I18n.t("cli.messages.history_title", deck: name)
-    h_text += "\n"
+  def show(count_n: Aro::Log::DEFAULT_COUNT, order_o: Aro::Log::ORDERING[:DESC])
+    unless count_n.kind_of?(Numeric) && count_n > 0
+      if count_n&.to_s&.downcase&.to_sym == Aro::Log::ALL
+        count_n = logs.count
+      else
+        count_n = Aro::Log::DEFAULT_COUNT
+      end
+    end
+    count_n = [count_n.to_i, logs.count].min
+
+    unless Aro::Log::ORDERING.include?(order_o&.to_s&.upcase&.to_sym)
+      Aro::P.say(I18n.t("cli.warnings.invalid_order"))
+      order_o = Aro::Log::ORDERING[:DESC]
+    end
+
+    # perform query
+    h_logs = logs.order(created_at: order_o.to_s.downcase).first(count_n)
+
+    # for now tests just expect text output
+    return h_logs if Aro::IS_TEST.call
+
+    Aro::P.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
+    
+    h_text = "\n"
     h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
     h_text += "#{name.upcase.center(Aro::Deck::DISPLAY_WIDTH)}\n\n"
-    logs.reverse.each_with_index{|l, i|
+    h_logs.each_with_index{|l, i|
       h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
       h_text += l.created_at.strftime(Aro::Deck::DATE_FORMAT).center(Aro::Deck::DISPLAY_WIDTH) + "\n"
-      h_text += "#{logs.count - i} of #{logs.count}".rjust(Aro::Deck::DISPLAY_WIDTH) + "\n"
+      h_text += "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? logs.count - i : 1 + i} of #{logs.count}".rjust(Aro::Deck::DISPLAY_WIDTH) + "\n"
       h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
       h_text += get_display_for_cards(
         Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM)
@@ -112,13 +132,19 @@ class Aro::Deck < ActiveRecord::Base
           drawn_cards
         )
         h_text += "\n"
+        h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
+      end
+
+      3.times do
+        h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
       end
     }
 
-    # for now tests just expect text output
-    return h_text if Aro::IS_TEST.call
-
-    Aro::P.less(h_text)
+    if count_n == Aro::Log::DEFAULT_COUNT
+      Aro::P.say(h_text)
+    else
+      Aro::P.less(h_text)
+    end
   end
 
   def get_display_for_cards(input = []) # todo:, print_nums: false)
@@ -146,7 +172,7 @@ class Aro::Deck < ActiveRecord::Base
     )
 
     # TODO: display this nicer
-    Aro::P.p.say(I18n.t("cards.#{Aro::Deck.card_strip(answer)}"))
+    Aro::P.say(I18n.t("cards.#{Aro::Deck.card_strip(answer)}"))
   end
 
   def shuffle
