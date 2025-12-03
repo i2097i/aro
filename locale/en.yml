@@ -1,9 +1,11 @@
 en:
   cli:
     config:
+      generating_default_config: "missing config. generating default config file at %{name}."
       json_format_description: "show aro responses in json format."
       possible_values: "possible values"
       text_format_description: "show aro responses in text format (default)"
+      sourcing_config: "loading configuration from %{name}..."
     errors:
       header: "error! something is out of place."
       missing_args: "the command you entered, '%{cmd}', is missing required argument(s)"
@@ -26,7 +28,6 @@ en:
         see aro --help for usage.
       deck_created_sucessfully: "%{name} deck created successfully"
       drawing: "drawing a card from %{name}..."
-      generating_default_config: "generating default config: %{name}"
       history_drawn: "drawn cards"
       no_decks: |
         no decks created yet.
@@ -38,8 +39,6 @@ en:
         see aro --help for usage.
       showing: "%{name}: (count: [%{count}], order: [%{order}])..."
       shuffling: "shuffling %{name}'s cards..."
-      source_config_result: "result: %{result}"
-      sourcing_config: "sourcing config: %{name}"
       replacing_drawn: "all drawn cards to %{name}..."
       resetting: "resetting %{name}'s cards..."
       understood: "%{name} says: 'understood.'"

@@ -26,6 +26,9 @@ module CLI
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
 
+  # initialize config
+  CLI::Config.instance
+
   # cli parser
   case CLI::ARGV0
   when :create
