@@ -196,7 +196,7 @@ class Aro::Deck < ActiveRecord::Base
     dt = nil
     return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE)
 
-    File.open(Aro::Deck::DEV_TAROT_FILE, "r"){|dtf| dt = dtf.read(4)}
+    File.open(Aro::Deck::DEV_TAROT_FILE, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
     
     # VERY IMPORTANT!
     Aro::P.say(I18n.t("cli.very_important", dev_tarot: dt))
@@ -254,18 +254,25 @@ class Aro::Deck < ActiveRecord::Base
         dev_tarot = summon_ruby_facot(cards_arr).split("")
       else
         # preferred randomness
-        dev_tarot = Aro::Deck.read_dev_tarot&.strip&.split("")
+        read_value = Aro::Deck.read_dev_tarot&.strip&.split("")
+        if read_value.count >= Aro::Mancy::N - 1
+          dev_tarot = read_value
+        end
       end
       
       unless dev_tarot.nil?
-        abs_dev_tarot = dev_tarot[1] + Aro::NUMERALS.key(
-          dev_tarot.select{|c| !dev_tarot.first(2).include?(c)}.join("").to_i
+        abs_dev_tarot = dev_tarot[Aro::Mancy::S] + Aro::NUMERALS.key(
+          dev_tarot.join("")[Aro::Mancy::OS..].to_i
         ).to_s
         if abs_cards_arr.include?(abs_dev_tarot)
           # dev_tarot is valid
-          dev_tarot = dev_tarot[0] + abs_dev_tarot
+          dev_tarot = dev_tarot[Aro::Mancy::O] + abs_dev_tarot
+        else
+          dev_tarot = nil
         end
-      else
+      end
+
+      if dev_tarot.nil?
         # dev_tarot is invalid
         sleeps += 1
         sleep(z.to_i)

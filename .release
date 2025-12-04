@@ -16,5 +16,5 @@
 # 6) push develop
 # 7) pull request develop -> master & merge
 # 8) checkout and pull master
-# 9) publish to rubygems
+# 9) publish to rubygems (warning, must version up after this)
 #     $ gem push pkg/aro-x.x.x.gem
