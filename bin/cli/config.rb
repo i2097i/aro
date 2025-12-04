@@ -53,7 +53,7 @@ module CLI
         description: I18n.t("cli.config.type_values_description"),
         validator: Proc.new{|unvalid, deff, key|
           CLI::Config.def_valid?(deff, key) &&
-          deff[:possible_values].keys.include?(unvalid.to_sym)
+          deff[:possible_values].keys.include?(unvalid&.to_sym)
         }
       },
     }
@@ -197,11 +197,19 @@ module CLI
     end
 
     def source_config
-      invalid_defs = validate_config
       Aro::P.say(I18n.t("cli.config.sourcing_config", name: CLI::Config::CONFIG_FILE_PATH))
-      system("source #{CLI::Config::CONFIG_FILE_PATH}")
+      File.read(CLI::Config::CONFIG_FILE_PATH).split("\n").select{|line|
+        line.match?("export #{CLI::Config::VAR_PREFIX}")
+      }.map{|line| 
+        line.gsub("export ", "").split("=")
+      }.each{|kv|
+        ENV[kv[0]] = kv[1]
+      }
+      
+      # todo: implement
+      # invalid_defs = validate_config
       CLI::Config::DEF.keys.each{|dfk|
-        next if invalid_defs.include?(dfk)
+        # next if invalid_defs.include?(dfk)
         Aro::P.say("$#{CLI::Config.var_key_with_suffix(dfk)}=#{CLI::Config.var_value_with_suffix(dfk)}")
       }
 

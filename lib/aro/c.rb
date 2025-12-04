@@ -3,7 +3,7 @@ module Aro
     ARO: Proc.new{Aro::IS_TEST.call ? ".aro_test" : ".aro"},
   }
 
-  AROYES = "aroyes"
+  AROYES = :aroyes
 
   NUMERALS = {
     O:    0,

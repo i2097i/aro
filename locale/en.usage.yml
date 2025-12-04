@@ -28,7 +28,7 @@ en:
             $ aro create <name>
 
         config
-          manage your aro config - not yet implemented
+          todo: manage your aro config - not yet implemented
 
         deck
           perform operations on the deck(s) in current aro instance

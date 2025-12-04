@@ -244,20 +244,20 @@ class Aro::Deck < ActiveRecord::Base
     # get drawn
     drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM) || []
 
-    # use fallback randomness if /dev/tarot unavailable
-    if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE)
-      dev_tarot = summon_ruby_facot(cards_arr)
-      abs_dev_tarot = Aro::Deck.card_strip(dev_tarot)
-    end
-
     sleeps = 0
     sleeps_max = z_max
 
     # find a card that is not already drawn
     while sleeps <= sleeps_max && dev_tarot.nil? do
-      # preferred randomness
-      dev_tarot = Aro::Deck.read_dev_tarot&.strip&.split("")
-      if dev_tarot.present?
+      # use fallback randomness if /dev/tarot unavailable
+      if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE)
+        dev_tarot = summon_ruby_facot(cards_arr).split("")
+      else
+        # preferred randomness
+        dev_tarot = Aro::Deck.read_dev_tarot&.strip&.split("")
+      end
+      
+      unless dev_tarot.nil?
         abs_dev_tarot = dev_tarot[1] + Aro::NUMERALS.key(
           dev_tarot.select{|c| !dev_tarot.first(2).include?(c)}.join("").to_i
         ).to_s
@@ -268,7 +268,7 @@ class Aro::Deck < ActiveRecord::Base
       else
         # dev_tarot is invalid
         sleeps += 1
-        sleep(z)
+        sleep(z.to_i)
       end
     end
 
