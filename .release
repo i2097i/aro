@@ -4,7 +4,7 @@
 
 # 1) update version and release notes (manually)
 # 2) test and build
-#     $ rake make
+#     $ rake make && gem build
 # 3) build checksum
 #     $ rake build:checksum 
 # 4) create a commit
