@@ -1,4 +1,5 @@
 require_relative :rspec_helper.to_s
+require :aro.to_s
 
 describe Aro::Deck do
   before :all do
@@ -67,7 +68,11 @@ describe Aro::Deck do
       Dir.chdir(TESTING_NAME.to_s) do
         deck = Aro::Deck.current_deck
         expect(deck.drawn).to be nil
-        deck.draw
+        deck.draw(
+          is_dt_dimension: true,
+          z_max: 7,
+          z: 1
+        )
         expect(deck.drawn.split(Aro::Deck::CARD_DELIM).count).to be 1
       end
     end

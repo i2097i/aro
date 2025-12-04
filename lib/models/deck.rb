@@ -76,13 +76,6 @@ class Aro::Deck < ActiveRecord::Base
     end
   end
 
-  def self.read_dev_tarot
-    dt = nil
-    return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE)
-
-    File.open(Aro::Deck::DEV_TAROT_FILE, "r"){|dtf| dt = dtf.read(4)}
-  end
-
   def self.card_strip(card)
     card.gsub(/[+-]/, "").strip
   end
@@ -198,48 +191,97 @@ class Aro::Deck < ActiveRecord::Base
     update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM))
   end
 
-  def draw
-    # draw a random card from the current deck.
+  # read dev_tarot
+  def self.read_dev_tarot
+    dt = nil
+    return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE)
+
+    File.open(Aro::Deck::DEV_TAROT_FILE, "r"){|dtf| dt = dtf.read(4)}
+    
+    # VERY IMPORTANT!
+    Aro::P.say(I18n.t("cli.very_important", dev_tarot: dt))
+    return dt
+  end
+
+  # summon ruby_facot
+  def summon_ruby_facot(cards_arr)
+    Aro::P.say(I18n.t("cli.messages.ruby_facot_random"))
+    ruby_facot = cards_arr.sample.split("")
+
+    # get orientation
+    ruby_facot_str = ["+","-"].sample
+
+    # get suite
+    ruby_facot_str += ruby_facot[1]
+
+    # calculate the sym
+    symm = ruby_facot.select{|c|
+      # loops through the characters in ruby_facot
+      # return all characters not matching:
+      # => character[0]: orientation
+      # => character[1]: suite 
+
+      # the first two characters in the dev_tarot format designate the
+      !ruby_facot.first(Aro::Mancy::OS).include?(c)
+    }.join("").to_sym
+    ruby_facot_str += Aro::NUMERALS[symm].to_s
+
+    # return ruby_facot_str
+    ruby_facot_str
+  end
+
+  def draw(is_dt_dimension: true, z_max: 7, z: 1)    
+    # the true card
+    abs_dev_tarot = nil
+
+    # oriented card
     dev_tarot = nil
 
+    # get cards
+    cards_arr = cards.split(Aro::Deck::CARD_DELIM) || []
+    # get abs_cards
+    abs_cards_arr = cards_arr.map{|c| Aro::Deck.card_strip(c)}
+    # get drawn
+    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM) || []
+
+    # use fallback randomness if /dev/tarot unavailable
+    if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE)
+      dev_tarot = summon_ruby_facot(cards_arr)
+      abs_dev_tarot = Aro::Deck.card_strip(dev_tarot)
+    end
+
+    sleeps = 0
+    sleeps_max = z_max
+
     # find a card that is not already drawn
-    while dev_tarot.nil? do
+    while sleeps <= sleeps_max && dev_tarot.nil? do
       # preferred randomness
-      dev_tarot = nil # Aro::Deck.read_dev_tarot&.strip&.split("")
-      
-      cards_arr = cards.split(Aro::Deck::CARD_DELIM) || []
-      cards_arr_stripped = cards_arr.map{|c| Aro::Deck.card_strip(c)}
-
-      if dev_tarot.nil?
-        # assume user does not have /dev/tarot device.
-        # generate random facade
-        facade = cards_arr.sample.split("")
-        dev_tarot = (
-          facade.first(2).join("") + 
-          Aro::NUMERALS[
-            facade.select{|c| !facade.first(2).include?(c)}.join("").to_sym
-          ].to_s
-        ).split("")
-      end
-
-      dev_tarot_converted = dev_tarot[1] + Aro::NUMERALS.key(
-        dev_tarot.select{|c| !dev_tarot.first(2).include?(c)}.join("").to_i
-      ).to_s
-      if cards_arr_stripped.include?(dev_tarot_converted)
-        # dev_tarot is valid
-        drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM) || []
-        dev_tarot = dev_tarot[0] + dev_tarot_converted
-        drawn_arr << dev_tarot
-        cards_arr.delete_at(cards_arr_stripped.index(dev_tarot_converted))
-        update(
-          cards: cards_arr.join(Aro::Deck::CARD_DELIM),
-          drawn: drawn_arr.join(Aro::Deck::CARD_DELIM)
-        )
+      dev_tarot = Aro::Deck.read_dev_tarot&.strip&.split("")
+      if dev_tarot.present?
+        abs_dev_tarot = dev_tarot[1] + Aro::NUMERALS.key(
+          dev_tarot.select{|c| !dev_tarot.first(2).include?(c)}.join("").to_i
+        ).to_s
+        if abs_cards_arr.include?(abs_dev_tarot)
+          # dev_tarot is valid
+          dev_tarot = dev_tarot[0] + abs_dev_tarot
+        end
       else
         # dev_tarot is invalid
-        dev_tarot = nil
-        sleep(1)
+        sleeps += 1
+        sleep(z)
       end
     end
+
+    # remove from cards
+    cards_arr.delete(cards_arr.select{|c| c.include?(abs_dev_tarot)}.first)
+
+    # insert dev_tarot to drawn
+    drawn_arr << dev_tarot
+
+    # update database 
+    update(
+      cards: cards_arr.join(Aro::Deck::CARD_DELIM),
+      drawn: drawn_arr.join(Aro::Deck::CARD_DELIM)
+    )
   end
 end

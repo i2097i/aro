@@ -2,7 +2,7 @@
 >__a cli for tarot__ - follow the way of the aro eht.
 
 ##### __current version:__
-[![gem version](https://badge.fury.io/rb/aro.svg)](https://badge.fury.io/rb/aro)
+[![Gem Version](https://badge.fury.io/rb/aro.svg)](https://badge.fury.io/rb/aro)
 
 aro is a command line interface that allows you to manage multiple tarot decks.
 

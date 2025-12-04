@@ -4,12 +4,17 @@
 
 # 1) update version and release notes (manually)
 # 2) test and build
-#   $ rake make
-# 3) create a commit
-# 4) generate tag
-#   $ gitaga vx.x.x
-# 5) push develop
-# 6) pull request develop -> master & merge
-# 7) checkout and pull master
-# 8) publish to rubygems
-#   $ gem push pkg/aro-x.x.x.gem
+#     $ rake make
+# 3) build checksum
+#     $ rake build:checksum 
+# 4) create a commit
+# 5) generate tag
+#     tag message format:
+#       vx.x.x
+#       <release_note_text>
+#     $ gitaga vx.x.x && gush tag vx.x.x
+# 6) push develop
+# 7) pull request develop -> master & merge
+# 8) checkout and pull master
+# 9) publish to rubygems
+#     $ gem push pkg/aro-x.x.x.gem

@@ -14,7 +14,6 @@ ENV[:ARO_ENV.to_s] = :production.to_s
 # ENV[:ARO_ENV.to_s] = :development.to_s
 
 module CLI
-  
   if CLI::LOAD_DECK_ACTIONS.keys.map{|k| k.downcase.to_sym}.include?(ARGV[0]&.to_sym)
     # enable deck shortcut (skip typing deck while in-game)
     ARGV0 = :deck
@@ -27,10 +26,14 @@ module CLI
     ARGV2 = ARGV[2]&.to_sym
   end
 
-  def self.exit_error_missing_args!
-    Aro::P.say(I18n.t("cli.errors.header"))
-    Aro::P.say(I18n.t("cli.errors.missing_args", cmd: "#{CLI::ARGV0} #{CLI::ARGV1} #{CLI::ARGV2}".strip))
-    exit(CLI::EXIT_CODES[:INVALID_ARG])
+  class Aroface
+
+    def self.exit_error_missing_args!
+      Aro::P.say(I18n.t("cli.errors.header"))
+      Aro::P.say(I18n.t("cli.errors.missing_args", cmd: "#{CLI::ARGV0} #{CLI::ARGV1} #{CLI::ARGV2}".strip))
+      exit(CLI::EXIT_CODES[:INVALID_ARG])
+    end
+
   end
 
 end
