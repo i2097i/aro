@@ -16,8 +16,10 @@ module Aro
 
     attr_accessor :game
 
+    OS = 2
     PS1 = Aro::Mancy.name
-    NAME_FILE = ".name"
+    NAME_FILE = :".name".to_s
+    I2097I = :i2097i
 
     def initialize
       Aro::Create.new(Aro::Db.get_name_from_namefile)

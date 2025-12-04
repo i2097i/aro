@@ -1,4 +1,4 @@
 module Aro
-  VERSION = :"0.1.3"
-  RELEASE_NOTES = :"added deck show options for count and order."
+  VERSION = :"0.1.4"
+  RELEASE_NOTES = :"add multiple config variables, add much improved randomness"
 end

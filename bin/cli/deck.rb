@@ -20,7 +20,7 @@ module CLI
       Aro::Create.new(Aro::Db.get_name_from_namefile)
       Aro::Deck.display_selection_menu
     elsif action == CLI::CREATE_DECK_ACTIONS[:CREATE]
-      CLI.exit_error_missing_args! if CLI::ARGV2.nil?
+      CLI::Aroface.exit_error_missing_args! if CLI::ARGV2.nil?
       deck = Aro::Deck.make(CLI::ARGV2.to_s)
       Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: Aro::Mancy.game.name))
       Aro::Deck.display_selection_menu
@@ -39,7 +39,12 @@ module CLI
         Aro::Mancy.game.shuffle
       when CLI::LOAD_DECK_ACTIONS[:DRAW]
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.game.name))
-        Aro::Mancy.game.draw
+        Aro::P.p.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.var_value_with_suffix(:DIMENSION)}"))
+        Aro::Mancy.game.draw(
+          is_dt_dimension: CLI::Config.var_value_with_suffix(:DIMENSION).to_sym == CLI::Config::DMS[:DEV_TAROT],
+          z_max: CLI::Config.var_value_with_suffix(:Z_MAX).to_i,
+          z: CLI::Config.var_value_with_suffix(:Z)
+        )
       when CLI::LOAD_DECK_ACTIONS[:REPLACE]
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
         Aro::Mancy.game.replace

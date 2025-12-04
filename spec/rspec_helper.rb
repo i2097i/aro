@@ -1,5 +1,7 @@
+# no aro libraries should be loaded in this file.
+# each individual spec explicitly handles this.
+
 ENV[:ARO_ENV.to_s] = :test.to_s
-require :aro.to_s
 
 # name for aro instance used in tests
 TESTING_NAME = :success
@@ -25,9 +27,9 @@ RSpec.configure do |config|
 end
 
 def rmrf(dir_path)
-  if File.exist?(dir_path)
+  if Dir.exist?(dir_path)
     rm_cmd = "rm -rf #{dir_path}"
-    # Aro::P.say(rm_cmd)
+    puts rm_cmd
     system(rm_cmd)
   end
 end
