@@ -12,7 +12,7 @@
 #     tag message format:
 #       vx.x.x
 #       <release_note_text>
-#     $ gitaga vx.x.x && gush tag vx.x.x
+#     $ gitaga vx.x.x && gutaga vx.x.x
 # 6) push develop
 # 7) pull request develop -> master & merge
 # 8) checkout and pull master
