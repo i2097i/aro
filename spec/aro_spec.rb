@@ -1,4 +1,5 @@
 require_relative :rspec_helper.to_s
+require :aro.to_s
 
 describe Aro do
   after :each do

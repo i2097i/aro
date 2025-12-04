@@ -15,11 +15,6 @@ require_relative :cli.to_s
 # todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
 
-# todo: response formats 
-# text (default)
-# json
-# 
-
 module CLI
   if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
     Aro::P.say(Aro::VERSION)
