@@ -16,6 +16,9 @@ module Aro
 
     attr_accessor :game
 
+    O = 0
+    S = 1
+    N = 4
     OS = 2
     PS1 = Aro::Mancy.name
     NAME_FILE = :".name".to_s
