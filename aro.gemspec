@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/i2097i/aro"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files`.split("\n").reject{|f| f.match(%r{^(spec)/})}
+  spec.files         = `git ls-files`.split("\n").reject{|f| f.match(%r{^(spec|pkg)/})}
   spec.bindir        = "bin"
   spec.executables   = ["aro"]
   spec.require_paths = ["lib", "bin/cli"]
