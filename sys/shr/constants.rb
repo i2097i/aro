@@ -1,10 +1,15 @@
+=begin
+  
+  constants.rb
+
+  aro shred constants.
+
+  by i2097i
+
+=end
+
 module Aro
-  DIRS = {
-    ARO: Proc.new{Aro::IS_TEST.call ? ".aro_test" : ".aro"},
-  }
-
-  AROYES = :aroyes
-
+  IS_TEST = Proc.new{ENV[:ARO_ENV.to_s] == :test.to_s}
   NUMERALS = {
     O:    0,
     I:    1,

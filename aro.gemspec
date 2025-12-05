@@ -1,21 +1,28 @@
-# coding: utf-8
+=begin
+  
+  aro.gemspec
 
-require :aro.to_s
+  aro gem specification.
+
+  by i2097i
+
+=end
+
+require_relative :"sys/shr/version".to_s
 
 Gem::Specification.new do |spec|
   spec.name          = "aro"
-  spec.version       = Aro::VERSION
+  spec.version       = Aro::VERSION.to_s
   spec.authors       = ["i2097i"]
   spec.email         = ["i2097i@hotmail.com"]
   spec.description   = "a cli for tarot."
   spec.summary       = "follow the way of the aro eht."
   spec.homepage      = "https://github.com/i2097i/aro"
   spec.license       = "MIT"
-
-  spec.files         = `git ls-files`.split("\n").reject{|f| f.match(%r{^(spec|pkg)/})}
+  spec.files         = `git ls-files`.split("\n").reject{|p| p.match?(/^(spec|.release|.*.gem$)/)}
   spec.bindir        = "bin"
   spec.executables   = ["aro"]
-  spec.require_paths = ["lib", "bin/cli"]
+  spec.require_paths = ["sys", "bin/cli"]
 
   # development gems
   spec.add_development_dependency "bundler",      "~> 2.7", ">= 2.7.2"

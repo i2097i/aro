@@ -3,61 +3,68 @@ en:
     usage: |
       NAME
 
-        aro - a cli for tarot.
+        aro - a cli for tarot games in the arodom.
 
       SYNOPSIS
 
         aro [-v | --version] [-h | --help] <command1> <command2>
 
-        to pick up where you left off, simply enter the following command:
-        
-          $ aro 
-
       COMMANDS
-
-        there are two primary commands in the aro. one is to create and the
-        other is to play.
-
         create
-          create an aro directory named <name>. if directory already exists, abort.
-
-          aro create <name>
-
-          examples:
+          create an aro game room named <name>:
 
             $ aro create <name>
 
         config
-          todo: manage your aro config - not yet implemented
+          config management (ex: update preferences)
+          todo:
 
         deck
-          perform operations on the deck(s) in current aro instance
+          manage decks in the current room
 
-          aro deck [-h | --help] <command>
+            $ aro deck <commands>
 
-          running `aro deck` with no arguments prompts user to select a deck.
+          note:
 
-            $ aro deck
+            deck subcommands do not require typing 'deck'. for example,
 
-          COMMANDS
+            $ aro deck show
 
-            create
+            is the same thing as:
 
-              creates a new deck with the specified name.
+            $ aro show
+
+          SUBCOMMANDS
+            draw
+              draw a random card from the current deck.
+
+            explore
+              allows user to browse each card in the current deck.
+
+            new
+              create a new deck with the specified name.
 
                 example:
 
-                  $ aro deck create <name_of_new_deck>
+                  $ aro deck create <name>
+
+            replace
+              replaces all drawn cards FIFO and puts them on the bottom of
+              the deck. this will preserve all card orientations.
+            
+            reset
+              completely reset the deck. replace all drawn and reset order.
+              all orientations will be set to upright. you must enter 'aroyes'
+              to continue.
 
             show
-
               displays the current deck's log record(s).
 
               the default behavior is to display only the most recent log record.
 
               note: 
               
-                'less' is automatically used to display records if --count > 1
+                'less' is automatically used to view text output log count > 1
 
               OPTIONS
 
@@ -74,26 +81,22 @@ en:
                                   possible values: ['asc', 'desc']
 
             shuffle
-
               shuffles the current deck and generates a log record.
 
-            explore
+        dom
+          create or manage an arodome (ex: list game rooms)
 
-              allows user to browse each card in the current deck.
+          $ aro dom <commands>
 
-            draw
+          SUBCOMMANDS
+            new
+              create a new arodome with the specified name.
 
-              draw a random card from the current deck.
+                example:
 
-            replace
+                  $ aro dom create <name>
 
-              replaces all drawn cards FIFO and puts them on the bottom of
-              the deck. this will preserve all card orientations.
-            
-            reset
 
-              completely reset the deck. replace all drawn and reset order.
-              all orientations will be set to upright.
 
 
 

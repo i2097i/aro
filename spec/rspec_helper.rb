@@ -1,5 +1,4 @@
-# no aro libraries should be loaded in this file.
-# each individual spec explicitly handles this.
+require :aro.to_s
 
 ENV[:ARO_ENV.to_s] = :test.to_s
 
@@ -20,16 +19,8 @@ RSpec.configure do |config|
   config.tty = true
 
   # use the specified formatter
-  config.formatter = :progress
+  config.formatter = :documentation # :progress
 
   # suppress stdout
   # config.before { allow($stdout).to receive(:puts) }
-end
-
-def rmrf(dir_path)
-  if Dir.exist?(dir_path)
-    rm_cmd = "rm -rf #{dir_path}"
-    puts rm_cmd
-    system(rm_cmd)
-  end
 end
