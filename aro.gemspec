@@ -1,5 +1,5 @@
 =begin
-  
+
   aro.gemspec
 
   aro gem specification.

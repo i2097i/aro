@@ -80,6 +80,7 @@ class Aro::Deck < ActiveRecord::Base
     count_n = [[Aro::Mancy::S, count_n.to_i].max, logs.count].min
     Aro::V.say("count_n: #{count_n}")
     Aro::V.say("order_o: #{order_o}")
+
     unless Aro::Log::ORDERING.values.include?(order_o)
       Aro::P.say(I18n.t("cli.warnings.invalid_order"))
       order_o = Aro::Log::ORDERING[:DESC]

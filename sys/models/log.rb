@@ -1,3 +1,4 @@
+
 require_relative :"./deck".to_s
 
 class Aro::Log < ActiveRecord::Base

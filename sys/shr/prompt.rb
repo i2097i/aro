@@ -1,5 +1,5 @@
 =begin
-  
+
   prompt.rb
 
   base logger for aro.

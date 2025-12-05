@@ -113,6 +113,7 @@ module Aro
       return unless Aro::Dom::D::WINGS[wing[:name].upcase].values.include?(room)
 
       Aro::Dom::P.say("generating the #{room[:name]} room.")
+
       room_path = File.join(wing[:name].to_s, room[:name].to_s)
       FileUtils.mkdir(room_path)
 
