@@ -23,17 +23,29 @@ module CLI
     INVALID_ARG: 3
   }
 
-  CREATE_DECK_ACTIONS = {
-    CREATE: :CREATE
-  }
-
-  LOAD_DECK_ACTIONS = {
-    DRAW:     :DRAW,
-    EXPLORE:  :EXPLORE,
-    REPLACE:  :REPLACE,
-    RESET:    :RESET,
-    SHOW:     :SHOW,
-    SHUFFLE:  :SHUFFLE,
+  CMDS = {
+    ARO: {
+      CREATE: :create,
+      CONFIG: :config,
+      DECK: :deck,
+      DOM: :dom,
+    },
+    CONFIG: {
+      # ...
+    },
+    DECK: {
+      DRAW: :draw,
+      EXPLORE: :explore,
+      NEW: :new,
+      REPLACE: :replace,
+      RESET: :reset,
+      SHOW: :show,
+      SHUFFLE: :shuffle,
+    },
+    DOM: {
+      NEW: :new,
+      INIT: :init,
+    }
   }
   
 end

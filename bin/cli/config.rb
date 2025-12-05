@@ -1,4 +1,20 @@
+=begin
+  
+  config.rb
+
+  configuration interface.
+
+  by i2097i
+
+=end
+
 module CLI
+
+  # cli entrypoint
+  def self.config
+    Aro::P.say("#{__FILE__}:#{__method__} was called (todo)...")
+  end
+
   class Config
     include Singleton
 
@@ -63,7 +79,7 @@ module CLI
     # example usage:
     # CLI::Config::DEF[:Z_MAX]
     DEF = {
-      FORMAT: {
+      FORMAT: { # not implemented yet.
         type: :values,
         description: I18n.t(
           "cli.config.format_description",
@@ -87,18 +103,17 @@ module CLI
           ruby_facot: I18n.t("cli.config.dimension_ruby_facot_description"),
         }
       },
-      # not implemented. replace Aro::Deck::DRAW_COUNT with this
-      # DRAW_COUNT: {
-      #   type: :int,
-      #   description: I18n.t(
-      #     "cli.config.draw_count_description",
-      #     min: CLI::Config::INTS[:I],
-      #     max: CLI::Config::INTS[:XXII],
-      #   ),
-      #   value: CLI::Config::INTS[:VII],
-      #   min: CLI::Config::INTS[:I],
-      #   max: CLI::Config::INTS[:XXII],
-      # },
+      DRAW_COUNT: { # not implemented yet. replace Aro::Deck::DRAW_COUNT with this
+        type: :int,
+        description: I18n.t(
+          "cli.config.draw_count_description",
+          min: CLI::Config::INTS[:I],
+          max: CLI::Config::INTS[:XXII],
+        ),
+        value: CLI::Config::INTS[:VII],
+        min: CLI::Config::INTS[:I],
+        max: CLI::Config::INTS[:XXII],
+      },
       Z: {
         type: :int,
         description: I18n.t(
@@ -169,7 +184,7 @@ module CLI
     end
 
     def initialize
-      return unless Aro::Mancy.is_aro_dir?
+      return unless Aro::Mancy.is_aro_space?
       unless File.exist?(CLI::Config::CONFIG_FILE_PATH)
         generate_config
       end

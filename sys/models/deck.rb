@@ -1,12 +1,11 @@
 require :base64.to_s
-require_relative :"./log".to_s
 
 class Aro::Deck < ActiveRecord::Base
   has_many :logs
 
-  DECK_FILE = ".deck"
-  CARD_DELIM = ","
-  DEV_TAROT_FILE = "/dev/tarot"
+  DECK_FILE = :".deck"
+  CARD_DELIM = :","
+  DEV_TAROT_FILE = :"/dev/tarot"
 
   # update this for # of cards you will draw
   DRAW_COUNT = 7
@@ -18,14 +17,15 @@ class Aro::Deck < ActiveRecord::Base
   # change to update how timestamps appear
   DATE_FORMAT = "%Y:%m:%d:%H:%M:%S"
 
+
   before_create :populate_cards
   after_commit :generate_log
 
   def self.make(new_name)
-    Aro::Create.new(new_name)
+    Aro::Db.new
     new_deck = Aro::Deck.create(name: new_name)
     if Aro::Deck.current_deck.nil?
-      File.open(Aro::Deck::DECK_FILE, "w") do |file|
+      File.open(Aro::Deck::DECK_FILE.to_s, "w") do |file|
         file.write(new_deck.id)
       end
     end
@@ -33,7 +33,7 @@ class Aro::Deck < ActiveRecord::Base
   end
 
   def self.fresh_cards
-    I18n.t("cards.index").map{|c| "+#{c}"}.join(Aro::Deck::CARD_DELIM)
+    I18n.t("cards.index").map{|c| "+#{c}"}.join(Aro::Deck::CARD_DELIM.to_s)
   end
 
   def populate_cards
@@ -64,14 +64,14 @@ class Aro::Deck < ActiveRecord::Base
         menu.choice(d.name, d.id)
       }
     end
-    File.open(Aro::Deck::DECK_FILE, "w") do |file|
+    File.open(Aro::Deck::DECK_FILE.to_s, "w") do |file|
       file.write(selection)
     end
   end
 
   def self.current_deck
-    if File.exist?(DECK_FILE)
-      current_deck_id = File.read(DECK_FILE)
+    if File.exist?(DECK_FILE.to_s)
+      current_deck_id = File.read(DECK_FILE.to_s)
       return Aro::Deck.find_by(id: current_deck_id)
     end
   end
@@ -82,7 +82,7 @@ class Aro::Deck < ActiveRecord::Base
 
   def show(count_n: Aro::Log::DEFAULT_COUNT, order_o: Aro::Log::ORDERING[:DESC])
     unless count_n.kind_of?(Numeric) && count_n > 0
-      if count_n&.to_s&.downcase&.to_sym == Aro::Log::ALL
+      if count_n&.to_s&.to_sym == Aro::Log::ALL
         count_n = logs.count
       else
         count_n = Aro::Log::DEFAULT_COUNT
@@ -90,13 +90,13 @@ class Aro::Deck < ActiveRecord::Base
     end
     count_n = [count_n.to_i, logs.count].min
 
-    unless Aro::Log::ORDERING.include?(order_o&.to_s&.upcase&.to_sym)
+    unless Aro::Log::ORDERING.values.include?(order_o)
       Aro::P.say(I18n.t("cli.warnings.invalid_order"))
       order_o = Aro::Log::ORDERING[:DESC]
     end
 
     # perform query
-    h_logs = logs.order(created_at: order_o.to_s.downcase).first(count_n)
+    h_logs = logs.order(created_at: order_o).first(count_n)
 
     # for now tests just expect text output
     return h_logs if Aro::IS_TEST.call
@@ -112,11 +112,11 @@ class Aro::Deck < ActiveRecord::Base
       h_text += "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? logs.count - i : 1 + i} of #{logs.count}".rjust(Aro::Deck::DISPLAY_WIDTH) + "\n"
       h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
       h_text += get_display_for_cards(
-        Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM)
+        Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM.to_s)
       )
       h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
       
-      drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM)
+      drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM.to_s)
 
       if !drawn_cards.nil? && drawn_cards.any?
         h_text += I18n.t("cli.messages.history_drawn").center(Aro::Deck::DISPLAY_WIDTH) + "\n"
@@ -158,7 +158,7 @@ class Aro::Deck < ActiveRecord::Base
     answer = Aro::P.p.select(
       I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
-      cards.split(Aro::Deck::CARD_DELIM).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
+      cards.split(Aro::Deck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
       per_page: 7,
       cycle: true,
       default: 1
@@ -169,7 +169,7 @@ class Aro::Deck < ActiveRecord::Base
 
   def shuffle
     # shuffles the current deck and generates a log record.
-    update(cards: cards.split(Aro::Deck::CARD_DELIM).shuffle.join(Aro::Deck::CARD_DELIM))
+    update(cards: cards.split(Aro::Deck::CARD_DELIM.to_s).shuffle.join(Aro::Deck::CARD_DELIM.to_s))
   end
 
   def reset
@@ -181,22 +181,22 @@ class Aro::Deck < ActiveRecord::Base
   def replace
     # replaces all drawn cards FIFO and puts them on the bottom of
     # the deck. this will preserve all card orientations.
-    cards_arr = cards.split(Aro::Deck::CARD_DELIM) || []
-    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM) || []
+    cards_arr = cards.split(Aro::Deck::CARD_DELIM.to_s) || []
+    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
     
     # append each drawn card to cards
     drawn_arr.each{|dc| cards_arr << dc }
 
     # clear drawn
-    update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM))
+    update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s))
   end
 
   # read dev_tarot
   def self.read_dev_tarot
     dt = nil
-    return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE)
+    return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE.to_s)
 
-    File.open(Aro::Deck::DEV_TAROT_FILE, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
+    File.open(Aro::Deck::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
     
     # VERY IMPORTANT!
     Aro::P.say(I18n.t("cli.very_important", dev_tarot: dt))
@@ -238,11 +238,11 @@ class Aro::Deck < ActiveRecord::Base
     dev_tarot = nil
 
     # get cards
-    cards_arr = cards.split(Aro::Deck::CARD_DELIM) || []
+    cards_arr = cards.split(Aro::Deck::CARD_DELIM.to_s) || []
     # get abs_cards
     abs_cards_arr = cards_arr.map{|c| Aro::Deck.card_strip(c)}
     # get drawn
-    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM) || []
+    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
 
     sleeps = 0
     sleeps_max = z_max
@@ -250,7 +250,7 @@ class Aro::Deck < ActiveRecord::Base
     # find a card that is not already drawn
     while sleeps <= sleeps_max && dev_tarot.nil? do
       # use fallback randomness if /dev/tarot unavailable
-      if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE)
+      if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE.to_s)
         dev_tarot = summon_ruby_facot(cards_arr).split("")
       else
         # preferred randomness
@@ -287,8 +287,8 @@ class Aro::Deck < ActiveRecord::Base
 
     # update database 
     update(
-      cards: cards_arr.join(Aro::Deck::CARD_DELIM),
-      drawn: drawn_arr.join(Aro::Deck::CARD_DELIM)
+      cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s),
+      drawn: drawn_arr.join(Aro::Deck::CARD_DELIM.to_s)
     )
   end
 end
