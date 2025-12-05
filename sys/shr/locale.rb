@@ -1,3 +1,13 @@
+=begin
+  
+  locale.rb
+
+  localization configuration.
+
+  by i2097i
+
+=end
+
 require :i18n.to_s
 
 module Aro
@@ -8,5 +18,6 @@ module Aro
     locale_path = Dir.pwd
   end
   I18n.load_path += Dir["#{locale_path}/#{LOCALE_DIR}/*.yml"]
+  I18n.available_locales = [:en]
   I18n.default_locale = :en
 end

@@ -1,6 +1,6 @@
-.DS_Store
-.aro
-.aro_test
-.name
-*.sql
+*.aro
+*.aro_test
 *.log
+*.name
+*.sql
+pkg/*

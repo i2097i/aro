@@ -1,7 +1,17 @@
+=begin
+  
+  prompt.rb
+
+  base logger for aro.
+
+  by i2097i
+
+=end
+
 require :"tty-prompt".to_s
 
 module Aro
-  class P
+  class Prompt
     include Singleton
 
     attr_accessor :prompt
@@ -15,7 +25,7 @@ module Aro
     end
 
     def self.say(message)
-      Aro::P::p.say(">[#{Aro::Mancy::PS1}::#{Time.now.to_i}]>: #{message}")
+      raise :override_me.to_s
     end
 
     def self.less(display_text = "")

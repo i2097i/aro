@@ -1,20 +1,26 @@
+=begin
+  
+  cli
+
+  the very first file loaded.
+
+  by i2097i
+
+=end
+
 require :aro.to_s
-[:cli].each do |dir|
+[:cli].each{|d|
   Dir[
-    File.join(
-      __dir__,
-      dir.to_s,
-      :"**/*.rb".to_s
-    )
-  ].each { |file| require file}
-end
+    File.join(__dir__, d.to_s, :"*.rb".to_s)
+  ].each { |f| require f}
+}
 
 # set environment variable
 ENV[:ARO_ENV.to_s] = :production.to_s
 # ENV[:ARO_ENV.to_s] = :development.to_s
 
 module CLI
-  if CLI::LOAD_DECK_ACTIONS.keys.map{|k| k.downcase.to_sym}.include?(ARGV[0]&.to_sym)
+  if CLI::CMDS[:DECK].values.include?(ARGV[0]&.to_sym)
     # enable deck shortcut (skip typing deck while in-game)
     ARGV0 = :deck
     ARGV1 = ARGV[0]&.to_sym
@@ -25,15 +31,4 @@ module CLI
     ARGV1 = ARGV[1]&.to_sym
     ARGV2 = ARGV[2]&.to_sym
   end
-
-  class Aroface
-
-    def self.exit_error_missing_args!
-      Aro::P.say(I18n.t("cli.errors.header"))
-      Aro::P.say(I18n.t("cli.errors.missing_args", cmd: "#{CLI::ARGV0} #{CLI::ARGV1} #{CLI::ARGV2}".strip))
-      exit(CLI::EXIT_CODES[:INVALID_ARG])
-    end
-
-  end
-
 end
