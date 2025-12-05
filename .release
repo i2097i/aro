@@ -22,3 +22,6 @@
 # 8) checkout and pull master
 # 9) publish to rubygems (warning, must version up after this)
 #     $ gem push pkg/aro-x.x.x.gem
+
+
+add room desc to each view before releasing 0.1.8!

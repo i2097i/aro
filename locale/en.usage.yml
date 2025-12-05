@@ -17,7 +17,7 @@ en:
 
         init
           set up the .aro directory that contains database and config
-          
+
           note:
             this runs by default after create and has no effect if init is complete.
 
@@ -57,7 +57,7 @@ en:
             replace
               replaces all drawn cards FIFO and puts them on the bottom of
               the deck. this will preserve all card orientations.
-            
+
             reset
               completely reset the deck. replace all drawn and reset order.
               all orientations will be set to upright. you must enter 'aroyes'

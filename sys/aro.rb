@@ -12,4 +12,5 @@ require_relative :reiquire.to_s
 Reiquire::aro
 
 module Aro
+
 end

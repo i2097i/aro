@@ -28,13 +28,14 @@ describe Aro::Deck do
       expect(deck.show.count).to eq(log_count)
       # should only return 1 record since this is newly created deck
       expect(deck.show(count_n: Aro::Mancy::OS).count).to eq(log_count)
-      
+
       deck.shuffle # generate another log record
       log_count += Aro::Mancy::S
-      
+
       # should return both
       expect(deck.show(count_n: log_count).count).to eq(log_count)
       # should still default to 1
+
       expect(deck.show.count).to eq(Aro::Mancy::S)
       # should return all
       expect(deck.show(count_n: Aro::Mancy::ALL).count).to eq(log_count)
@@ -56,6 +57,7 @@ describe Aro::Deck do
 
       # should display in asc order
       desc = deck.show(count_n: Aro::Mancy::ALL, order_o: Aro::Log::ORDERING[:ASC])
+
       expect(desc.first.created_at < desc.last.created_at)
     end
 
