@@ -38,7 +38,7 @@ module Aro
 
     def self.base_aro_dir
       base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      CLI::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file 
+      CLI::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file
     end
 
     def db_config_filepath
