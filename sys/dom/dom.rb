@@ -70,7 +70,6 @@ module Aro
 
       pwd_path.any?{|step|
         pwd = File.join(pwd, step)
-        puts "checking #{pwd}"
         ls = Dir.glob("#{pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
         ls.any?
       }
@@ -100,7 +99,70 @@ module Aro
       return unless Aro::Dom::D::WINGS[wing[:name].upcase].values.include?(room)
 
       Aro::Dom::P.say("generating the #{room[:name]} room.")
-      FileUtils.mkdir(File.join(wing[:name].to_s, room[:name].to_s))
+      room_path = File.join(wing[:name].to_s, room[:name].to_s)
+      FileUtils.mkdir(room_path)
+
+      if wing[:name] == Aro::Dom::GAMES
+        File.open(File.join(room_path, Aro::Mancy::NAME_FILE.to_s), "w+") do |f|
+          f.write(room[:name])
+        end
+      end
+    end
+
+    def self.map
+      return unless Aro::Dom.in_arodom?
+      separator = "-" * CLI::Config.display_config[:WIDTH]
+
+      map_str = ""
+      3.times do
+        map_str += separator
+      end
     end
   end
 end # aroadhome
+
+=begin
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+-------------------------------ARODOME MAP-----------------------------------
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                 GAMES                                     |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|    WELCOME                                                   KNOW         |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                   .                                       |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|      ..                                                      SETUP        |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+|                                                                           |
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+
+=end
