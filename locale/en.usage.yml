@@ -11,9 +11,15 @@ en:
 
       COMMANDS
         create
-          create an aro game room named <name>:
+          create and init an aro game room named <name>:
 
             $ aro create <name>
+
+        init
+          set up the .aro directory that contains database and config
+          
+          note:
+            this runs by default after create and has no effect if init is complete.
 
         config
           config management (ex: update preferences)
@@ -89,12 +95,21 @@ en:
           $ aro dom <commands>
 
           SUBCOMMANDS
+            init
+              generate the arodome
+
+            map
+              display arodome map
+
+                example
+
+                  $ aro dom map
             new
               create a new arodome with the specified name.
 
                 example:
 
-                  $ aro dom create <name>
+                  $ aro dom new <name>
 
 
 

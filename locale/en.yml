@@ -10,7 +10,7 @@ en:
       dimension_description: "chosen dimension of aro space. possible values: [${possible values}]"
       dimension_dev_tarot_description: "reads from /dev/tarot device if available."
       dimension_ruby_facot_description: "generated ruby_facot (facade randomness)."
-      draw_count_description: "number of cards in one line of draws. valid range: (${min}-${max})"
+      display_columns_description: "display width multiplier. valid range: (${min}-${max})"
       generating_default_config: "missing config. generating default config file at %{name}."
       json_format_description: "show aro responses in json format."
       maximum: "max"
@@ -18,16 +18,21 @@ en:
       possible_values: "possible values"
       text_format_description: "show aro responses in text format (default)"
       type_int_description: "a primitive decimal-less numeric."
+      type_string_description: "a blank-space terminated string of characters."
       type_values_description: "an enumerated type."
       sourcing_config: "loading configuration from %{name}..."
       z_description: "sleep time between attempts to read /dev/tarot. valid range (%{min}-%{max})"
       z_max_description: "max number of z long sleeps before giving up. valid range (%{min}-%{max})"
     errors:
-      header: "error! something is out of place."
-      missing_args: "the command you entered, '%{cmd}', is missing required argument(s)"
-      missing_deck: "no deck selected. use 'aro deck' to select one or 'aro deck create deck_name' to create one."
+      # , cmd: Aro::Mancy::I2097I))
+      header: "$ %{cmd}: !error."
+      invalid_usage: "$ %{cmd}: !says you're not supposed to be here."
+      missing_args: "$ %{cmd}: !says missing required argument(s)."
+      missing_deck: "$ %{cmd}: !no deck selected. use 'aro deck' to select one or 'aro deck create <name>' to create one."
+      not_in_aro: "$ %{cmd}: !you are not in aro space. that command will not work here."
     warnings:
       invalid_order: "the order specified for displaying logs in invalid. using default (desc)."
+      not_initialized: "warning - you need to initialize aro. run 'aro init' to do so"
     messages:
       choose_card: "choose a card."
       confirmation_prompt: "input 'aroyes' to reset %{name}, or enter to cancel (cancel): "

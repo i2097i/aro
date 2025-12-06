@@ -7,17 +7,6 @@ class Aro::Deck < ActiveRecord::Base
   CARD_DELIM = :","
   DEV_TAROT_FILE = :"/dev/tarot"
 
-  # update this for # of cards you will draw
-  DRAW_COUNT = 7
-  
-  # do not modify
-  DISPLAY_WIDTH = Aro::Deck::DRAW_COUNT*Aro::Deck::DRAW_COUNT
-  HISTORY_SEPARATOR = "#{"-" * Aro::Deck::DISPLAY_WIDTH}"
-  
-  # change to update how timestamps appear
-  DATE_FORMAT = "%Y:%m:%d:%H:%M:%S"
-
-
   before_create :populate_cards
   after_commit :generate_log
 
@@ -98,38 +87,43 @@ class Aro::Deck < ActiveRecord::Base
     # perform query
     h_logs = logs.order(created_at: order_o).first(count_n)
 
+    # Aro::D.say("h_logs.count: #{h_logs.count}")
+
     # for now tests just expect text output
-    return h_logs if Aro::IS_TEST.call
+    return h_logs if Aro::Mancy.is_test?
 
     Aro::P.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
-    
+
+    dc = CLI::Config.display_config
+    width = dc[:WIDTH]
+    divider = dc[:DIVIDER] * width
     h_text = "\n"
-    h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
-    h_text += "#{name.upcase.center(Aro::Deck::DISPLAY_WIDTH)}\n\n"
+    h_text += divider + "\n\n"
+    h_text += "#{name.upcase.center(width)}\n\n"
     h_logs.each_with_index{|l, i|
-      h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
-      h_text += l.created_at.strftime(Aro::Deck::DATE_FORMAT).center(Aro::Deck::DISPLAY_WIDTH) + "\n"
-      h_text += "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? logs.count - i : 1 + i} of #{logs.count}".rjust(Aro::Deck::DISPLAY_WIDTH) + "\n"
-      h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
+      h_text += divider + "\n"
+      h_text += l.created_at.strftime(CLI::Config::DATE_FORMAT).center(width) + "\n"
+      h_text += "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? logs.count - i : 1 + i} of #{logs.count}".rjust(width) + "\n"
+      h_text += divider + "\n\n"
       h_text += get_display_for_cards(
         Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM.to_s)
       )
-      h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
+      h_text += divider + "\n"
       
       drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM.to_s)
 
       if !drawn_cards.nil? && drawn_cards.any?
-        h_text += I18n.t("cli.messages.history_drawn").center(Aro::Deck::DISPLAY_WIDTH) + "\n"
-        h_text += Aro::Deck::HISTORY_SEPARATOR + "\n\n"
+        h_text += I18n.t("cli.messages.history_drawn").center(width) + "\n"
+        h_text += divider + "\n\n"
         h_text += get_display_for_cards(
           drawn_cards
         )
         h_text += "\n"
-        h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
+        h_text += divider + "\n"
       end
 
-      3.times do
-        h_text += Aro::Deck::HISTORY_SEPARATOR + "\n"
+      Aro::Mancy::OS.times do
+        h_text += divider + "\n"
       end
     }
 
@@ -141,12 +135,13 @@ class Aro::Deck < ActiveRecord::Base
   end
 
   def get_display_for_cards(input = []) # todo:, print_nums: false)
+    columns = CLI::Config.display_config[:COLUMNS]
     result = ""
     input.each_with_index{|c, i|
       if i == I18n.t("cards.index").count - 1
-        result += c.ljust(Aro::Deck::DISPLAY_WIDTH)
+        result += c.ljust(columns)
       else
-        result += c.ljust(Aro::Deck::DRAW_COUNT) + ((i + 1) % Aro::Deck::DRAW_COUNT == 0 ? "\n" : "")
+        result += c.ljust(columns) + ((i + 1) % columns == 0 ? "\n" : "")
       end
     }
     result += "\n"
@@ -224,7 +219,7 @@ class Aro::Deck < ActiveRecord::Base
       # the first two characters in the dev_tarot format designate the
       !ruby_facot.first(Aro::Mancy::OS).include?(c)
     }.join("").to_sym
-    ruby_facot_str += Aro::NUMERALS[symm].to_s
+    ruby_facot_str += Aro::Mancy::NUMERALS[symm].to_s
 
     # return ruby_facot_str
     ruby_facot_str
@@ -261,7 +256,7 @@ class Aro::Deck < ActiveRecord::Base
       end
       
       unless dev_tarot.nil?
-        abs_dev_tarot = dev_tarot[Aro::Mancy::S] + Aro::NUMERALS.key(
+        abs_dev_tarot = dev_tarot[Aro::Mancy::S] + Aro::Mancy::NUMERALS.key(
           dev_tarot.join("")[Aro::Mancy::OS..].to_i
         ).to_s
         if abs_cards_arr.include?(abs_dev_tarot)

@@ -1,6 +1,9 @@
-require :aro.to_s
+# to require entire cli use:
+# require_relative :"../bin/cli".to_s
 
 ENV[:ARO_ENV.to_s] = :test.to_s
+
+require :aro.to_s
 
 # name for aro instance used in tests
 TESTING_NAME = :success
