@@ -29,6 +29,7 @@ module CLI
       CONFIG: :config,
       DECK: :deck,
       DOM: :dom,
+      INIT: :init,
     },
     CONFIG: {
       # ...
@@ -43,8 +44,9 @@ module CLI
       SHUFFLE: :shuffle,
     },
     DOM: {
-      NEW: :new,
       INIT: :init,
+      MAP: :map,
+      NEW: :new,
     }
   }
   
