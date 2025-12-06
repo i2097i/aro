@@ -9,6 +9,10 @@
 =end
 
 module Aro
-  VERSION = :"0.1.6"
-  RELEASE_NOTES = :"fix issue with corrupt card data."
+  VERSION = :"0.1.7"
+  RELEASE_NOTES = :"this version".to_s + [
+    "adds views",
+    "adds ivars and ovars",
+    "adds verbose logging",
+  ].join(",")
 end

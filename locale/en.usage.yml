@@ -1,6 +1,6 @@
 en: 
-  cli:
-    usage: |
+  usage:
+    main: |
       NAME
 
         aro - a cli for tarot games in the arodom.

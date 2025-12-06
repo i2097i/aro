@@ -1,5 +1,5 @@
 # to require entire cli use:
-# require_relative :"../bin/cli".to_s
+# require_relative :"../sys/cli".to_s
 
 ENV[:ARO_ENV.to_s] = :test.to_s
 
@@ -25,5 +25,5 @@ RSpec.configure do |config|
   config.formatter = :documentation # :progress
 
   # suppress stdout
-  # config.before { allow($stdout).to receive(:puts) }
+  config.before { allow($stdout).to receive(:puts) }
 end

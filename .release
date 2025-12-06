@@ -2,7 +2,9 @@
 
 # start on latest develop branch
 
-# 1) update version and release notes (manually)
+# 1) update code for release
+#     - version
+#     - release notes (use "this version" verbiage)
 # 2) test and build
 #     $ rake make && gem build
 # 3) build checksum

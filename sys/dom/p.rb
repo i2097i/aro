@@ -1,14 +1,12 @@
 =begin
   
-  dom_p.rb
+  p.rb
 
-  logger for dom space.
+  p logger for dom space.
 
   by i2097i
 
 =end
-
-require_relative :"../shr/prompt".to_s
 
 module Aro
   class Dom::P < Aro::Prompt
