@@ -145,7 +145,7 @@ module Aro
 
       Aro::P.say(map_str)
     end
-  end
+  end 
 end # aroadhome
 
 =begin
