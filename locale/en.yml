@@ -37,7 +37,6 @@ en:
 
       generate: "generating default config file at %{name}."
       source: "installing ivars from %{name}..."
-
       maximum: "max"
       minimum: "min"
       possible_values: "possible values"
