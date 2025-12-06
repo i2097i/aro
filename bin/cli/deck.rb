@@ -15,7 +15,7 @@ module CLI
 
     if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
       # todo: breakout usage into subcommand-specific verbiage
-      CLI::Usage::usage
+      CLI.usage::usage
       exit(CLI::EXIT_CODES[:SUCCESS])
     elsif CLI::ARGV1.nil?
       # no args, open deck menu
@@ -28,7 +28,7 @@ module CLI
       Aro::Deck.display_selection_menu
     elsif CLI::CMDS[:DECK].values.include?(action)    
       if Aro::Mancy.game.nil?
-        Aro::P.say(I18n.t("cli.errors.missing_deck"))
+        Aro::P.say(I18n.t("cli.errors.missing_deck", cmd: Aro::Mancy::I2097I))
         exit(CLI::EXIT_CODES[:GENERAL_ERROR])
       end
 
@@ -41,11 +41,11 @@ module CLI
         Aro::Mancy.game.shuffle
       when CLI::CMDS[:DECK][:DRAW]
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.game.name))
-        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.var_value_with_suffix(:DIMENSION)}"))
+        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.cvar(:DIMENSION)}"))
         Aro::Mancy.game.draw(
-          is_dt_dimension: CLI::Config.var_value_with_suffix(:DIMENSION)&.to_sym == CLI::Config::DMS[:DEV_TAROT],
-          z_max: CLI::Config.var_value_with_suffix(:Z_MAX).to_i,
-          z: CLI::Config.var_value_with_suffix(:Z)
+          is_dt_dimension: CLI::Config.cvar(:DIMENSION)&.to_sym == CLI::Config::DMS[:DEV_TAROT],
+          z_max: CLI::Config.cvar(:Z_MAX).to_i,
+          z: CLI::Config.cvar(:Z)
         )
       when CLI::CMDS[:DECK][:REPLACE]
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
