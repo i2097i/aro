@@ -8,8 +8,6 @@
 
 =end
 
-require :"tty-prompt".to_s
-
 module Aro
   class Prompt
     include Singleton

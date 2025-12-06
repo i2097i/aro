@@ -43,13 +43,17 @@ module Aro
         },
         VIPPS: {
           name: Aro::Dom::VIPPS,
-          description: "very important - 111% /dev/tarot users."
+          description: "very important - 100% /dev/tarot users."
         },
       },
       KNOW: { 
         LIBRARY: {
           name: Aro::Dom::LIBRARY,
           description: "definition management."
+        },
+        TEMPLE: {
+          name: Aro::Dom::TEMPLE,
+          description: "mindfulness management."
         },
       },
       SETUP: {
@@ -85,7 +89,8 @@ module Aro
         name: Aro::Dom::KNOW,
         description: "information space.",
         rooms: [
-          Aro::Dom::D::WINGS[:KNOW][:LIBRARY]
+          Aro::Dom::D::WINGS[:KNOW][:LIBRARY],
+          Aro::Dom::D::WINGS[:KNOW][:TEMPLE]
         ],
       },
       SETUP: {

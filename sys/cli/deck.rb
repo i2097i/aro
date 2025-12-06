@@ -41,11 +41,11 @@ module CLI
         Aro::Mancy.game.shuffle
       when CLI::CMDS[:DECK][:DRAW]
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.game.name))
-        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.cvar(:DIMENSION)}"))
+        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.ivar(:DIMENSION)}"))
         Aro::Mancy.game.draw(
-          is_dt_dimension: CLI::Config.cvar(:DIMENSION)&.to_sym == CLI::Config::DMS[:DEV_TAROT],
-          z_max: CLI::Config.cvar(:Z_MAX).to_i,
-          z: CLI::Config.cvar(:Z)
+          is_dt_dimension: Aro::T::is_dev_tarot?,
+          z_max: CLI::Config.ivar(:Z_MAX).to_i,
+          z: CLI::Config.ivar(:Z)
         )
       when CLI::CMDS[:DECK][:REPLACE]
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
@@ -67,7 +67,7 @@ module CLI
   # parse show options
   # todo: better naming
   def self.shoptions
-    show_options_count = Aro::Log::DEFAULT_COUNT
+    show_options_count = Aro::Mancy::S
     show_options_order = Aro::Log::ORDERING[:DESC]
     
     # Aro::P.say("ARGV.map{|a| a.to_sym} => #{ARGV.map{|a| a.to_sym}}")

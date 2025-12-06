@@ -16,13 +16,13 @@ Gem::Specification.new do |spec|
   spec.authors       = ["i2097i"]
   spec.email         = ["i2097i@hotmail.com"]
   spec.description   = "a cli for tarot."
-  spec.summary       = "follow the way of the aro eht."
+  spec.summary       = Aro::RELEASE_NOTES.to_s
   spec.homepage      = "https://github.com/i2097i/aro"
   spec.license       = "MIT"
   spec.files         = `git ls-files`.split("\n").reject{|p| p.match?(/^(spec|.release|.*.gem$)/)}
   spec.bindir        = "bin"
   spec.executables   = ["aro"]
-  spec.require_paths = ["sys", "bin/cli"]
+  spec.require_paths = ["sys"]
 
   # development gems
   spec.add_development_dependency "bundler",      "~> 2.7", ">= 2.7.2"

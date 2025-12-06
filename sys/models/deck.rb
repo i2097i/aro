@@ -1,11 +1,11 @@
 require :base64.to_s
+require_relative :"../shr/t".to_s
 
 class Aro::Deck < ActiveRecord::Base
   has_many :logs
 
   DECK_FILE = :".deck"
   CARD_DELIM = :","
-  DEV_TAROT_FILE = :"/dev/tarot"
 
   before_create :populate_cards
   after_commit :generate_log
@@ -69,16 +69,17 @@ class Aro::Deck < ActiveRecord::Base
     card.gsub(/[+-]/, "").strip
   end
 
-  def show(count_n: Aro::Log::DEFAULT_COUNT, order_o: Aro::Log::ORDERING[:DESC])
-    unless count_n.kind_of?(Numeric) && count_n > 0
-      if count_n&.to_s&.to_sym == Aro::Log::ALL
+  def show(count_n: Aro::Mancy::S, order_o: Aro::Log::ORDERING[:DESC])
+    unless count_n.kind_of?(Numeric) && count_n.to_i > Aro::Mancy::O
+      if count_n&.to_s&.to_sym == Aro::Mancy::ALL
         count_n = logs.count
       else
-        count_n = Aro::Log::DEFAULT_COUNT
+        count_n = Aro::Mancy::S
       end
     end
-    count_n = [count_n.to_i, logs.count].min
-
+    count_n = [[Aro::Mancy::S, count_n.to_i].max, logs.count].min
+    Aro::V.say("count_n: #{count_n}")
+    Aro::V.say("order_o: #{order_o}")
     unless Aro::Log::ORDERING.values.include?(order_o)
       Aro::P.say(I18n.t("cli.warnings.invalid_order"))
       order_o = Aro::Log::ORDERING[:DESC]
@@ -87,65 +88,26 @@ class Aro::Deck < ActiveRecord::Base
     # perform query
     h_logs = logs.order(created_at: order_o).first(count_n)
 
-    # Aro::D.say("h_logs.count: #{h_logs.count}")
+    # todo: this is doing more work than it needs to. needs debugging.
+    # Aro::V.say("h_logs.count: #{h_logs.count}")
 
     # for now tests just expect text output
-    return h_logs if Aro::Mancy.is_test?
+    return h_logs if CLI::Config.is_test?
 
     Aro::P.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
-    dc = CLI::Config.display_config
-    width = dc[:WIDTH]
-    divider = dc[:DIVIDER] * width
-    h_text = "\n"
-    h_text += divider + "\n\n"
-    h_text += "#{name.upcase.center(width)}\n\n"
-    h_logs.each_with_index{|l, i|
-      h_text += divider + "\n"
-      h_text += l.created_at.strftime(CLI::Config::DATE_FORMAT).center(width) + "\n"
-      h_text += "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? logs.count - i : 1 + i} of #{logs.count}".rjust(width) + "\n"
-      h_text += divider + "\n\n"
-      h_text += get_display_for_cards(
-        Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM.to_s)
-      )
-      h_text += divider + "\n"
-      
-      drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM.to_s)
+    h_text = Aro::Vi::Deck.generate({
+      deck: self,
+      h_logs: h_logs,
+      count_n: count_n,
+      order_o: order_o
+    })
 
-      if !drawn_cards.nil? && drawn_cards.any?
-        h_text += I18n.t("cli.messages.history_drawn").center(width) + "\n"
-        h_text += divider + "\n\n"
-        h_text += get_display_for_cards(
-          drawn_cards
-        )
-        h_text += "\n"
-        h_text += divider + "\n"
-      end
-
-      Aro::Mancy::OS.times do
-        h_text += divider + "\n"
-      end
-    }
-
-    if count_n == Aro::Log::DEFAULT_COUNT
-      Aro::P.say(h_text)
+    if count_n == Aro::Mancy::S
+      Aro::Vi::Deck.draw(h_text)
     else
       Aro::P.less(h_text)
     end
-  end
-
-  def get_display_for_cards(input = []) # todo:, print_nums: false)
-    columns = CLI::Config.display_config[:COLUMNS]
-    result = ""
-    input.each_with_index{|c, i|
-      if i == I18n.t("cards.index").count - 1
-        result += c.ljust(columns)
-      else
-        result += c.ljust(columns) + ((i + 1) % columns == 0 ? "\n" : "")
-      end
-    }
-    result += "\n"
-    result
   end
 
   def explore
@@ -154,9 +116,9 @@ class Aro::Deck < ActiveRecord::Base
       I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Deck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
-      per_page: 7,
+      per_page: Aro::Mancy::NUMERALS[:VII],
       cycle: true,
-      default: 1
+      default: Aro::Mancy::S
     )
 
     Aro::P.say(I18n.t("cards.#{Aro::Deck.card_strip(answer)}"))
@@ -186,45 +148,6 @@ class Aro::Deck < ActiveRecord::Base
     update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s))
   end
 
-  # read dev_tarot
-  def self.read_dev_tarot
-    dt = nil
-    return dt unless File.exist?(Aro::Deck::DEV_TAROT_FILE.to_s)
-
-    File.open(Aro::Deck::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
-    
-    # VERY IMPORTANT!
-    Aro::P.say(I18n.t("cli.very_important", dev_tarot: dt))
-    return dt
-  end
-
-  # summon ruby_facot
-  def summon_ruby_facot(cards_arr)
-    Aro::P.say(I18n.t("cli.messages.ruby_facot_random"))
-    ruby_facot = cards_arr.sample.split("")
-
-    # get orientation
-    ruby_facot_str = ["+","-"].sample
-
-    # get suite
-    ruby_facot_str += ruby_facot[1]
-
-    # calculate the sym
-    symm = ruby_facot.select{|c|
-      # loops through the characters in ruby_facot
-      # return all characters not matching:
-      # => character[0]: orientation
-      # => character[1]: suite 
-
-      # the first two characters in the dev_tarot format designate the
-      !ruby_facot.first(Aro::Mancy::OS).include?(c)
-    }.join("").to_sym
-    ruby_facot_str += Aro::Mancy::NUMERALS[symm].to_s
-
-    # return ruby_facot_str
-    ruby_facot_str
-  end
-
   def draw(is_dt_dimension: true, z_max: 7, z: 1)    
     # the true card
     abs_dev_tarot = nil
@@ -245,11 +168,11 @@ class Aro::Deck < ActiveRecord::Base
     # find a card that is not already drawn
     while sleeps <= sleeps_max && dev_tarot.nil? do
       # use fallback randomness if /dev/tarot unavailable
-      if !is_dt_dimension || !File.exist?(Aro::Deck::DEV_TAROT_FILE.to_s)
-        dev_tarot = summon_ruby_facot(cards_arr).split("")
+      if !is_dt_dimension || !File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
+        dev_tarot = Aro::T.summon_ruby_facot(cards_arr).split("")
       else
         # preferred randomness
-        read_value = Aro::Deck.read_dev_tarot&.strip&.split("")
+        read_value = Aro::T.read_dev_tarot&.strip&.split("")
         if read_value.count >= Aro::Mancy::N - 1
           dev_tarot = read_value
         end

@@ -8,11 +8,6 @@
 
 =end
 
-require :active_record.to_s
-require :base64.to_s
-require :fileutils.to_s
-require :yaml.to_s
-
 module Aro
   class Db
     DATABASE_YML = :"database.yml"
@@ -43,7 +38,7 @@ module Aro
 
     def self.base_aro_dir
       base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      Aro::Mancy.is_test? ? "#{base_aro_file}_test" : base_aro_file 
+      CLI::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file 
     end
 
     def db_config_filepath
@@ -91,7 +86,7 @@ module Aro
         Pathname.new(n).basename.to_s.split("_")[0].to_i
       }.max
       ActiveRecord::MigrationContext.new(local_migrate_dir).migrate(migration_version)
-      require 'active_record/schema_dumper'
+
       filename = File.join(Aro::Db.base_aro_dir, Aro::Db::SCHEMA_FILE.to_s)
       File.open(filename, "w+") do |f|
         ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection_pool, f)

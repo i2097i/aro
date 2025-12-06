@@ -37,6 +37,7 @@ module Aro
 
     # > know spaces
     LIBRARY = :library
+    TEMPLE = :temple
     # ...
 
     # > setup spaces
@@ -75,6 +76,19 @@ module Aro
       }
     end
 
+    def self.ethergeist_path
+      # todo: traverse up pwd and locate etherfile/.name
+      # pwd_path = Dir.pwd.split("/").reject{|p| p.empty?}
+      # pwd = "/"
+
+      # for now assume in arodome root
+      File.join(Aro::Dom::ETHER_FILE.to_s, Aro::Mancy::NAME_FILE.to_s)
+    end
+
+    def dom_root
+      # todo:
+    end
+
     def generate
       return unless Aro::Dom.in_arodom?
 
@@ -111,14 +125,26 @@ module Aro
 
     def self.map
       return unless Aro::Dom.in_arodom?
-      separator = "-" * CLI::Config.display_config[:WIDTH]
 
-      map_str = ""
-      3.times do
-        map_str += separator
-      end
+      dc = CLI::Config.display_config
+      width = dc[:WIDTH]
+      divider = dc[:DIVIDER] * width + "\n"
+
+      map_str = "\n"
+      map_str += divider
+
+      # todo: ethergeist_path
+      map_name = File.read(Aro::Dom.ethergeist_path).upcase
+      Aro::V.say("map_name: #{map_name}")
+      title_divider = dc[:DIVIDER] * ((width - map_name.length) / Aro::Mancy::OS)
+      map_str += (title_divider + map_name).ljust(width, dc[:DIVIDER]) + "\n"
+      map_str += divider
+
+
+
+      Aro::P.say(map_str)
     end
-  end
+  end 
 end # aroadhome
 
 =begin

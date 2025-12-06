@@ -10,41 +10,35 @@
 
 =end
 
-require_relative :cli.to_s
+require :aro.to_s
 
 # todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
 
-module CLI
-  if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
-    Aro::P.say(Aro::VERSION)
+if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
+  Aro::P.say(Aro::VERSION)
+  exit(CLI::EXIT_CODES[:SUCCESS])
+end
+
+# cli parser
+case CLI::ARGV0
+when CLI::CMDS[:ARO][:CONFIG]
+  CLI::config
+when CLI::CMDS[:ARO][:CREATE]
+  CLI::create
+when CLI::CMDS[:ARO][:DECK]
+  CLI::deck
+when CLI::CMDS[:ARO][:DOM]
+  CLI::dom
+when CLI::CMDS[:ARO][:INIT]
+  Aro::Mancy.init
+else
+  unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
+    Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game"))
+    Aro::Mancy.game.show
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
 
-  # initialize config
-  CLI::Config.instance
-
-  # cli parser
-  case CLI::ARGV0
-  when CLI::CMDS[:ARO][:CONFIG]
-    CLI::config
-  when CLI::CMDS[:ARO][:CREATE]
-    CLI::create
-  when CLI::CMDS[:ARO][:DECK]
-    CLI::deck
-  when CLI::CMDS[:ARO][:DOM]
-    CLI::dom
-  when CLI::CMDS[:ARO][:INIT]
-    Aro::Mancy.init
-  else
-    unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
-      Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game"))
-      Aro::Mancy.game.show
-      exit(CLI::EXIT_CODES[:SUCCESS])
-    end
-
-    CLI.usage
-    exit(CLI::EXIT_CODES[:SUCCESS])
-  end
-
+  CLI.usage
+  exit(CLI::EXIT_CODES[:SUCCESS])
 end
