@@ -1,0 +1,27 @@
+en:
+  aos:
+    commands:
+      description:
+        cd: "change directory. no args navigates to arodom root."
+        config: "open settings."
+        config_set: "set a ivar config variable to a specified value."
+        exit: "exit."
+        ls: "list files and folders in the pwd."
+        pwd: "show pwd."
+      usage:
+        cd: "$ cd <name>"
+        config: "$ config"
+        config_set: "$ config set <var_name> <var_value>"
+        exit: "$ exit"
+        ls: "$ ls"
+        pwd: "$ pwd"
+    constants:
+      commands: "COMMANDS"
+    views:
+      dom:
+        title: "welcome to the dom. this is the hub of the arodome running on Aos::Os."
+        description: "this is the root space where you begin. available commands are listed below."
+        quick_navigation: "the following room names are reserved for quick navigation. enter any of them to navigate to that room."
+      game:
+        title: "aro"
+        description: "enter commands to play."

@@ -26,7 +26,7 @@ module Aro
       File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
       
       # VERY IMPORTANT!
-      Aro::P.say(I18n.t("cli.very_important", dev_tarot: dt))
+      Aro::D.say(I18n.t("cli.very_important", dev_tarot: dt))
       return dt
     end
 

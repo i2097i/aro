@@ -13,6 +13,7 @@ class CreateLogs < ActiveRecord::Migration[8.1]
   end
 
   def self.down
+    remove_index :logs, :deck_id
     drop_table :logs
   end
 

@@ -19,7 +19,7 @@ module Aro
     end
 
     def self.p
-      P.instance.prompt
+      Aro::Prompt.instance.prompt
     end
 
     def self.should_print?
@@ -30,8 +30,8 @@ module Aro
       raise :override_me.to_s
     end
 
-    def self.less(display_text = "")
-      IO.popen("less -X", "w") { |f| f.puts display_text }
+    def self.less(message)
+      IO.popen("less -X", "w") { |f| f.puts(message) }
     end
   end
 end

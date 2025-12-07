@@ -1,0 +1,19 @@
+#! /usr/bin/env ruby
+
+=begin
+
+  aos
+
+  entry point for aos.
+
+  by i2097i
+
+=end
+
+require :aro.to_s
+
+if CLI::ARGV0 == CLI::CMDS[:AOS][:WATCH]
+  Aos::watch
+else CLI::ARGV0 == CLI::CMDS[:AOS][:RUN] || CLI::ARGV0.nil?
+  exit(Aos::run)
+end

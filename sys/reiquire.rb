@@ -29,7 +29,7 @@ module Reiquire
     I18n.default_locale = :en    
 
     # require all aro folders
-    Reiquire::requires [:aro, :cli, :dom, :models, :shr, :views]
+    Reiquire::requires [:aro, :cli, :dom, :models, :shr, :views, :aos]
 
     # require cli module
     require_relative :"./cli".to_s
@@ -38,7 +38,7 @@ module Reiquire
   def self.requires(dirs)
     dirs.each{|d|
       Dir[
-        File.join(__dir__, d.to_s, :"**/*.rb".to_s)
+        File.join(__dir__, d.to_s, :"**/**/*.rb".to_s)
       ].each { |f| require f}
     }
   end

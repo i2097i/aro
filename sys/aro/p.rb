@@ -14,7 +14,7 @@ require_relative :"./r".to_s
 module Aro
   class P < Aro::Prompt
     def self.say(message)
-      unless Aro::T.is_dev_tarot?
+      if !Aro::Dom.in_arodom? && !Aro::T.is_dev_tarot?
         Aro::R.say(message)
       else
         Aro::P::p.say(">[#{Aro::Mancy::PS1}]>: #{message}")

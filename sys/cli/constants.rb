@@ -24,6 +24,10 @@ module CLI
   }
 
   CMDS = {
+    AOS: {
+      RUN: :run,
+      WATCH: :watch,
+    },
     ARO: {
       CREATE: :create,
       CONFIG: :config,
@@ -45,9 +49,8 @@ module CLI
     },
     DOM: {
       INIT: :init,
-      MAP: :map,
       NEW: :new,
-    }
+    },
   }
   
 end

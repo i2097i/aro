@@ -1,3 +1,13 @@
+=begin
+
+  deck.rb
+
+  deck object.
+
+  by i2097i
+
+=end
+
 require :base64.to_s
 require_relative :"../shr/t".to_s
 
@@ -98,18 +108,12 @@ class Aro::Deck < ActiveRecord::Base
 
     Aro::P.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
-    h_text = Aro::Vi::Deck.generate({
+    Aos::Vi::Deck.show({
       deck: self,
       h_logs: h_logs,
       count_n: count_n,
       order_o: order_o
     })
-
-    if count_n == Aro::Mancy::S
-      Aro::Vi::Deck.draw(h_text)
-    else
-      Aro::P.less(h_text)
-    end
   end
 
   def explore

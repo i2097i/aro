@@ -19,10 +19,6 @@ module Aro
           name: Aro::Dom::WAITE,
           description: "sign up."
         },
-        WELCOME: { 
-          name: Aro::Dom::WELCOME,
-          description: "sign in."
-        },
         WINNER: {
           name: Aro::Dom::WINNER,
           description: "win."
@@ -71,7 +67,6 @@ module Aro
         description: "sign up process.",
         rooms: [
           Aro::Dom::D::WINGS[:WELCOME][:WAITE],
-          Aro::Dom::D::WINGS[:WELCOME][:WELCOME],
           Aro::Dom::D::WINGS[:WELCOME][:WINNER],
         ]
       },

@@ -8,7 +8,7 @@
 
 =end
 
-require_relative :"./s".to_s
+require_relative :"../aos/s".to_s
 
 module Aro
   class Dom
@@ -18,31 +18,31 @@ module Aro
     ETHERGEIST = :ethergeist
     ETHER_FILE = :".#{Aro::Dom::ETHERGEIST}"
 
-    # < root space
+    # < root found_space
     ARODOME = :arodome
 
-    # < user spaces
+    # < user found_spaces
     WELCOME = :welcome
     GAMES = :games
     KNOW = :know
     SETUP = :setup
 
-    # > welcome spaces
+    # > welcome found_spaces
     WAITE = :waite
     WINNER = :winner
     
-    # > game spaces
+    # > game found_spaces
     ABPPS = :abpps
     HBPPS = :hbpps
     SHPPS = :shpps
     VIPPS = :vipps
 
-    # > know spaces
+    # > know found_spaces
     LIBRARY = :library
     TEMPLE = :temple
     # ...
 
-    # > setup spaces
+    # > setup found_spaces
     SETTINGS = :settings
     # ...
 
@@ -71,24 +71,48 @@ module Aro
       !Aro::Dom.ethergeist_path.nil?
     end
 
-    def self.ethergeist_path
-      root = nil
-      pwd_path = Dir.pwd.split("/").reject{|p| p.empty?}
-      pwd = "/"
-
-      pwd_path.any?{|step|
-        pwd = File.join(pwd, step)
-        ls = Dir.glob("#{pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
-        
-        root = ls.first if ls.any?
-        !root.nil?
+    def self.room_path(needle)
+      return nil if needle.nil?
+      needle = needle.to_s.strip
+      found_space = nil
+      found_room = nil
+      Aro::Dom::D::LAYOUT.values.each{|layout|
+        next unless found_room.nil?
+        found_space = layout[:name].to_s
+        if found_space == needle
+          found_room = found_space
+          found_space = nil
+        else
+          layout[:rooms].each{|room|
+            if room[:name].to_s == needle
+              found_room = room[:name].to_s
+            end
+          }
+        end
       }
+      found_space = nil if found_room.nil?
 
-      return root
+      [found_space, found_room].compact.join("/")
     end
 
-    def dom_root
-      # todo:
+    def self.ethergeist_path
+      path = nil
+      search_path = Dir.pwd.split("/").reject{|p| p.empty?}
+      search_pwd = "/"
+
+      search_path.any?{|step|
+        search_pwd = File.join(search_pwd, step)
+        ls = Dir.glob("#{search_pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
+        
+        path = ls.first if ls.any?
+        !path.nil?
+      }
+
+      return path
+    end
+
+    def self.dom_root
+      File.dirname(Aro::Dom::ethergeist_path)
     end
 
     def generate
@@ -126,65 +150,12 @@ module Aro
       end
     end
 
-    def self.map
-      return unless Aro::Dom.in_arodom?
-
-      dc = CLI::Config.display_config
-      width = dc[:WIDTH]
-      divider = dc[:DIVIDER] * width + "\n"
-
-      map_name = File.read(
+    def self.ethergeist_name
+      File.read(
         File.join(
           Aro::Dom.ethergeist_path, Aro::Mancy::NAME_FILE.to_s
         )
       )
-
-      Aro::V.say("map_name: #{map_name}")
-
-      Aro::Mancy::OS.times do
-        Aro::Aos::S.say(divider)
-      end
-      # center the title
-      t_divider = dc[:DIVIDER] * ((width - map_name.length) / Aro::Mancy::OS)
-      Aro::Aos::S.say((t_divider + map_name).ljust(width, dc[:DIVIDER]))
-      Aro::Mancy::OS.times do
-        Aro::Aos::S.say(divider)
-      end
-
-      empty_s = " "
-      bar = "|" * Aro::Mancy::OS
-
-      # make this configurable via env var
-      this should not run until completed.
-      Aro::Mancy::NUMERALS[:XLII].times do |i|
-
-        inject = "#{i.to_s.ljust(Aro::Mancy::OS)}) #{Aro::Mancy::PS1}$ "
-
-        case i
-        when Aro::Mancy::O
-          # width.times do |r|
-            # inject += "".ljust(width - (bar.length * Aro::Mancy::N.pow(Aro::Mancy::OS)), "#{Aro::Mancy::O}")
-            inject += "hello world."
-          # end
-        when Aro::Mancy::S
-          inject += "if you've found your way here then you are well on your way to becoming an aromancer."
-        when Aro::Mancy::OS
-          inject += "it's like terminal but much more fun because we dip into the realm of chance as a rule."
-        when Aro::Mancy::NUMERALS[:III]
-          inject += "this will help us begin to understand such things with greater depths."
-        when Aro::Mancy::N
-          inject += "in any case, welcome to the #{Aro::Mancy} #{Aro::Dom} that you have so graciously named '#{map_name.downcase}'."
-        end
-        Aro::Aos::S.say((bar + inject).ljust(width) + bar)
-      end
-
-      Aro::Mancy::N.times do
-        Aro::Aos::S.say(divider)
-      end
     end
   end 
 end # aroadhome
-
-=begin
-
-=end
