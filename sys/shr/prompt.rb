@@ -26,6 +26,10 @@ module Aro
       CLI::Config::BOOLS[:TRUE]
     end
 
+    def self.should_print?
+      CLI::Config::BOOLS[:TRUE]
+    end
+
     def self.say(message)
       raise :override_me.to_s
     end
