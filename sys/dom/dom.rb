@@ -8,6 +8,8 @@
 
 =end
 
+require_relative :"./s".to_s
+
 module Aro
   class Dom
     PS1 = Aro::Dom.name
@@ -131,64 +133,58 @@ module Aro
       width = dc[:WIDTH]
       divider = dc[:DIVIDER] * width + "\n"
 
-      map_str = "\n"
-      map_str += divider
+      map_name = File.read(
+        File.join(
+          Aro::Dom.ethergeist_path, Aro::Mancy::NAME_FILE.to_s
+        )
+      )
 
-      # todo: ethergeist_path
-      map_name = File.read(File.join(Aro::Dom.ethergeist_path, Aro::Mancy::NAME_FILE.to_s)).upcase
       Aro::V.say("map_name: #{map_name}")
-      title_divider = dc[:DIVIDER] * ((width - map_name.length) / Aro::Mancy::OS)
-      map_str += (title_divider + map_name).ljust(width, dc[:DIVIDER]) + "\n"
-      map_str += divider
 
+      Aro::Mancy::OS.times do
+        Aro::Aos::S.say(divider)
+      end
+      # center the title
+      t_divider = dc[:DIVIDER] * ((width - map_name.length) / Aro::Mancy::OS)
+      Aro::Aos::S.say((t_divider + map_name).ljust(width, dc[:DIVIDER]))
+      Aro::Mancy::OS.times do
+        Aro::Aos::S.say(divider)
+      end
 
+      empty_s = " "
+      bar = "|" * Aro::Mancy::OS
 
-      Aro::P.say(map_str)
+      # make this configurable via env var
+      this should not run until completed.
+      Aro::Mancy::NUMERALS[:XLII].times do |i|
+
+        inject = "#{i.to_s.ljust(Aro::Mancy::OS)}) #{Aro::Mancy::PS1}$ "
+
+        case i
+        when Aro::Mancy::O
+          # width.times do |r|
+            # inject += "".ljust(width - (bar.length * Aro::Mancy::N.pow(Aro::Mancy::OS)), "#{Aro::Mancy::O}")
+            inject += "hello world."
+          # end
+        when Aro::Mancy::S
+          inject += "if you've found your way here then you are well on your way to becoming an aromancer."
+        when Aro::Mancy::OS
+          inject += "it's like terminal but much more fun because we dip into the realm of chance as a rule."
+        when Aro::Mancy::NUMERALS[:III]
+          inject += "this will help us begin to understand such things with greater depths."
+        when Aro::Mancy::N
+          inject += "in any case, welcome to the #{Aro::Mancy} #{Aro::Dom} that you have so graciously named '#{map_name.downcase}'."
+        end
+        Aro::Aos::S.say((bar + inject).ljust(width) + bar)
+      end
+
+      Aro::Mancy::N.times do
+        Aro::Aos::S.say(divider)
+      end
     end
   end 
 end # aroadhome
 
 =begin
------------------------------------------------------------------------------
------------------------------------------------------------------------------
--------------------------------ARODOME MAP-----------------------------------
------------------------------------------------------------------------------
------------------------------------------------------------------------------
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                 GAMES                                     |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|    WELCOME                                                   KNOW         |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                   .                                       |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|      ..                                                      SETUP        |
-|                                                                           |
-|                                                                           |
-|                                                                           |
-|                                                                           |
------------------------------------------------------------------------------
------------------------------------------------------------------------------
------------------------------------------------------------------------------
 
 =end

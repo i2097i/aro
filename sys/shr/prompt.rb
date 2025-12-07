@@ -22,6 +22,10 @@ module Aro
       P.instance.prompt
     end
 
+    def self.should_print?
+      CLI::Config::BOOLS[:TRUE]
+    end
+
     def self.say(message)
       raise :override_me.to_s
     end
