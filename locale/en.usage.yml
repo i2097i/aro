@@ -94,16 +94,15 @@ en:
 
           $ aro dom <commands>
 
+            note: passing no arguments displays the main dom.
+
+              example
+
+                $ aro dom
+
           SUBCOMMANDS
             init
               generate the arodome
-
-            map
-              display arodome map
-
-                example
-
-                  $ aro dom map
             new
               create a new arodome with the specified name.
 

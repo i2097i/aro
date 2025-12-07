@@ -10,15 +10,15 @@
 
 require_relative :"../shr/prompt".to_s
 
-module Aro::Aos
+module Aos
   class S < Aro::Prompt
     def self.say(message)
-      return unless Aro::Aos::S.should_print?
+      return unless Aos::S.should_print?
       Aro::P::p.say(message)
     end
 
     def self.should_print?
-      super
+      true
     end
   end
 end

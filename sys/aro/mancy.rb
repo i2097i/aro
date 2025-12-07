@@ -17,6 +17,7 @@ module Aro
     O  = 0
     S  = 1
     OS = 2
+    E  = 3
     N  = 4
     PS1 = Aro::Mancy.name
     NAME_FILE = :".name"
@@ -51,22 +52,13 @@ module Aro
       XX:      20,
       XXI:     21,
       XXII:    22,
+      XXXVII:  37,
       XLII:    42,
+      C:       100,
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
 
     def initialize
-      # ENV bindings
-      ENV[:ARO_ENV_O.to_s] = "#{Aro::Mancy::O}"
-      ENV[:ARO_ENV_S.to_s] = "#{Aro::Mancy::S}"
-      ENV[:ARO_ENV_OS.to_s] = "#{Aro::Mancy::OS}"
-      ENV[:ARO_ENV_N.to_s] = "#{Aro::Mancy::N}"
-      ENV[:ARO_ENV_PS1.to_s] = "#{Aro::Mancy::PS1}"
-      ENV[:ARO_ENV_NAME_FILE.to_s] = "#{Aro::Mancy::NAME_FILE}"
-      ENV[:ARO_ENV_I2097I.to_s] = "#{Aro::Mancy::I2097I}"
-      ENV[:ARO_ENV_YES.to_s] = "#{Aro::Mancy::YES}"
-      ENV[:ARO_ENV_ALL.to_s] = "#{Aro::Mancy::ALL}"
-
       if Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
         Aro::Mancy.init
         self.game = Aro::Deck.current_deck
@@ -105,6 +97,10 @@ module Aro
 
     def self.init
       Aro::Db.new
+    end
+
+    def self.start
+      Aos.start(:aro)
     end
 
     def self.is_initialized?

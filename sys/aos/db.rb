@@ -1,15 +1,15 @@
 =begin
-  
+
   db.rb
 
-  database for aro room.
+  database for aos room.
 
   by i2097i
 
 =end
 
-module Aro
-  class Db
+module Aos
+  class Db < Aro::Db
     DATABASE_YML = :"database.yml"
     SQL_FILE = :"database.sql"
     SCHEMA_FILE = :"schema.rb"
@@ -17,45 +17,37 @@ module Aro
 
     def initialize
       # ActiveRecord::Base.logger = Logger.new(STDOUT)
-      unless Aro::Mancy.is_aro_space?
-        Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
+      unless Aro::Dom.in_arodom?
+        Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Dom.name))
         return
       end
-      
-      setup_local_aro
-    end
 
-    def connect(name)
-      ActiveRecord::Base.establish_connection(config)
-    end
-
-    def config
-      @config ||= YAML.load_file(db_config_filepath)
+      set_up_aos
     end
 
     def self.base_aro_dir
-      base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      CLI::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file
+      Aro::Dom.ethergeist_path
     end
 
     def db_config_filepath
-      File.join(Aro::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s)
+      File.join(Aos::Db.base_aro_dir, Aos::Db::DATABASE_YML.to_s)
     end
 
-    def setup_local_aro
-      name = Aro::Mancy.is_aro_space? ? File.read(Aro::Mancy::NAME_FILE.to_s).strip : nil
+    def set_up_aos
+      name = Aro::Dom.ethergeist_name
       return if name.nil?
 
-      # create local .aro/ directory
-      unless File.exist?(Aro::Db.base_aro_dir)
-        FileUtils.mkdir(Aro::Db.base_aro_dir)
+      # create local /.ethergeist directory
+      unless File.exist?(Aos::Db.base_aro_dir)
+        FileUtils.mkdir(Aos::Db.base_aro_dir)
       end
 
+      Aro::D.say("creating database: #{db_config_filepath}")
       unless File.exist?(db_config_filepath)
         # create database config yaml file
         c = {
           adapter: :sqlite3.to_s,
-          database: File.join(Aro::Db.base_aro_dir, Aro::Db::SQL_FILE.to_s),
+          database: File.join(Aos::Db.base_aro_dir, Aos::Db::SQL_FILE.to_s),
           username: name,
           password: name
         }.to_yaml
@@ -69,10 +61,10 @@ module Aro
     end
 
     def migrate(name)
-      local_migrate_dir = File.join(Aro::Db.base_aro_dir, Aro::Db::MIGRATIONS_DIR.to_s)
+      local_migrate_dir = File.join(Aos::Db.base_aro_dir, Aos::Db::MIGRATIONS_DIR.to_s)
       unless Dir.exist?(local_migrate_dir)
         gem_dir = Dir[Gem.loaded_specs[:aro.to_s]&.full_gem_path || '.'].first
-        FileUtils.cp_r(File.join(gem_dir, "db"), Aro::Db::base_aro_dir)
+        FileUtils.cp_r(File.join(gem_dir, "db"), Aos::Db::base_aro_dir)
       end
 
       migration_version = Dir["#{local_migrate_dir}/*.rb"].map{|n|
@@ -80,7 +72,7 @@ module Aro
       }.max
       ActiveRecord::MigrationContext.new(local_migrate_dir).migrate(migration_version)
 
-      filename = File.join(Aro::Db.base_aro_dir, Aro::Db::SCHEMA_FILE.to_s)
+      filename = File.join(Aos::Db.base_aro_dir, Aos::Db::SCHEMA_FILE.to_s)
       File.open(filename, "w+") do |f|
         ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection_pool, f)
       end

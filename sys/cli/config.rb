@@ -81,7 +81,7 @@ module CLI
     DEF_TYPES = {
       BOOL: {
         name: CLI::Config::TYPES[:BOOL],
-        description: I18n.t("cli.config.type_bool_description"),
+        description: I18n.t("cli.config.type.bool_description"),
         converter: Proc.new{|v|
           if v == CLI::Config::BOOLS[:TRUE].to_s
             CLI::Config::BOOLS[:TRUE]
@@ -96,7 +96,7 @@ module CLI
       },
       INT: {
         name: :int,
-        description: I18n.t("cli.config.type_int_description"),
+        description: I18n.t("cli.config.type.int_description"),
         converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
           int_valid = CLI::Config.def_valid?(k, v) &&
@@ -112,7 +112,7 @@ module CLI
       },
       STRING: {
         name: :string,
-        description: I18n.t("cli.config.type_string_description"),
+        description: I18n.t("cli.config.type.string_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
           CLI::Config.def_valid?(k, v) &&
@@ -121,7 +121,7 @@ module CLI
       },
       VALUES: {
         name: :values,
-        description: I18n.t("cli.config.type_values_description"),
+        description: I18n.t("cli.config.type.values_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
           CLI::Config.def_valid?(k, v) &&
@@ -185,11 +185,11 @@ module CLI
         type: CLI::Config::TYPES[:VALUES],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::ENVS[:PRODUCTION],
-        description: I18n.t("cli.config.env_description"),
+        description: I18n.t("cli.config.env.description"),
         possible_values: {
-          development: I18n.t("cli.config.env_development_description"),
-          production: I18n.t("cli.config.env_production_description"),
-          test: I18n.t("cli.config.env_test_description"),
+          development: I18n.t("cli.config.env.development_description"),
+          production: I18n.t("cli.config.env.production_description"),
+          test: I18n.t("cli.config.env.test_description"),
         }
       },
       FORMAT: { # not implemented yet.
@@ -197,32 +197,44 @@ module CLI
         implemented: false,
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::FORMATS[:TEXT],
-        description: I18n.t("cli.config.format_description"),
+        description: I18n.t("cli.config.format.description"),
         possible_values: {
-          text: I18n.t("cli.config.text_format_description"),
-          json: I18n.t("cli.config.json_format_description")
+          text: I18n.t("cli.config.format.text_description"),
+          json: I18n.t("cli.config.format.json_description")
         }
       },
       DIMENSION: {
         type: CLI::Config::TYPES[:VALUES],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::DMS[:DEV_TAROT],
-        description: I18n.t("cli.config.dimension_description"),
+        description: I18n.t("cli.config.dimension.description"),
         possible_values: {
-          dev_tarot: I18n.t("cli.config.dimension_dev_tarot_description"),
-          ruby_facot: I18n.t("cli.config.dimension_ruby_facot_description"),
+          dev_tarot: I18n.t("cli.config.dimension.dev_tarot_description"),
+          ruby_facot: I18n.t("cli.config.dimension.ruby_facot_description"),
         }
       },
-      DISPLAY_COLUMNS: {
+      HEIGHT: {
         type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:XI],
+        value: Aro::Mancy::NUMERALS[:XLII],
         min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:XXII] / Aro::Mancy::OS,
+        max: Aro::Mancy::NUMERALS[:VII].pow(Aro::Mancy::OS),
         description: I18n.t(
-          "cli.config.display_columns_description",
+          "cli.config.height_description",
           min: Aro::Mancy::NUMERALS[:I],
-          max: Aro::Mancy::NUMERALS[:XXII] / Aro::Mancy::OS,
+          max: Aro::Mancy::NUMERALS[:VII].pow(Aro::Mancy::OS),
+        ),
+      },
+      WIDTH: {
+        type: CLI::Config::TYPES[:INT],
+        access: CLI::Config::DEF_ACCESS[:WRITE],
+        value: Aro::Mancy::NUMERALS[:C] + Aro::Mancy::NUMERALS[:XXXVII] - Aro::Mancy::S,
+        min: Aro::Mancy::NUMERALS[:I],
+        max: Aro::Mancy::NUMERALS[:XI].pow(Aro::Mancy::OS),
+        description: I18n.t(
+          "cli.config.width_description",
+          min: Aro::Mancy::NUMERALS[:I],
+          max: Aro::Mancy::NUMERALS[:XI].pow(Aro::Mancy::OS),
         ),
       },
       Z: {
@@ -260,65 +272,77 @@ module CLI
       # => ovars
       #
       ARO_ENV_O: {
-        type: CLI::Config::TYPES[:STRING],
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::O,
-        description: I18n.t("cli.config.aro_env_O_description"),
+        description: I18n.t("cli.config.aro_env.O_description"),
       },
       ARO_ENV_S: {
-        type: CLI::Config::TYPES[:STRING],
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::S,
-        description: I18n.t("cli.config.aro_env_S_description"),
+        description: I18n.t("cli.config.aro_env.S_description"),
       },
       ARO_ENV_OS: {
-        type: CLI::Config::TYPES[:STRING],
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::OS,
-        description: I18n.t("cli.config.aro_env_OS_description"),
+        description: I18n.t("cli.config.aro_env.OS_description"),
+      },
+      ARO_ENV_E: {
+        type: CLI::Config::TYPES[:INT],
+        access: CLI::Config::DEF_ACCESS[:READ],
+        value: Aro::Mancy::E,
+        description: I18n.t("cli.config.aro_env.E_description"),
       },
       ARO_ENV_N: {
-        type: CLI::Config::TYPES[:STRING],
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::N,
-        description: I18n.t("cli.config.aro_env_N_description"),
+        description: I18n.t("cli.config.aro_env.N_description"),
       },
       ARO_ENV_PS1: {
         type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::PS1,
-        description: I18n.t("cli.config.aro_env_PS1_description"),
+        description: I18n.t("cli.config.aro_env.PS1_description"),
       },
       ARO_ENV_NAME_FILE: {
         type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::NAME_FILE,
-        description: I18n.t("cli.config.aro_env_NAME_FILE_description"),
+        description: I18n.t("cli.config.aro_env.NAME_FILE_description"),
       },
       ARO_ENV_I2097I: {
         type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::I2097I,
-        description: I18n.t("cli.config.aro_env_I2097I_description"),
+        description: I18n.t("cli.config.aro_env.I2097I_description"),
       },
       ARO_ENV_YES: {
         type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::YES,
-        description: I18n.t("cli.config.aro_env_YES_description"),
+        description: I18n.t("cli.config.aro_env.YES_description"),
       },
       ARO_ENV_ALL: {
         type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::ALL,
-        description: I18n.t("cli.config.aro_env_ALL_description"),
+        description: I18n.t("cli.config.aro_env.ALL_description"),
       },
     }
 
     def initialize
-      return unless Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+      @@context = nil
+      if Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+        @@context = Aro::Mancy.name
+      elsif Aro::Dom.in_arodom?
+        @@context = Aro::Dom.name
+      end
 
-      Aro::D.say(File.join(CLI::Config.name.to_s, __method__.to_s))
+      return if @@context.nil?
+
       unless File.exist?(CLI::Config.config_filepath)
         generate_config
       end
@@ -328,22 +352,17 @@ module CLI
     end
 
     def self.config_filepath
-      File.join(Aro::Db.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
+      db_cls = @@context == Aro::Dom.name ? Aos::Db : Aro::Db
+      File.join(db_cls.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
     end
 
     def self.display_config
       Aro::V.say(__method__)
-      columns = CLI::Config.ivar(:DISPLAY_COLUMNS)
-
-      # default
-      width = CLI::Config::DEF[:DISPLAY_COLUMNS][:value]
-      if columns.respond_to?(:to_i)
-        # user setting
-        columns = columns.to_i
-        width = columns.to_i.pow(Aro::Mancy::OS)
-      end
+      width = CLI::Config.ivar(:WIDTH).to_i
+      columns = width.pow(Aro::Mancy::S.to_f / Aro::Mancy::OS.to_f).to_i
       result = {
         COLUMNS: columns,
+        HEIGHT: CLI::Config.ivar(:HEIGHT).to_i,
         WIDTH: width,
         DIVIDER: :"-".to_s
       }
@@ -354,7 +373,7 @@ module CLI
 
     # out vars
     def self.ovar(suffix)
-      ENV[CLI::Config.ovar_k(suffix)]
+      CLI::Config::DEF[suffix][:value]
     end
     # out vars
     def self.ovar_k(suffix)
@@ -385,9 +404,9 @@ module CLI
     end
 
     def source_config
-      Aro::D.say(I18n.t("cli.config.sourcing_config", name: CLI::Config.config_filepath))
+      Aro::D.say(I18n.t("cli.config.source", name: CLI::Config.config_filepath))
       File.read(CLI::Config.config_filepath).split("\n").select{|line|
-        line.match?(/export #{:ARO_}/)
+        line.match?(/export #{CLI::Config::ARO_CONFIG_PREFIX}/)
       }.map{|line| 
         line.gsub("export ", "").split("=")
       }.each{|kv|
@@ -410,7 +429,7 @@ module CLI
 
     def generate_config
       # todo: localize generated config text
-      Aro::D.say(I18n.t("cli.config.generating_default_config", name: CLI::Config.config_filepath))
+      Aro::D.say(I18n.t("cli.config.generate", name: CLI::Config.config_filepath))
       File.open(CLI::Config.config_filepath, "w+") do |file|
         # intro
         Aro::Mancy::OS.times do
@@ -531,14 +550,14 @@ module CLI
       file.write("#   => #{I18n.t("cli.config.def_type")}: #{v[:type]}\n")
       case v[:type]
       when CLI::Config::DEF_TYPES[:INT][:name]
-        file.write("#   => #{I18n.t("cli.config.type_int_description")}\n")
+        file.write("#   => #{I18n.t("cli.config.type.int_description")}\n")
         file.write("#   => #{I18n.t("cli.config.minimum")}: #{v[:min]}\n")
         file.write("#   => #{I18n.t("cli.config.maximum")}: #{v[:max]}\n")
       when CLI::Config::DEF_TYPES[:STRING][:name]
-        file.write("#   => #{I18n.t("cli.config.type_string_description")}\n")
+        file.write("#   => #{I18n.t("cli.config.type.string_description")}\n")
         file.write("#   => use \"double quotes\" if there are any spaces.\n")
       when CLI::Config::DEF_TYPES[:VALUES][:name]
-        file.write("#   => #{I18n.t("cli.config.type_values_description")}\n")
+        file.write("#   => #{I18n.t("cli.config.type.values_description")}\n")
         file.write("#   => #{I18n.t("cli.config.possible_values")}:\n")
         print_sr f_object_id
         v[:possible_values].each{|name, description|
@@ -551,7 +570,11 @@ module CLI
       print_osr f_object_id
       file.write("#   => description:\n")
       file.write("#   => #{v[:description]}\n")
-      file.write("export #{var_name}=#{v[:value]}\n")
+      if is_ovar && CLI::Config::DEF_TYPES[:STRING][:name] == v[:type]
+        file.write("export #{var_name}=\"#{v[:value]}\"\n")
+      else
+        file.write("export #{var_name}=#{v[:value]}\n")
+      end
       print_osr f_object_id
     end
 

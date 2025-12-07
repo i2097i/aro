@@ -18,7 +18,7 @@ module Aro
     end
 
     def self.should_print?
-      Aro::Mancy::ARO_ENV_DEBUG_MODES.include?(ENV[:ARO_ENV.to_s]&.to_sym)
+      Aro::Mancy::ARO_ENV_DEBUG_MODES[Aro::Mancy::O].to_s == ENV[:ARO_ENV.to_s]
     end
   end
 end

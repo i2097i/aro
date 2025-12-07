@@ -5,36 +5,49 @@ en:
     # VERY IMPORTANT!
 
     config:
-      aro_env_O_description: "read-only env var for holding O."
-      aro_env_S_description: "read-only env var for holding S."
-      aro_env_OS_description: "read-only env var for holding OS."
-      aro_env_N_description: "read-only env var for holding N"
-      aro_env_PS1_description: "read-only env var for holding default PS1."
-      aro_env_NAME_FILE_description: "read-only env var for name file."
-      aro_env_I2097I_description: "read-only env var for i2097i."
-      aro_env_YES_description: "read-only env var for 'aroyes'."
-      aro_env_ALL_description: "read-only env var for 'all'."
-      format_description: "aro output format."
+      aro_env:
+        O_description: "read-only env var for holding O."
+        S_description: "read-only env var for holding S."
+        OS_description: "read-only env var for holding OS."
+        E_description: "read-only env var for holding E."
+        N_description: "read-only env var for holding N"
+        PS1_description: "read-only env var for holding default PS1."
+        NAME_FILE_description: "read-only env var for name file."
+        I2097I_description: "read-only env var for i2097i."
+        YES_description: "read-only env var for 'aroyes'."
+        ALL_description: "read-only env var for 'all'."
       def_type: "CLI::Config::DEF_TYPES"
-      dimension_description: "selected dimension of aro space."
-      dimension_dev_tarot_description: "reads from /dev/tarot device if available."
-      dimension_ruby_facot_description: "generated ruby_facot (facade randomness)."
-      display_columns_description: "display width multiplier. valid range: (${min}-${max})"
-      env_description: "aro run environment."
-      env_development_description: "basic development logs and features."
-      env_production_description: "game logging only."
-      env_test_description: "logging and features tailored for tests."
-      generating_default_config: "missing config. generating default config file at %{name}."
-      json_format_description: "show aro responses in json format."
+      dimension:
+        description: "selected dimension of aro space."
+        dev_tarot_description: "reads from /dev/tarot device if available."
+        ruby_facot_description: "generated ruby_facot (facade randomness)."
+      format:
+        description: "aro output format."
+        text_description: "show aro responses in text format (default)"
+        json_description: "show aro responses in json format."
+
+      height_description: "display height. valid range: (${min}-${max})"
+      width_description: "display width. valid range: (${min}-${max})"
+
+      env:
+        description: "aro run environment."
+        development_description: "basic development logs and features."
+        production_description: "game logging only."
+        test_description: "logging and features tailored for tests."
+
+      generate: "generating default config file at %{name}."
+      source: "installing ivars from %{name}..."
+
       maximum: "max"
       minimum: "min"
       possible_values: "possible values"
-      text_format_description: "show aro responses in text format (default)"
-      type_bool_description: "true or false."
-      type_int_description: "a primitive decimal-less numeric."
-      type_string_description: "a blank-space-terminated string of characters."
-      type_values_description: "an enumerated type."
-      sourcing_config: "loading configuration from %{name}..."
+
+      type:
+        bool_description: "true or false."
+        int_description: "a primitive decimal-less numeric."
+        string_description: "a blank-space-terminated string of characters."
+        values_description: "an enumerated type."
+
       z_description: "sleep time between attempts to read /dev/tarot. valid range (%{min}-%{max})"
       z_max_description: "max number of z long sleeps before giving up. valid range (%{min}-%{max})"
     errors:

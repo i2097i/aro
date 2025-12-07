@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.files         = `git ls-files`.split("\n").reject{|p| p.match?(/^(spec|.release|.*.gem$)/)}
   spec.bindir        = "bin"
-  spec.executables   = ["aro"]
+  spec.executables   = ["aro", "aos"]
   spec.require_paths = ["sys"]
   spec.required_ruby_version = ">= 3.4.7"
 

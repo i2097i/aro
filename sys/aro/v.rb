@@ -22,4 +22,3 @@ module Aro
     end
   end
 end
-

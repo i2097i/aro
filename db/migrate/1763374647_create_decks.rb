@@ -8,9 +8,12 @@ class CreateDecks < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    add_index :decks, :name, unique: true
   end
 
   def self.down
+    remove_index :decks, :name
     drop_table :decks
   end
 
