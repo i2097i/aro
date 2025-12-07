@@ -103,7 +103,6 @@ module Aro
       search_path.any?{|step|
         search_pwd = File.join(search_pwd, step)
         ls = Dir.glob("#{search_pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
-
         path = ls.first if ls.any?
         !path.nil?
       }
