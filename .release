@@ -6,7 +6,9 @@
 #     - version
 #     - release notes (use "this version" verbiage)
 # 2) test and build
-#     $ rake make && gem build
+#     $ rake make 
+#     $ gem build
+#     $ copy to pkg/
 # 3) build checksum
 #     $ rake build:checksum 
 # 4) create a commit
