@@ -9,10 +9,6 @@
 =end
 
 module Aro
-  VERSION = :"0.1.7"
-  RELEASE_NOTES = :"this version".to_s + [
-    "adds views",
-    "adds ivars and ovars",
-    "adds verbose logging",
-  ].join(",")
+  VERSION = :"0.1.8"
+  RELEASE_NOTES = :"this version".to_s + [].join(",")
 end

@@ -29,11 +29,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler",      "~> 2.7", ">= 2.7.2"
   spec.add_development_dependency "rake",         "~> 13.3", ">= 13.3.1"
   spec.add_development_dependency "rspec",        "~> 3.13", ">= 3.13.2"
+  spec.add_development_dependency "listen",       "~> 3.9", ">= 3.9.0"
 
   # runtime gems
   spec.add_runtime_dependency     "i18n",         "~> 1.14", ">= 1.14.7"
   spec.add_runtime_dependency     "activerecord", "~> 8.1", ">= 8.1.1"
   spec.add_runtime_dependency     "sqlite3",      "~> 2.8", ">= 2.8.0"
   spec.add_runtime_dependency     "tty-prompt",   "~> 0.23.1", ">= 0.23.1"
-  spec.add_runtime_dependency     "listen",       "~> 3.9", ">= 3.9.0"
 end
