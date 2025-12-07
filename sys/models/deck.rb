@@ -11,6 +11,7 @@ class Aro::Deck < ActiveRecord::Base
   after_commit :generate_log
 
   def self.make(new_name)
+    return nil unless Aro::Mancy.is_initialized?
     Aro::Db.new
     new_deck = Aro::Deck.create(name: new_name)
     if Aro::Deck.current_deck.nil?

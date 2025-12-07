@@ -52,7 +52,7 @@ en:
 
                 example:
 
-                  $ aro deck create <name>
+                  $ aro deck new <name>
 
             replace
               replaces all drawn cards FIFO and puts them on the bottom of
