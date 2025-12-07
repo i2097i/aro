@@ -66,23 +66,23 @@ module Aro
     end
 
     def self.in_arodom?
+      !Aro::Dom.ethergeist_path.nil?
+    end
+
+    def self.ethergeist_path
+      root = nil
       pwd_path = Dir.pwd.split("/").reject{|p| p.empty?}
       pwd = "/"
 
       pwd_path.any?{|step|
         pwd = File.join(pwd, step)
         ls = Dir.glob("#{pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
-        ls.any?
+        
+        root = ls.first if ls.any?
+        !root.nil?
       }
-    end
 
-    def self.ethergeist_path
-      # todo: traverse up pwd and locate etherfile/.name
-      # pwd_path = Dir.pwd.split("/").reject{|p| p.empty?}
-      # pwd = "/"
-
-      # for now assume in arodome root
-      File.join(Aro::Dom::ETHER_FILE.to_s, Aro::Mancy::NAME_FILE.to_s)
+      return root
     end
 
     def dom_root
@@ -135,7 +135,7 @@ module Aro
       map_str += divider
 
       # todo: ethergeist_path
-      map_name = File.read(Aro::Dom.ethergeist_path).upcase
+      map_name = File.read(File.join(Aro::Dom.ethergeist_path, Aro::Mancy::NAME_FILE.to_s)).upcase
       Aro::V.say("map_name: #{map_name}")
       title_divider = dc[:DIVIDER] * ((width - map_name.length) / Aro::Mancy::OS)
       map_str += (title_divider + map_name).ljust(width, dc[:DIVIDER]) + "\n"

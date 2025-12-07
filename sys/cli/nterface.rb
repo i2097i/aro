@@ -21,5 +21,11 @@ module CLI
       Aro::P.say(I18n.t("cli.errors.invalid_usage", cmd: Aro::Mancy::I2097I))
       exit(CLI::EXIT_CODES[:INVALID_ARG])
     end
+
+    def self.exit_error_not_initialized!
+      Aro::P.say(I18n.t("cli.errors.header", cmd: Aro::Mancy::I2097I))
+      Aro::P.say(I18n.t("cli.errors.not_initialized", cmd: Aro::Mancy::I2097I))
+      exit(CLI::EXIT_CODES[:INVALID_ARG])
+    end
   end
 end

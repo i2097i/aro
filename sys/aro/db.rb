@@ -20,12 +20,8 @@ module Aro
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
         return
       end
-
-      if Aro::Mancy.is_initialized?
-        setup_local_aro
-      else
-        Aro::P.say(I18n.t("cli.warnings.not_initialized"))
-      end
+      
+      setup_local_aro
     end
 
     def connect(name)

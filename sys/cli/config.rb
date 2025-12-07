@@ -53,9 +53,25 @@ module CLI
       RUBY_FACOT: :ruby_facot,
     }
 
+    # ovar and ivar access
+    #
+    # example usage:
+    # CLI::Config::DEF_ACCESS[:READ]
     DEF_ACCESS = {
       READ: :read,
       WRITE: :write
+    }
+
+    BOOLS = {
+      FALSE: false,
+      TRUE: true,
+    }
+
+    TYPES = {
+      BOOL: :bool,
+      INT: :int,
+      STRING: :string,
+      VALUES: :values
     }
 
     # types used in definition
@@ -63,9 +79,25 @@ module CLI
     # example usage:
     # CLI::Config::DEF_TYPES[:INT][:validator].call(unvalid, CLI::Config::DEF[:DIMENSION])
     DEF_TYPES = {
+      BOOL: {
+        name: CLI::Config::TYPES[:BOOL],
+        description: I18n.t("cli.config.type_bool_description"),
+        converter: Proc.new{|v|
+          if v == CLI::Config::BOOLS[:TRUE].to_s
+            CLI::Config::BOOLS[:TRUE]
+          else
+            CLI::Config::BOOLS[:FALSE]
+          end
+        },
+        validator: Proc.new{|unvalid, k, v|
+          CLI::Config.def_valid?(k, v) &&
+          CLI::Config.bool_valid?(unvalid)
+        }
+      },
       INT: {
         name: :int,
         description: I18n.t("cli.config.type_int_description"),
+        converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
           int_valid = CLI::Config.def_valid?(k, v) &&
             CLI::Config.int_valid?(unvalid)        &&
@@ -81,13 +113,16 @@ module CLI
       STRING: {
         name: :string,
         description: I18n.t("cli.config.type_string_description"),
+        converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
-          unvalid.is_a?(String)
+          CLI::Config.def_valid?(k, v) &&
+          CLI::Config.string_valid?(unvalid)
         }
       },
       VALUES: {
         name: :values,
         description: I18n.t("cli.config.type_values_description"),
+        converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
           CLI::Config.def_valid?(k, v) &&
           v[:possible_values].keys.include?(unvalid&.to_sym)
@@ -95,8 +130,16 @@ module CLI
       },
     }
 
+    def self.bool_valid?(unvalid)
+      CLI::Config::BOOLS.include?(unvalid&.to_s&.to_sym)
+    end
+
     def self.int_valid?(unvalid)
       !unvalid&.to_i.nil?
+    end
+
+    def self.string_valid?(unvalid)
+      unvalid.is_a?(String)
     end
 
     def self.def_valid?(key, deff)
@@ -109,33 +152,40 @@ module CLI
     end
 
     def validate_config
-      invalid_defs = []
-      CLI::Config::DEF.each{|k, v|        
-        invalid_defs << k unless validate_value(CLI::Config.ivar(k), k, v)
+      invalid_vars = []
+      CLI::Config::DEF.each{|k, v|
+        is_valid = valid_var?(ENV[CLI::Config.ivar_k(k)], k, v)
+        invalid_vars << k unless is_valid
       }
-      invalid_defs
+      invalid_vars
     end
 
-    def validate_value(var_value, k, v)
+    def valid_var?(var_value, k, v)
       CLI::Config::DEF_TYPES[
         v[:type].to_s.upcase.to_sym
       ][:validator].call(var_value, k, v)
-    end   
+    end
+
+    def convert_var_for_def(k)
+      CLI::Config::DEF_TYPES[
+        CLI::Config::DEF[k][:type].upcase
+      ][:converter].call(ENV[CLI::Config.ivar_k(k)])
+    end
 
     # adapts I18n translations to generate bash environment vars.
     # 
     # example usage:
     # CLI::Config::DEF[:Z_MAX]
     DEF = {
-      # writable variables
+
+      #
+      # => ivars
+      #
       ENV: {
-        type: :values,
+        type: CLI::Config::TYPES[:VALUES],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::ENVS[:PRODUCTION],
-        description: I18n.t(
-          "cli.config.env_description",
-          possible_values: CLI::Config::ENVS.values.join(", ")
-         ),
+        description: I18n.t("cli.config.env_description"),
         possible_values: {
           development: I18n.t("cli.config.env_development_description"),
           production: I18n.t("cli.config.env_production_description"),
@@ -143,36 +193,30 @@ module CLI
         }
       },
       FORMAT: { # not implemented yet.
-        type: :values,
+        type: CLI::Config::TYPES[:VALUES],
         implemented: false,
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::FORMATS[:TEXT],
-        description: I18n.t(
-          "cli.config.format_description",
-          possible_values: CLI::Config::FORMATS.values.join(", ")
-        ),
+        description: I18n.t("cli.config.format_description"),
         possible_values: {
           text: I18n.t("cli.config.text_format_description"),
           json: I18n.t("cli.config.json_format_description")
         }
       },
       DIMENSION: {
-        type: :values,
+        type: CLI::Config::TYPES[:VALUES],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::DMS[:DEV_TAROT],
-        description: I18n.t(
-          "cli.config.dimension_description",
-          possible_values: CLI::Config::DMS.values.join(", ")
-         ),
+        description: I18n.t("cli.config.dimension_description"),
         possible_values: {
           dev_tarot: I18n.t("cli.config.dimension_dev_tarot_description"),
           ruby_facot: I18n.t("cli.config.dimension_ruby_facot_description"),
         }
       },
       DISPLAY_COLUMNS: {
-        type: :int,
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:VII],
+        value: Aro::Mancy::NUMERALS[:XI],
         min: Aro::Mancy::NUMERALS[:I],
         max: Aro::Mancy::NUMERALS[:XXII] / Aro::Mancy::OS,
         description: I18n.t(
@@ -182,7 +226,7 @@ module CLI
         ),
       },
       Z: {
-        type: :int,
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:I],
         min: Aro::Mancy::NUMERALS[:I],
@@ -194,7 +238,7 @@ module CLI
         ),
       },
       Z_MAX: {
-        type: :int,
+        type: CLI::Config::TYPES[:INT],
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:VII],
         min: Aro::Mancy::NUMERALS[:I],
@@ -205,79 +249,76 @@ module CLI
           max: Aro::Mancy::NUMERALS[:XXII],
         ),
       },
+      VERBOSE: {
+        type: CLI::Config::TYPES[:BOOL],
+        access: CLI::Config::DEF_ACCESS[:WRITE],
+        value: CLI::Config::BOOLS[:FALSE],
+        description: I18n.t("cli.config.verbose_description"),
+      },
 
-      # read only variables
+      #
+      # => ovars
+      #
       ARO_ENV_O: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::O,
-        description: I18n.t(
-          "cli.config.aro_env_O_description"
-        ),
+        description: I18n.t("cli.config.aro_env_O_description"),
       },
       ARO_ENV_S: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::S,
-        description: I18n.t(
-          "cli.config.aro_env_S_description"
-        ),
+        description: I18n.t("cli.config.aro_env_S_description"),
       },
       ARO_ENV_OS: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::OS,
-        description: I18n.t(
-          "cli.config.aro_env_OS_description"
-        ),
+        description: I18n.t("cli.config.aro_env_OS_description"),
       },
       ARO_ENV_N: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::N,
-        description: I18n.t(
-          "cli.config.aro_env_N_description"
-        ),
+        description: I18n.t("cli.config.aro_env_N_description"),
       },
       ARO_ENV_PS1: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::PS1,
-        description: I18n.t(
-          "cli.config.aro_env_PS1_description"
-        ),
+        description: I18n.t("cli.config.aro_env_PS1_description"),
       },
       ARO_ENV_NAME_FILE: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::NAME_FILE,
-        description: I18n.t(
-          "cli.config.aro_env_NAME_FILE_description"
-        ),
+        description: I18n.t("cli.config.aro_env_NAME_FILE_description"),
       },
       ARO_ENV_I2097I: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
-        description: I18n.t(
-          "cli.config.aro_env_I2097I_description"
-        ),
-        value: Aro::Mancy::I2097I
+        value: Aro::Mancy::I2097I,
+        description: I18n.t("cli.config.aro_env_I2097I_description"),
       },
       ARO_ENV_YES: {
-        type: :string,
+        type: CLI::Config::TYPES[:STRING],
         access: CLI::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::YES,
-        description: I18n.t(
-          "cli.config.aro_env_YES_description"
-        ),
+        description: I18n.t("cli.config.aro_env_YES_description"),
       },
-
-      # ...
+      ARO_ENV_ALL: {
+        type: CLI::Config::TYPES[:STRING],
+        access: CLI::Config::DEF_ACCESS[:READ],
+        value: Aro::Mancy::ALL,
+        description: I18n.t("cli.config.aro_env_ALL_description"),
+      },
     }
 
     def initialize
-      Aro::P.say("config init")
       return unless Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+
+      Aro::D.say(File.join(CLI::Config.name.to_s, __method__.to_s))
       unless File.exist?(CLI::Config.config_filepath)
         generate_config
       end
@@ -291,9 +332,8 @@ module CLI
     end
 
     def self.display_config
-      Aro::V.say("getting display config...")
+      Aro::V.say(__method__)
       columns = CLI::Config.ivar(:DISPLAY_COLUMNS)
-      Aro::V.say("DISPLAY_COLUMNS: #{columns}")
 
       # default
       width = CLI::Config::DEF[:DISPLAY_COLUMNS][:value]
@@ -302,13 +342,14 @@ module CLI
         columns = columns.to_i
         width = columns.to_i.pow(Aro::Mancy::OS)
       end
-      Aro::V.say("WIDTH: #{width}")
-
-      {
+      result = {
         COLUMNS: columns,
         WIDTH: width,
         DIVIDER: :"-".to_s
       }
+      Aro::V.say(result)
+
+      result
     end
 
     # out vars
@@ -334,8 +375,8 @@ module CLI
       # 
       # default is production
       varenv = CLI::Config.ivar(:ENV)
-      var_valid = validate_value(varenv, :ENV, CLI::Config::DEF[:ENV])
-      ENV[:ARO_ENV.to_s] = var_valid ? varenv : CLI::Config::ENVS[:PRODUCTION].to_s
+      is_valid = valid_var?(varenv, :ENV, CLI::Config::DEF[:ENV])
+      ENV[:ARO_ENV.to_s] = is_valid ? varenv : CLI::Config::ENVS[:PRODUCTION].to_s
       Aro::D.say("setup_env: #{ENV[:ARO_ENV.to_s]}")
     end
 

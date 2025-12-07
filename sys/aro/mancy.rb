@@ -26,7 +26,6 @@ module Aro
     ALL = :all
 
     ARO_ENV_DEBUG_MODES = [:development, :test]
-    DEBUG_VERBOSE = false
 
     NUMERALS = {
       O:       0,
@@ -65,9 +64,10 @@ module Aro
       ENV[:ARO_ENV_NAME_FILE.to_s] = "#{Aro::Mancy::NAME_FILE}"
       ENV[:ARO_ENV_I2097I.to_s] = "#{Aro::Mancy::I2097I}"
       ENV[:ARO_ENV_YES.to_s] = "#{Aro::Mancy::YES}"
+      ENV[:ARO_ENV_ALL.to_s] = "#{Aro::Mancy::ALL}"
 
-      if Aro::Mancy.is_aro_space?
-        Aro::Db.new
+      if Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+        Aro::Mancy.init
         self.game = Aro::Deck.current_deck
       end
     end
@@ -97,13 +97,13 @@ module Aro
       end
 
       Dir.chdir(name) do
-        Aro::Db.new.setup_local_aro
+        Aro::Mancy.init
       end
       return true
     end
 
     def self.init
-      Aro::Db.new.setup_local_aro
+      Aro::Db.new
     end
 
     def self.is_initialized?

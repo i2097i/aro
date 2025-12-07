@@ -14,11 +14,11 @@ module Aro
   class V < Aro::D
     def self.say(message)
       return unless Aro::V.should_print?
-      Aro::P::p.say(">[Aro::Mancy::DEBUG_VERBOSE]>: #{message}\n")
+      Aro::P::p.say(">[VERBOSE]>: #{message}\n")
     end
 
     def self.should_print?
-      Aro::Mancy::DEBUG_VERBOSE && super 
+      CLI::Config.ivar(:VERBOSE).to_s == CLI::Config::BOOLS[:TRUE].to_s && super
     end
   end
 end
