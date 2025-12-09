@@ -17,12 +17,11 @@ module Aro
 
     def initialize
       # ActiveRecord::Base.logger = Logger.new(STDOUT)
-      unless Aro::Mancy.is_aro_space?
+      if Aro::Mancy.in_aro?
+        setup_local_aro
+      else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
-        return
       end
-      
-      setup_local_aro
     end
 
     def connect(name)
@@ -43,7 +42,7 @@ module Aro
     end
 
     def setup_local_aro
-      name = Aro::Mancy.is_aro_space? ? File.read(Aro::Mancy::NAME_FILE.to_s).strip : nil
+      name = Aro::Mancy.in_aro? ? Aro::Mancy.aro_mancy_name : nil
       return if name.nil?
 
       # create local .aro/ directory

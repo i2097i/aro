@@ -11,7 +11,7 @@
 module Aro
   module T
     DEV_TAROT_FILE = :"/dev/tarot"
-
+    DEV_TAROT = :"Dev::Tarot".to_s
     RUBY_FACOT = :"Ruby::Facot".to_s
 
     def self.is_dev_tarot?
@@ -21,19 +21,21 @@ module Aro
     # read dev_tarot
     def self.read_dev_tarot
       dt = nil
-      return dt unless File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
-
-      File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
-      
-      # VERY IMPORTANT!
-      Aro::D.say(I18n.t("cli.very_important", dev_tarot: dt))
+      if Aro::T.is_dev_tarot? && File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
+        File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
+        # VERY IMPORTANT!
+        Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
+      else
+        Aro::V.say("warning: summoning ruby_facot in #{__method__}")
+        dt = Aro::T.summon_ruby_facot unless Aro::T.is_dev_tarot?
+      end
       return dt
     end
 
     # summon ruby_facot
-    def self.summon_ruby_facot(cards_arr)
-      Aro::P.say(I18n.t("cli.messages.ruby_facot_random"))
-      ruby_facot = cards_arr.sample.split("")
+    def self.summon_ruby_facot
+      Aro::D.say(I18n.t("cli.messages.ruby_facot_random"))
+      ruby_facot = I18n.t("cards.index").map{|c| "+#{c}"}.sample.split("")
 
       # get orientation
       ruby_facot_str = ["+","-"].sample

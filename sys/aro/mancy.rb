@@ -19,7 +19,8 @@ module Aro
     OS = 2
     E  = 3
     N  = 4
-    PS1 = Aro::Mancy.name
+    V  = 5
+    PS1 = :">[#{Aro::Mancy.name}]>: "
     NAME_FILE = :".name"
     ARO_FILE = :".aro"
     I2097I = :i2097i
@@ -59,7 +60,7 @@ module Aro
     }
 
     def initialize
-      if Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         Aro::Mancy.init
         self.game = Aro::Deck.current_deck
       end
@@ -70,7 +71,7 @@ module Aro
     end
 
     def self.create(name)
-      return false if Aro::Mancy.is_aro_space? || name.nil?
+      return false if Aro::Mancy.in_aro? || name.nil?
 
       # explicitly only allow String/Symbol types for name
       return false unless name.kind_of?(String) || name.kind_of?(Symbol)
@@ -99,16 +100,22 @@ module Aro
       Aro::Db.new
     end
 
-    def self.start
-      Aos.start(:aro)
-    end
-
     def self.is_initialized?
-      Dir.exist?(Aro::Db.base_aro_dir)
+      !Aro::Db.base_aro_dir.nil? && Dir.exist?(Aro::Db.base_aro_dir)
     end
 
-    def self.is_aro_space?
+    def self.in_aro?
       File.exist?(Aro::Mancy::NAME_FILE.to_s)
+    end
+
+    def self.domain
+      "#{Aro::Mancy}#{Aos::Os::A}#{Aro::Mancy.aro_mancy_name}"
+    end
+
+    def self.aro_mancy_name
+      return nil unless Aro::Mancy.in_aro?
+
+      File.read(Aro::Mancy::NAME_FILE.to_s).strip
     end
   end
 end

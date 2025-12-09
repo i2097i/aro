@@ -12,6 +12,11 @@
 
 require :aro.to_s
 
+unless Aro::Dom.in_arodom?
+  Aos::S.say(I18n.t("cli.errors.not_in_aos" , cmd: Aos::Os.name))
+  exit(CLI::EXIT_CODES[:GENERAL_ERROR])
+end
+
 if CLI::ARGV0 == CLI::CMDS[:AOS][:WATCH]
   Aos::watch
 else CLI::ARGV0 == CLI::CMDS[:AOS][:RUN] || CLI::ARGV0.nil?

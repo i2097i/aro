@@ -42,9 +42,9 @@ class Aro::Deck < ActiveRecord::Base
 
   def generate_log
     prev_cards = Base64::decode64(logs.last.card_data) if logs.any?
-    if prev_cards.present? && prev_cards != cards || prev_cards.nil?
+    if (prev_cards.present? && prev_cards != cards) || (prev_cards.nil? || prev_cards.empty?)
       logs.create(
-        card_data: Base64::encode64(cards),
+        card_data: Base64::encode64(cards || ""),
         drawn_data: Base64::encode64(drawn || "")
       )
     end
@@ -106,9 +106,9 @@ class Aro::Deck < ActiveRecord::Base
     # for now tests just expect text output
     return h_logs if CLI::Config.is_test?
 
-    Aro::P.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
+    Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
-    Aos::Vi::Deck.show({
+    Aos::Vi::Game.show_game({
       deck: self,
       h_logs: h_logs,
       count_n: count_n,
@@ -146,7 +146,7 @@ class Aro::Deck < ActiveRecord::Base
     # the deck. this will preserve all card orientations.
     cards_arr = cards.split(Aro::Deck::CARD_DELIM.to_s) || []
     drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
-    
+
     # append each drawn card to cards
     drawn_arr.each{|dc| cards_arr << dc }
 
@@ -154,7 +154,7 @@ class Aro::Deck < ActiveRecord::Base
     update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s))
   end
 
-  def draw(is_dt_dimension: true, z_max: 7, z: 1)    
+  def draw(is_dt_dimension: true, z_max: 7, z: 1)
     # the true card
     abs_dev_tarot = nil
 
@@ -168,6 +168,10 @@ class Aro::Deck < ActiveRecord::Base
     # get drawn
     drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
 
+    if cards_arr.empty?
+      Aro::P.say("there are no cards left to draw.")
+      return
+    end
     sleeps = 0
     sleeps_max = z_max
 
@@ -175,7 +179,7 @@ class Aro::Deck < ActiveRecord::Base
     while sleeps <= sleeps_max && dev_tarot.nil? do
       # use fallback randomness if /dev/tarot unavailable
       if !is_dt_dimension || !File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
-        dev_tarot = Aro::T.summon_ruby_facot(cards_arr).split("")
+        dev_tarot = Aro::T.summon_ruby_facot.split("")
       else
         # preferred randomness
         read_value = Aro::T.read_dev_tarot&.strip&.split("")

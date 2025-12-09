@@ -12,50 +12,60 @@ require_relative :dom.to_s
 
 module Aro
   class Dom::D
-    # definition of rooms in each layout section
+    def self.reserved_words
+      reserved = []
+      Aro::Dom::D::LAYOUT.values.each{|wing|
+        reserved << wing[:name].to_s
+        wing[:rooms].each{|room| reserved << room[:name].to_s}
+      }
+
+      reserved.sort
+    end
+
+    # definition of rooms in each layout wing
     WINGS = {
       WELCOME: {
         WAITE: {
           name: Aro::Dom::WAITE,
-          description: "sign up."
+          description: I18n.t("dom.rooms.waite.description"),
         },
         WINNER: {
           name: Aro::Dom::WINNER,
-          description: "win."
+          description: I18n.t("dom.rooms.winner.description"),
         },
       },
       GAMES: {
         ABPPS: {
           name: Aro::Dom::ABPPS,
-          description: "artificial beings."
+          description: I18n.t("dom.rooms.abpps.description"),
         },
         HBPPS: {
           name: Aro::Dom::HBPPS,
-          description: "human beings."
+          description: I18n.t("dom.rooms.hbpps.description"),
         },
         SHPPS: {
           name: Aro::Dom::SHPPS,
-          description: "human and artificial beings."
+          description: I18n.t("dom.rooms.shpps.description"),
         },
         VIPPS: {
           name: Aro::Dom::VIPPS,
-          description: "very important - 100% /dev/tarot users."
+          description: I18n.t("dom.rooms.vipps.description"),
         },
       },
       KNOW: { 
         LIBRARY: {
           name: Aro::Dom::LIBRARY,
-          description: "definition management."
+          description: I18n.t("dom.rooms.library.description"),
         },
         TEMPLE: {
           name: Aro::Dom::TEMPLE,
-          description: "mindfulness management."
+          description: I18n.t("dom.rooms.temple.description"),
         },
       },
       SETUP: {
         SETTINGS: {
           name: Aro::Dom::SETTINGS,
-          description: "user settings and configuration."
+          description: I18n.t("dom.rooms.settings.description"),
         },
       },
     }
@@ -64,7 +74,7 @@ module Aro
     LAYOUT = {
       WELCOME: {
         name: Aro::Dom::WELCOME,
-        description: "sign up process.",
+        description: I18n.t("dom.wings.welcome.description"),
         rooms: [
           Aro::Dom::D::WINGS[:WELCOME][:WAITE],
           Aro::Dom::D::WINGS[:WELCOME][:WINNER],
@@ -72,7 +82,7 @@ module Aro
       },
       GAMES: {
         name: Aro::Dom::GAMES,
-        description: "aroflie game rooms.",
+        description: I18n.t("dom.wings.games.description"),
         rooms: [
           Aro::Dom::D::WINGS[:GAMES][:ABPPS],
           Aro::Dom::D::WINGS[:GAMES][:HBPPS],
@@ -82,7 +92,7 @@ module Aro
       },
       KNOW: {
         name: Aro::Dom::KNOW,
-        description: "information space.",
+        description: I18n.t("dom.wings.know.description"),
         rooms: [
           Aro::Dom::D::WINGS[:KNOW][:LIBRARY],
           Aro::Dom::D::WINGS[:KNOW][:TEMPLE]
@@ -90,7 +100,7 @@ module Aro
       },
       SETUP: {
         name: Aro::Dom::SETUP,
-        description: "user configuration space.",
+        description: I18n.t("dom.wings.setup.description"),
         rooms: [
           Aro::Dom::D::WINGS[:SETUP][:SETTINGS]
         ],

@@ -9,8 +9,10 @@
 =end
 
 module Aro
-  VERSION = :"0.1.8"
+  VERSION = :"0.1.9"
   RELEASE_NOTES = :"this version".to_s + [
-    "created aos"
+    "adds improved views.",
+    "adds aro gameplay within an arodome game room.",
+    "adds ability to set config ivars from aos."
   ].join(",")
 end

@@ -18,9 +18,9 @@ module CLI
   }
 
   EXIT_CODES = {
-    SUCCESS: 0,
-    GENERAL_ERROR: 1,
-    INVALID_ARG: 3
+    SUCCESS: Aro::Mancy::O,
+    GENERAL_ERROR: Aro::Mancy::S,
+    INVALID_ARG: Aro::Mancy::E,
   }
 
   CMDS = {

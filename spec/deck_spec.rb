@@ -63,7 +63,7 @@ describe Aro::Deck do
 
     it "should :DRAW" do
       deck = Aro::Deck.current_deck
-      expect(deck.drawn).to be nil
+      expect(deck.drawn).to eq("")
       deck.draw(
         is_dt_dimension: true,
         z_max: Aro::Mancy::NUMERALS[:VII],

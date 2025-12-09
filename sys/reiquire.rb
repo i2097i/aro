@@ -14,6 +14,7 @@ require :"active_record/schema_dumper".to_s
 require :base64.to_s
 require :fileutils.to_s
 require :i18n.to_s
+require :readline.to_s
 require :"tty-prompt".to_s
 require :yaml.to_s
 

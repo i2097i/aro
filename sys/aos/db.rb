@@ -17,12 +17,11 @@ module Aos
 
     def initialize
       # ActiveRecord::Base.logger = Logger.new(STDOUT)
-      unless Aro::Dom.in_arodom?
+      if Aro::Dom.in_arodom?
+        set_up_aos
+      else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Dom.name))
-        return
       end
-
-      set_up_aos
     end
 
     def self.base_aro_dir
@@ -42,8 +41,8 @@ module Aos
         FileUtils.mkdir(Aos::Db.base_aro_dir)
       end
 
-      Aro::D.say("creating database: #{db_config_filepath}")
       unless File.exist?(db_config_filepath)
+        Aro::D.say("creating database: #{db_config_filepath}")
         # create database config yaml file
         c = {
           adapter: :sqlite3.to_s,

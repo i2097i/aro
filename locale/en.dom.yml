@@ -1,0 +1,42 @@
+en:
+  dom:
+    wings:
+      welcome:
+        description: "sign up process."
+      games:
+        description: "aro game rooms."
+      know:
+        description: "information space."
+      setup:
+        description: "user configuration space."
+    rooms:
+      waite:
+        description: "sign up."
+      winner:
+        description: "win."
+      abpps:
+        description: "artificial beings."
+      hbpps:
+        description: "human beings."
+      shpps:
+        description: "human and artificial beings."
+      vipps:
+        description: "only dev_tarot users. no ruby_facots allowed."
+      library:
+        description: "definition management."
+      temple:
+        description: "mindfulness management."
+      settings:
+        description: "user settings and configuration."
+    errors:
+      directory_exists: "unable to create arodome at %{name}. file or directory already exists."
+      failed_already_in_arodom: "unable to create an arodome because you are already in arodom."
+      failed_in_aro_space: "unable to create an arodome inside of aro space."
+      failed_already_initialized: "arodome is already initialized. doing nothing."
+    messages:
+      arodome_created: "%{name} arodome created. enter the following commands to begin: $ cd %{name}"
+      creating_arodome: "creating arodome named %{name}"
+      generating_wings: "generating wings..."
+      generating_wing: "generating the %{wing} wing..."
+      generating_room: "generating the %{room} room."
+      initialization_complete: "%{name} initialization complete! use aos to begin."
