@@ -13,11 +13,16 @@ require :aro.to_s
 module Aos
   module Vi
     class Base
-      BAR = :|.to_s
+      BAR = :"|".to_s
       MARGIN_V = Aro::Mancy::S
       MARGIN_H = Aro::Mancy::S
 
       def self.show(model)
+        unless Aro::Mancy.game.nil?
+          Aro::Mancy.game.show
+          return
+        end
+
         # default view
         draw([self.name], model)
       end
@@ -28,7 +33,6 @@ module Aos
         dc = CLI::Config.display_config
         height = dc[:HEIGHT]
         width = dc[:WIDTH]
-        divider = dc[:DIVIDER] * width
 
         # lines printed
         printed = Aro::Mancy::O
@@ -37,21 +41,30 @@ module Aos
         # vertical margins
         max_lines = height - Aos::Vi::Base::MARGIN_V * Aro::Mancy::OS
         # footer
-        max_lines = max_lines - Aro::Mancy::OS
+        max_lines = max_lines + Aro::Mancy::S
 
         # header
         Aro::Mancy::S.times do |i|
-          printed += Aro::Mancy::S
-          Aos::S.say(divider)
+          printed += Aro::Mancy::OS
+          Aos::S.say("".center(width, dc[:DIVIDER]))
+          printed += Aro::Mancy::OS
+          Aos::S.say("".center(width))
+          Aos::S.say("\n")
         end
 
-        t_divider = dc[:DIVIDER] * ((width - self.name.length) / Aro::Mancy::OS)
+        half = ((width - self.name.length) / Aro::Mancy::OS.to_f).ceil
+        domain = Aro::Dom.in_arodom? ? Aro::Dom::domain : Aro::Mancy.domain
+        clock = Time.now.strftime(Aos::Os::DATE_FORMAT)
         printed += Aro::Mancy::S
-        Aos::S.say((t_divider + self.name.to_s.upcase).ljust(width, dc[:DIVIDER]))
+        Aos::S.say(
+          (
+            domain.ljust(half) + self.name.to_s.upcase
+          ).ljust(width - clock.length) + clock
+        )
 
         Aro::Mancy::S.times do
           printed += Aro::Mancy::S
-          Aos::S.say(divider)
+          Aos::S.say("".center(width, dc[:DIVIDER]))
         end
 
         # top vertical margin
@@ -60,7 +73,7 @@ module Aos
           print_regular_line("")
         end
 
-        # print lines
+        # yield => print lines
         lines.each{|line|
           next if printed == max_lines
 
@@ -77,18 +90,21 @@ module Aos
         # bottom vertical margin
         Aos::Vi::Base::MARGIN_V.times do
           printed += Aro::Mancy::S
-          print_regular_line("")
+          Aos::S.say("[#{Aos::Os} v#{Aro::VERSION.to_s}]".center(width, :"-".to_s))
         end
 
         # footer
-        if you.nil?
-          Aos::S.say("")
-          Aos::S.say("")
-        else
-          Aos::S.say(divider[Aro::Mancy::O..width - Aro::Mancy::S])
-          Aos::S.say("#{Aos::Os}_v#{Aro::VERSION}_#{Aro::Dom}: /#{Aos::Os::osify(you.pwd)}")
-        end
+        dimension = (Aro::T.is_dev_tarot? ? Aro::T::DEV_TAROT : Aro::T::RUBY_FACOT)
+        dt = Aro::T.read_dev_tarot.strip[Aro::Mancy::S..]
+        display_dim = "#{dt.rjust(Aro::Mancy::V)} :<[#{dimension}]<"
+        Aos::S.say(
+          (
+            ">#{domain}>#{Aos::Os::osify(you&.pwd || Dir.pwd)}"
+          ).ljust(width - display_dim.length) + display_dim
+        )
+        Aos::S.say("".center(width, dc[:DIVIDER]))
 
+        # debug logging
         Aro::D.say("invalid printed height: #{height}, printed: #{printed}") if printed != height
 
         # explicitly return true

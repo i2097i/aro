@@ -13,11 +13,11 @@ module CLI
   def self.deck
     action = CLI::ARGV1&.to_sym
 
-    if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
+    if CLI::FLAGS[:HELP].include?(action.to_s)
       # todo: breakout usage into subcommand-specific verbiage
       CLI.usage::usage
       exit(CLI::EXIT_CODES[:SUCCESS])
-    elsif CLI::ARGV1.nil?
+    elsif action.nil? || action == :aos
       # no args, open deck menu
       Aro::Db.new
       Aro::Deck.display_selection_menu
@@ -51,13 +51,18 @@ module CLI
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
         Aro::Mancy.game.replace
       when CLI::CMDS[:DECK][:RESET]
-        if Aro::Mancy::YES.to_s != Aro::P.p.ask(I18n.t("cli.messages.confirmation_prompt", name: Aro::Mancy.game.name))
+        if Aro::Mancy::YES.to_s != Aro::P.p.ask("#{Aro::Mancy::PS1}#{I18n.t("cli.messages.confirmation_prompt", name: Aro::Mancy.game.name)}")
           Aro::P.say(I18n.t("cli.messages.understood", name: Aro::Mancy.game.name))
           exit(CLI::EXIT_CODES[:SUCCESS])
         end
 
         Aro::P.say(I18n.t("cli.messages.resetting", name: Aro::Mancy.game.name))
         Aro::Mancy.game.reset
+      end
+
+      if ARGV.include?(:aos.to_s)
+        # run silent
+        exit(CLI::EXIT_CODES[:SUCCESS])
       end
 
       Aro::Mancy.game.show(**CLI::shoptions)
@@ -70,23 +75,23 @@ module CLI
     show_options_count = Aro::Mancy::S
     show_options_order = Aro::Log::ORDERING[:DESC]
     
-    # Aro::P.say("ARGV.map{|a| a.to_sym} => #{ARGV.map{|a| a.to_sym}}")
+    # Aro::D.say("ARGV.map{|a| a.to_sym} => #{ARGV.map{|a| a.to_sym}}")
     
     count_option_flags = ARGV.map{|a| a.to_sym} & CLI::FLAGS[:SHOW_COUNT]
-    # Aro::P.say("count_option_flags: #{count_option_flags}")
+    # Aro::D.say("count_option_flags: #{count_option_flags}")
     if count_option_flags.any?
       # get the ARGV index element after flag index
       show_options_count = ARGV[ARGV.index(count_option_flags.first.to_s) + 1]
       show_options_count = show_options_count.to_i unless [0, nil].include?(show_options_count&.to_i)
-      # Aro::P.say("show_options_count: #{show_options_count}")
+      # Aro::D.say("show_options_count: #{show_options_count}")
     end
 
     order_option_flags = ARGV.map{|a| a.to_sym} & CLI::FLAGS[:SHOW_ORDER]
-    # Aro::P.say("count_option_flags: #{order_option_flags}")
+    # Aro::D.say("count_option_flags: #{order_option_flags}")
     if order_option_flags.any?
       # get the ARGV index element after flag index
       show_options_order = ARGV[ARGV.index(order_option_flags.first.to_s) + 1].to_sym
-      Aro::P.say("show_options_order: #{show_options_order}")
+      # Aro::D.say("show_options_order: #{show_options_order}")
     end
 
     {

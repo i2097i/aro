@@ -22,13 +22,20 @@ module CLI
 
     case action
     when CLI::CMDS[:DOM][:INIT]
-      arodome = Aro::Dom.new
-      arodome.generate
+      if Aro::Dom.is_initialized?
+        Aro::P.say(I18n.t("dom.errors.failed_already_initialized"))
+      elsif Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
+        arodome = Aro::Dom.new
+        arodome.generate
+      else
+        CLI::Nterface.exit_error_invalid_usage!
+      end
     when CLI::CMDS[:DOM][:NEW]
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
       if Aro::Dom.in_arodom?
-        # todo: i18n
-        Aro::P.say("unable to create an arodome because you are already in arodom.")
+        Aro::P.say(I18n.t("dom.errors.failed_already_in_arodom"))
+      elsif Aro::Mancy.in_aro?
+        Aro::P.say(I18n.t("dom.errors.failed_in_aro_space"))
       else
         Aro::Dom.create(CLI::ARGV2.to_s)
       end

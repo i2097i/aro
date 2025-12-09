@@ -15,27 +15,14 @@ module Aos
     class Settings < Aos::Vi::Base
       def self.show(model)
         just_access = Aro::Mancy::NUMERALS[:VI]
-        just_key = Aro::Mancy::NUMERALS[:XXI]
+        just_key = Aro::Mancy::NUMERALS[:XXII]
         just_value = Aro::Mancy::NUMERALS[:VI]
         bullet = ":"
 
         # print CLI::Config::DEF
         lines = []
-        lines << "CLI::Config::DEF:"
-        lines << "#{"access".rjust(just_access)}#{bullet} #{"variable_name".ljust(just_key)}=value"
-        lines << ""
-        CLI::Config::DEF.each{|k, deff|
-          val = nil
-
-          if deff[:access] == CLI::Config::DEF_ACCESS[:READ]
-            val = CLI::Config.ovar(k)
-          else
-            val = CLI::Config.ivar(k)
-            k = CLI::Config.ivar_k(k)
-          end
-
-          lines << "#{deff[:access].to_s.rjust(just_access)}#{bullet} #{k.to_s.ljust(just_key)}=#{val}"
-        }
+        lines << "<CLI::Config::DEF>"
+        lines += CLI::Config.dump_config
 
         # print config commands
         lines << ""

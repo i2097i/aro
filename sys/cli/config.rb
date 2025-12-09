@@ -12,7 +12,7 @@ module CLI
 
   # cli entrypoint
   def self.config
-    Aro::D.say("#{__FILE__}:#{__method__} was called (todo)...")
+    CLI::Config.process_config_command(ARGV)
   end
 
   class Config
@@ -83,7 +83,7 @@ module CLI
         name: CLI::Config::TYPES[:BOOL],
         description: I18n.t("cli.config.type.bool_description"),
         converter: Proc.new{|v|
-          if v == CLI::Config::BOOLS[:TRUE].to_s
+          if [CLI::Config::BOOLS[:TRUE].to_s, Aro::Mancy::S].include?(v)
             CLI::Config::BOOLS[:TRUE]
           else
             CLI::Config::BOOLS[:FALSE]
@@ -99,14 +99,14 @@ module CLI
         description: I18n.t("cli.config.type.int_description"),
         converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
+          Aro::V.say("validating #{k} (#{CLI::Config::DEF_TYPES[:INT][:name]})")
+          Aro::V.say("unvalid = #{unvalid}")
+          Aro::V.say("[min, max] = [#{v[:min]}, #{v[:max]}]")
           int_valid = CLI::Config.def_valid?(k, v) &&
             CLI::Config.int_valid?(unvalid)        &&
             unvalid.to_i >= v[:min]                &&
             unvalid.to_i <= v[:max]
-
-          Aro::V.say("validating #{k} (#{CLI::Config::DEF_TYPES[:INT][:name]})")
-          Aro::V.say("unvalid = #{unvalid}")
-          Aro::V.say("unvalid is#{int_valid ? " " : :" not ".to_s}valid.")
+          Aro::V.say("unvalid(#{unvalid}) is#{int_valid ? " " : :" not ".to_s}valid.")
           int_valid
         }
       },
@@ -131,7 +131,7 @@ module CLI
     }
 
     def self.bool_valid?(unvalid)
-      CLI::Config::BOOLS.include?(unvalid&.to_s&.to_sym)
+      CLI::Config::BOOLS.values.map{|b| b.to_s.to_sym}.include?(unvalid&.to_s&.to_sym)
     end
 
     def self.int_valid?(unvalid)
@@ -154,13 +154,20 @@ module CLI
     def validate_config
       invalid_vars = []
       CLI::Config::DEF.each{|k, v|
-        is_valid = valid_var?(ENV[CLI::Config.ivar_k(k)], k, v)
+        Aro::V.say(v[:access])
+        is_valid = v[:access] == CLI::Config::DEF_ACCESS[:READ]
+        unless is_valid
+          is_valid = valid_var?(CLI::Config.ivar(k), k, v)
+        end
         invalid_vars << k unless is_valid
       }
       invalid_vars
     end
 
     def valid_var?(var_value, k, v)
+      Aro::V.say(v)
+      return true if v[:access] == CLI::Config::DEF_ACCESS[:READ]
+
       CLI::Config::DEF_TYPES[
         v[:type].to_s.upcase.to_sym
       ][:validator].call(var_value, k, v)
@@ -192,6 +199,12 @@ module CLI
           test: I18n.t("cli.config.env.test_description"),
         }
       },
+      VERBOSE: {
+        type: CLI::Config::TYPES[:BOOL],
+        access: CLI::Config::DEF_ACCESS[:WRITE],
+        value: CLI::Config::BOOLS[:FALSE],
+        description: I18n.t("cli.config.verbose_description"),
+      },
       FORMAT: { # not implemented yet.
         type: CLI::Config::TYPES[:VALUES],
         implemented: false,
@@ -218,7 +231,7 @@ module CLI
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:XLII],
         min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:VII].pow(Aro::Mancy::OS),
+        max: Aro::Mancy::NUMERALS[:MMXCVII],
         description: I18n.t(
           "cli.config.height_description",
           min: Aro::Mancy::NUMERALS[:I],
@@ -230,7 +243,7 @@ module CLI
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:C] + Aro::Mancy::NUMERALS[:XXXVII] - Aro::Mancy::S,
         min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:XI].pow(Aro::Mancy::OS),
+        max: Aro::Mancy::NUMERALS[:MMXCVII],
         description: I18n.t(
           "cli.config.width_description",
           min: Aro::Mancy::NUMERALS[:I],
@@ -260,12 +273,6 @@ module CLI
           min: Aro::Mancy::NUMERALS[:I],
           max: Aro::Mancy::NUMERALS[:XXII],
         ),
-      },
-      VERBOSE: {
-        type: CLI::Config::TYPES[:BOOL],
-        access: CLI::Config::DEF_ACCESS[:WRITE],
-        value: CLI::Config::BOOLS[:FALSE],
-        description: I18n.t("cli.config.verbose_description"),
       },
 
       #
@@ -335,9 +342,9 @@ module CLI
 
     def initialize
       @@context = nil
-      if Aro::Mancy.is_aro_space? && Aro::Mancy.is_initialized?
+      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         @@context = Aro::Mancy.name
-      elsif Aro::Dom.in_arodom?
+      elsif Aro::Dom.in_arodom? && Aro::Dom.is_initialized?
         @@context = Aro::Dom.name
       end
 
@@ -356,19 +363,35 @@ module CLI
       File.join(db_cls.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
     end
 
+    def self.is_test?
+      ENV[:ARO_ENV.to_s] == CLI::Config::ENVS[:TEST].to_s
+    end
+
     def self.display_config
-      Aro::V.say(__method__)
+      # Aro::V.say(__method__)
       width = CLI::Config.ivar(:WIDTH).to_i
       columns = width.pow(Aro::Mancy::S.to_f / Aro::Mancy::OS.to_f).to_i
       result = {
         COLUMNS: columns,
         HEIGHT: CLI::Config.ivar(:HEIGHT).to_i,
         WIDTH: width,
-        DIVIDER: :"-".to_s
+        DIVIDER: :"_".to_s
       }
-      Aro::V.say(result)
+      # Aro::V.say(result)
 
       result
+    end
+
+    def self.process_config_command(args)
+      if args[1].nil? || args[1] == :aos.to_s
+        # print config
+        Aro::P.say((
+          ["config loaded from #{CLI::Config.config_filepath}"] +
+          CLI::Config.dump_config
+        ).join("\n"))
+      elsif [args[2],args[3]].compact.any? && args[1] == Aos::Os::CMDS[:CONFIG][:cmds][:SET][:key].to_s
+        CLI::Config.set_ivar(args[2], args[3])
+      end
     end
 
     # out vars
@@ -389,6 +412,30 @@ module CLI
       "#{CLI::Config::ARO_CONFIG_PREFIX}#{suffix}"
     end
 
+    def self.set_ivar(k, new_value)
+      k = k.upcase.to_sym
+
+      current_value = CLI::Config.ivar(k)
+      # ensure the var name is valid
+      unless current_value.nil?
+        Aro::V.say("validating #{k} with value #{new_value}")
+        if CLI::Config.instance.valid_var?(new_value, k, CLI::Config::DEF[k])
+          # set ENV value
+          ENV[CLI::Config.ivar_k(k)] = new_value
+          Aro::V.say(ENV[CLI::Config.ivar_k(k)])
+
+          # flush existing config and regen
+          CLI::Config.instance.generate_config(true)
+          CLI::Config.instance.source_config
+          CLI::Config.instance.setup_env
+        else
+          Aro::Dom::P.say("the ivar value you entered is invalid. ignoring.")
+        end
+      else
+        Aro::Dom::P.say("the ivar name you entered is invalid. ignoring.")
+      end
+    end
+
     def setup_env
       # do not change - update $ARO_CONFIG_ENV .aro/.config file
       # 
@@ -399,8 +446,17 @@ module CLI
       Aro::D.say("setup_env: #{ENV[:ARO_ENV.to_s]}")
     end
 
-    def self.is_test?
-      ENV[:ARO_ENV.to_s] == CLI::Config::ENVS[:TEST].to_s
+    def self.dump_config
+      dump = []
+      CLI::Config::DEF.each{|k, v|
+        if v[:access] == CLI::Config::DEF_ACCESS[:WRITE]
+          dump << "$#{CLI::Config.ivar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{CLI::Config.ivar(k)}"
+        else
+          dump << "$#{CLI::Config.ovar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{CLI::Config.ovar(k)}"
+        end
+      }
+
+      dump
     end
 
     def source_config
@@ -417,17 +473,18 @@ module CLI
       
       # todo: implement
       invalid_defs = validate_config
-      CLI::Config::DEF.keys.each{|dfk|
-        Aro::V.say("$#{CLI::Config.ivar_k(dfk)}=#{CLI::Config.ivar(dfk)}")
+      CLI::Config.dump_config.each{|l| Aro::V.say(l)}
+      invalid_defs.each{|k|
+        v = CLI::Config::DEF[k.to_sym]
+        if v[:access] == CLI::Config::DEF_ACCESS[:WRITE]
+          ENV[CLI::Config.ivar_k(k)] = v[:value]
+        else
+          ENV[CLI::Config.ovar_k(k)] = v[:value]
+        end
       }
-      Aro::V.say("todo: invalid_defs: #{invalid_defs}")
-      # todo: set all invalid_refs to default in ENV
-      # invalid_defs.each{|id| 
-
-      # }
     end
 
-    def generate_config
+    def generate_config(from_memory = false)
       # todo: localize generated config text
       Aro::D.say(I18n.t("cli.config.generate", name: CLI::Config.config_filepath))
       File.open(CLI::Config.config_filepath, "w+") do |file|
@@ -464,7 +521,7 @@ module CLI
 
         # vars
         CLI::Config::DEF.each{|k, v|
-          print_var file.object_id, k, v
+          print_var file.object_id, k, v, (from_memory ? ENV[CLI::Config.ivar_k(k)] : nil)
         }
 
         print_osr file.object_id
@@ -535,7 +592,7 @@ module CLI
       file.write("#     => which can be used to write programs on top of aro.\n")
     end
 
-    def print_var f_object_id, k, v
+    def print_var f_object_id, k, v, mem_v
       file = ObjectSpace._id2ref f_object_id
 
       is_ovar = CLI::Config::DEF[k][:access] == CLI::Config::DEF_ACCESS[:READ]
@@ -547,7 +604,7 @@ module CLI
       Aro::V.say("access for #{k} is #{CLI::Config::DEF[k][:access]}")
       Aro::V.say("using var_name: #{var_name}")
       file.write("# [#{var_name}] (#{is_ovar ? :ovar : :ivar})\n")
-      file.write("#   => #{I18n.t("cli.config.def_type")}: #{v[:type]}\n")
+      file.write("#   => CLI::Config::DEF_TYPES: #{v[:type]}\n")
       case v[:type]
       when CLI::Config::DEF_TYPES[:INT][:name]
         file.write("#   => #{I18n.t("cli.config.type.int_description")}\n")
@@ -573,7 +630,7 @@ module CLI
       if is_ovar && CLI::Config::DEF_TYPES[:STRING][:name] == v[:type]
         file.write("export #{var_name}=\"#{v[:value]}\"\n")
       else
-        file.write("export #{var_name}=#{v[:value]}\n")
+        file.write("export #{var_name}=#{mem_v || v[:value]}\n")
       end
       print_osr f_object_id
     end

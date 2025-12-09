@@ -3,8 +3,8 @@ class CreateDecks < ActiveRecord::Migration[8.1]
   def self.up
     create_table :decks do |t|
       t.string :name
-      t.string :cards
-      t.string :drawn
+      t.string :cards, null: false, default: ""
+      t.string :drawn, null: false, default: ""
 
       t.timestamps
     end

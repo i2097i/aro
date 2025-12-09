@@ -27,17 +27,8 @@ module Aos
         lines << ""
         lines << I18n.t("aos.views.dom.quick_navigation")
         lines << ""
-        just = Aro::Mancy::NUMERALS[:XI]
-        converter = Proc.new{|layout|
-          "#{layout[:name].to_s.ljust(just)} #{layout[:rooms].map{|r| r[:name].to_s.ljust(just)}.join(" ")}"
-        }
-        lines << converter.call(Aro::Dom::D::LAYOUT[:WELCOME])
+        lines << "  =>  #{Aro::Dom::D.reserved_words.join("  ")}"
         lines << ""
-        lines << converter.call(Aro::Dom::D::LAYOUT[:GAMES])
-        lines << ""
-        lines << converter.call(Aro::Dom::D::LAYOUT[:KNOW])
-        lines << ""
-        lines << converter.call(Aro::Dom::D::LAYOUT[:SETUP])
         draw(lines, model)
       end
     end

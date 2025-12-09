@@ -22,13 +22,24 @@ en:
             this runs by default after create and has no effect if init is complete.
 
         config
-          config management (ex: update preferences)
-          todo:
+          aro config management.
+
+            $ aro config <commands>
+
+          passing no args opens prints the current config.
+
+          SUBCOMMANDS
+            set
+              sets an ivar to a specified value. the aro var prefix can be omitted.
+
+                $ config set <var_name> <var_value>
 
         deck
-          manage decks in the current room
+          manage decks in the current room.
 
             $ aro deck <commands>
+
+          passing no args opens the selection menu.
 
           note:
 
