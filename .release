@@ -15,4 +15,3 @@
 # 7) checkout and pull master
 # 8) publish to rubygems (warning, must version up after this)
 #     $ gem push pkg/aro-x.x.x.gem
-

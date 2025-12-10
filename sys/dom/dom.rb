@@ -68,6 +68,8 @@ module Aro
     end
 
     def self.is_initialized?
+      return false if !Aro::Dom.in_arodom?
+
       File.exist?(File.join(Aro::Dom::ethergeist_path, Aos::Db::SQL_FILE.to_s))
     end
 
@@ -156,7 +158,7 @@ module Aro
       FileUtils.mkdir(room_path)
 
       if wing[:name] == Aro::Dom::GAMES
-        File.open(File.join(room_path, Aro::Mancy::NAME_FILE.to_s), "w+") do |f|
+        File.open(File.join(room_path, Aro::Mancy::NAME_FILE.to_s), "w") do |f|
           f.write(room[:name])
         end
       end

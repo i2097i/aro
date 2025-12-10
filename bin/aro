@@ -34,10 +34,10 @@ when CLI::CMDS[:ARO][:INIT]
   Aro::Mancy.init
 else
   unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
-    unless ARGV.include?(:aos.to_s)
+    # unless ARGV.include?(:aos.to_s)
       Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game"))
       Aro::Mancy.game.show
-    end
+    # end
 
     exit(CLI::EXIT_CODES[:SUCCESS])
   end

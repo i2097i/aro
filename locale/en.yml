@@ -32,6 +32,8 @@ en:
         production_description: "game logging only."
         test_description: "logging and features tailored for tests."
       verbose_description: "enable verbose logging in development env."
+      log_aos_db_description: "show aos database transactions."
+      log_aro_db_description: "show aro database transactions"
       generate: "generating default config file at %{name}."
       source: "installing ivars from %{name}..."
       maximum: "max"
@@ -56,6 +58,7 @@ en:
       invalid_order: "the order specified for displaying logs in invalid. using default (desc)."
     messages:
       choose_card: "choose a card."
+      choose_deck: "choose a deck."
       confirmation_prompt: "input 'aroyes' to reset %{name}, or enter to cancel (cancel): "
       creating: "creating %{name}..."
       creation_attempt: "attempting to create aro table named %{name}..."

@@ -16,11 +16,17 @@ module Aro
     MIGRATIONS_DIR = :"db/migrate"
 
     def initialize
-      # ActiveRecord::Base.logger = Logger.new(STDOUT)
+      Aro::Db.configure_logger
       if Aro::Mancy.in_aro?
         setup_local_aro
+      end
+    end
+
+    def self.configure_logger
+      if CLI::Config.ivar(:LOG_ARO_DB).to_s == CLI::Config::BOOLS[:TRUE].to_s
+        ActiveRecord::Base.logger = Logger.new(STDOUT)
       else
-        Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
+        ActiveRecord::Base.logger = nil
       end
     end
 

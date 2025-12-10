@@ -19,13 +19,22 @@ module CLI
       exit(CLI::EXIT_CODES[:SUCCESS])
     elsif action.nil? || action == :aos
       # no args, open deck menu
-      Aro::Db.new
-      Aro::Deck.display_selection_menu
+      if Aro::Mancy.in_aro?
+        Aro::Db.new
+        Aro::Deck.display_selection_menu
+      else
+        Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
+      end
     elsif action == CLI::CMDS[:DECK][:NEW]
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
-      deck = Aro::Deck.make(CLI::ARGV2.to_s)
-      Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: Aro::Mancy.game.name))
-      Aro::Deck.display_selection_menu
+      if Aro::Mancy.in_aro?
+        Aro::Db.new
+        deck = Aro::Deck.make(CLI::ARGV2.to_s)
+        Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: Aro::Mancy.game.name))
+        Aro::Deck.display_selection_menu
+      else
+        Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
+      end
     elsif CLI::CMDS[:DECK].values.include?(action)    
       if Aro::Mancy.game.nil?
         Aro::P.say(I18n.t("cli.errors.missing_deck", cmd: Aro::Mancy::I2097I))
