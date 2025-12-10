@@ -154,7 +154,6 @@ module CLI
     def validate_config
       invalid_vars = []
       CLI::Config::DEF.each{|k, v|
-        Aro::V.say(v[:access])
         is_valid = v[:access] == CLI::Config::DEF_ACCESS[:READ]
         unless is_valid
           is_valid = valid_var?(CLI::Config.ivar(k), k, v)
@@ -204,6 +203,18 @@ module CLI
         access: CLI::Config::DEF_ACCESS[:WRITE],
         value: CLI::Config::BOOLS[:FALSE],
         description: I18n.t("cli.config.verbose_description"),
+      },
+      LOG_AOS_DB: {
+        type: CLI::Config::TYPES[:BOOL],
+        access: CLI::Config::DEF_ACCESS[:WRITE],
+        value: CLI::Config::BOOLS[:FALSE],
+        description: I18n.t("cli.config.log_aos_db_description"),
+      },
+      LOG_ARO_DB: {
+        type: CLI::Config::TYPES[:BOOL],
+        access: CLI::Config::DEF_ACCESS[:WRITE],
+        value: CLI::Config::BOOLS[:FALSE],
+        description: I18n.t("cli.config.log_aro_db_description"),
       },
       FORMAT: { # not implemented yet.
         type: CLI::Config::TYPES[:VALUES],
@@ -343,12 +354,13 @@ module CLI
     def initialize
       @@context = nil
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        @@context = Aro::Mancy.name
+        @@context = Aro::Db
       elsif Aro::Dom.in_arodom? && Aro::Dom.is_initialized?
-        @@context = Aro::Dom.name
+        @@context = Aos::Db
       end
 
       return if @@context.nil?
+      Aro::V.say(@@context)
 
       unless File.exist?(CLI::Config.config_filepath)
         generate_config
@@ -358,9 +370,24 @@ module CLI
       setup_env
     end
 
+    def self.context
+      @@context
+    end
+
     def self.config_filepath
-      db_cls = @@context == Aro::Dom.name ? Aos::Db : Aro::Db
-      File.join(db_cls.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
+      cfp = nil
+      if @@context == Aro::Db &&
+        Aro::Dom.in_arodom? &&
+        Aro::Dom.is_initialized?
+
+        # override when in arodome game room
+        # this ensures the arodome config is being used
+        cfp = File.join(Aos::Db.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
+      else
+        cfp = File.join(@@context.base_aro_dir, CLI::Config::CONFIG_FILE.to_s)
+      end
+
+      cfp
     end
 
     def self.is_test?
@@ -368,18 +395,19 @@ module CLI
     end
 
     def self.display_config
-      # Aro::V.say(__method__)
-      width = CLI::Config.ivar(:WIDTH).to_i
-      columns = width.pow(Aro::Mancy::S.to_f / Aro::Mancy::OS.to_f).to_i
+      height, width = IO.console.winsize
       result = {
-        COLUMNS: columns,
-        HEIGHT: CLI::Config.ivar(:HEIGHT).to_i,
-        WIDTH: width,
+        HEIGHT: height, #CLI::Config.ivar(:HEIGHT).to_i,
+        WIDTH: width - Aro::Mancy::O,
         DIVIDER: :"_".to_s
       }
       # Aro::V.say(result)
 
       result
+    end
+
+    def self.is_format_text?
+      CLI::Config.ivar(:FORMAT)&.to_sym == CLI::Config::FORMATS[:TEXT]
     end
 
     def self.process_config_command(args)
@@ -418,16 +446,18 @@ module CLI
       current_value = CLI::Config.ivar(k)
       # ensure the var name is valid
       unless current_value.nil?
-        Aro::V.say("validating #{k} with value #{new_value}")
+        Aro::Dom::P.say("validating #{k} with value #{new_value}")
         if CLI::Config.instance.valid_var?(new_value, k, CLI::Config::DEF[k])
           # set ENV value
           ENV[CLI::Config.ivar_k(k)] = new_value
+          Aro::Dom::P.say("#{k} set to #{new_value}")
           Aro::V.say(ENV[CLI::Config.ivar_k(k)])
 
           # flush existing config and regen
           CLI::Config.instance.generate_config(true)
           CLI::Config.instance.source_config
           CLI::Config.instance.setup_env
+          @@context.configure_logger
         else
           Aro::Dom::P.say("the ivar value you entered is invalid. ignoring.")
         end

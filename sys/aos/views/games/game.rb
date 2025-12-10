@@ -55,8 +55,8 @@ module Aos
         order_o = model[:order_o]
 
         dc = CLI::Config.display_config
-        width = dc[:WIDTH] = viewport_width
-        divider = dc[:DIVIDER] * viewport_width
+        width = count_n == Aro::Mancy::S ? viewport_width : dc[:WIDTH]
+        divider = dc[:DIVIDER] * width
         lines = []
         lines << "#{deck.name.upcase.center(width)}"
         h_logs.each_with_index{|l, i|
@@ -94,7 +94,9 @@ module Aos
       end
 
       def self.get_display_for_cards(input = [])
-        columns = CLI::Config.display_config[:COLUMNS].to_i
+        columns = Aos::Vi::Base::COL_POW.call(
+          CLI::Config.display_config[:WIDTH].to_i
+        )
         lines = []
         return lines unless input.any?
         card_line = ""

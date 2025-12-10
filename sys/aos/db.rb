@@ -11,16 +11,24 @@
 module Aos
   class Db < Aro::Db
     DATABASE_YML = :"database.yml"
-    SQL_FILE = :"database.sql"
+    SQL_FILE = :"aos.sql"
     SCHEMA_FILE = :"schema.rb"
     MIGRATIONS_DIR = :"db/migrate"
 
     def initialize
-      # ActiveRecord::Base.logger = Logger.new(STDOUT)
+      Aos::Db.configure_logger
       if Aro::Dom.in_arodom?
         set_up_aos
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Dom.name))
+      end
+    end
+
+    def self.configure_logger
+      if CLI::Config.ivar(:LOG_AOS_DB).to_s == CLI::Config::BOOLS[:TRUE].to_s
+        ActiveRecord::Base.logger = Logger.new(STDOUT)
+      else
+        ActiveRecord::Base.logger = nil
       end
     end
 

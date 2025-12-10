@@ -21,14 +21,22 @@ module Aro
     # read dev_tarot
     def self.read_dev_tarot
       dt = nil
-      if Aro::T.is_dev_tarot? && File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
-        File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
-        # VERY IMPORTANT!
-        Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
-      else
-        Aro::V.say("warning: summoning ruby_facot in #{__method__}")
-        dt = Aro::T.summon_ruby_facot unless Aro::T.is_dev_tarot?
+      if Aro::T.is_dev_tarot?
+        if File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
+          File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
+          # VERY IMPORTANT!
+          Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
+        else
+          Aro::D.say("error: /dev/tarot not installed.")
+        end
       end
+
+      if dt.nil?
+        # fallback on ruby_facot
+        Aro::V.say("warning: summoning ruby_facot in #{__method__}")
+        dt = Aro::T.summon_ruby_facot
+      end
+
       return dt
     end
 

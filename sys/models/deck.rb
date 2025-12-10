@@ -56,7 +56,8 @@ class Aro::Deck < ActiveRecord::Base
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
-    selection = Aro::P.p.select("choose a deck:") do |menu|
+    choose_deck_text = Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_deck")
+    selection = Aro::P.p.select(choose_deck_text) do |menu|
       Aro::Deck.all.each{|d|
         if d.id == Aro::Deck.current_deck&.id
           menu.default d.id
@@ -119,15 +120,23 @@ class Aro::Deck < ActiveRecord::Base
   def explore
     # allows user to browse each card in the current deck.
     answer = Aro::P.p.select(
-      I18n.t("cli.messages.choose_card"),
+      Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Deck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aro::Mancy::NUMERALS[:VII],
+      per_page: CLI::Config.display_config[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )
-
-    Aro::P.say(I18n.t("cards.#{Aro::Deck.card_strip(answer)}"))
+    # {name: "four of swords", tag_list: ["lord of rest from strife", "libra", "jupiter", "introspection", "recuperation", "regain strength", "rest", "solitude", "stability"], reversed_tag_list: ["lord of rest from strife", "libra", "jupiter", "burnt out", "inundated", "need a break", "overwhelmed"], summary: "", reversed_summary: ""}
+    definition = I18n.t("cards.#{Aro::Deck.card_strip(answer)}")
+    indent = Aro::Mancy::N
+    Aro::P.say(definition[:name])
+    Aro::P.say(definition[:summary])
+    Aro::P.say("tags:")
+    definition[:tag_list].sort.each{|tl| Aro::P.say("".rjust(indent) + tl)}
+    Aro::P.say(definition[:reversed_summary])
+    Aro::P.say("reverse tags:")
+    definition[:reversed_tag_list].sort.each{|tl| Aro::P.say("".rjust(indent) + tl)}
   end
 
   def shuffle
