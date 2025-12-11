@@ -32,7 +32,7 @@ en:
             set
               sets an ivar to a specified value. the aro var prefix can be omitted.
 
-                $ config set <var_name> <var_value>
+                $ aro config set <var_name> <var_value>
 
         deck
           manage decks in the current room.
@@ -101,15 +101,9 @@ en:
               shuffles the current deck and generates a log record.
 
         dom
-          create or manage an arodome (ex: list game rooms)
+          arodom management.
 
           $ aro dom <commands>
-
-            note: passing no arguments displays the main dom.
-
-              example
-
-                $ aro dom
 
           SUBCOMMANDS
             init
