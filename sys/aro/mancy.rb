@@ -60,6 +60,7 @@ module Aro
     }
 
     def initialize
+      Aro::Config.instance.load
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         Aro::Mancy.init
         self.game = Aro::Deck.current_deck

@@ -36,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency     "activerecord", "~> 8.1", ">= 8.1.1"
   spec.add_runtime_dependency     "sqlite3",      "~> 2.8", ">= 2.8.0"
   spec.add_runtime_dependency     "tty-prompt",   "~> 0.23.1", ">= 0.23.1"
+  spec.add_runtime_dependency     "ffi",          "~> 1.17", ">= 1.17.2"
 end

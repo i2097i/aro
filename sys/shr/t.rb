@@ -15,20 +15,26 @@ module Aro
     RUBY_FACOT = :"Ruby::Facot".to_s
 
     def self.is_dev_tarot?
-      CLI::Config.ivar(:DIMENSION)&.to_sym == CLI::Config::DMS[:DEV_TAROT]
+      Aro::T.is_dev_tarot_avail? && (
+        Aro::Config.ivar(:DIMENSION)&.to_sym ==
+        Aro::Config::DMS[:DEV_TAROT]
+      )
+    end
+
+    def self.is_dev_tarot_avail?
+      File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
     end
 
     # read dev_tarot
     def self.read_dev_tarot
       dt = nil
       if Aro::T.is_dev_tarot?
-        if File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
-          File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
-          # VERY IMPORTANT!
-          Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
-        else
-          Aro::D.say("error: /dev/tarot not installed.")
-        end
+        # VERY IMPORTANT!
+        File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
+        # VERY IMPORTANT!
+        Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
+      else
+        Aro::D.say("error: #{Aro::T::DEV_TAROT_FILE.to_s} not installed.")
       end
 
       if dt.nil?

@@ -29,14 +29,21 @@ module Aos
   class Os
     include Singleton
 
-    attr_accessor :you, :running, :view, :db
+    attr_accessor :you, :libs, :running, :view, :db, :display_lines
 
     A = :"@"
     STAR = :"*"
+    YOU = :you.to_s
+    YOU_FLAG = :"--you".to_s
     PS1 = :">[#{Aos::Os}]>: "
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
 
     CMDS = {
+      AMG: {
+        key: :amg,
+        description: I18n.t("aos.commands.description.amg"),
+        usage: I18n.t("aos.commands.usage.amg"),
+      },
       CD: {
         key: :cd,
         description: I18n.t("aos.commands.description.cd"),
@@ -49,7 +56,7 @@ module Aos
         cmds: {
           SET: {
             key: :set,
-            description: I18n.t("aos.commands.description.config_set", prefix: CLI::Config::ARO_CONFIG_PREFIX),
+            description: I18n.t("aos.commands.description.config_set", prefix: Aro::Config::ARO_CONFIG_PREFIX),
             usage: I18n.t("aos.commands.usage.config_set"),
           }
         }
@@ -58,6 +65,11 @@ module Aos
         key: :exit,
         description: I18n.t("aos.commands.description.exit"),
         usage: I18n.t("aos.commands.usage.exit"),
+      },
+      HELP: {
+        key: :help,
+        description: I18n.t("aos.commands.description.help"),
+        usage: I18n.t("aos.commands.usage.help"),
       },
       LS: {
         key: :ls,
@@ -76,50 +88,91 @@ module Aos
       },
     }
 
-    def initialize
-      if Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
-        Aro::Dom.new.generate
-      end
-      @db = Aos::Db.new
-      load_you
-    end
-
-    def load_you
-      @you = Aos::You.where(name: :you).first
-      @you = Aos::You.create(name: :you, pwd: Dir.pwd) if @you.nil?
-      Aro::D.say(@you.inspect)
-    end
-
-    def load_view
-      view_name = Aos::Os.osify(@you.pwd).split("/").last || :dom.to_s
-      view_cls = nil
-      begin
-        view_cls = (Aos::Vi.name + "::#{view_name.capitalize}").constantize
-      rescue
-        view_cls = Aos::Vi::Base
-      end
-
-      Dir.chdir(@you.pwd) do
-        if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-          view_cls = Aos::Vi::Game
-        end
-      end
-
-      Aro::D.say("loading view #{view_cls}")
-      @view = view_cls
-    end
-
-    def self.osify(path)
+    def self.osify(path, leading_slash = false)
       return path unless Aro::Dom.in_arodom?
       path_arr = path.split("/")
       Aro::Dom::dom_root.split("/").each{|rdp| path_arr.delete(rdp)}
-      path_arr.join("/")
+      result = path_arr.join("/")
+      if leading_slash
+        result = "/" + result
+      end
+
+      result
     end
 
     def self.is_aos_command?(arg)
       # determine if command is Aos::Os::CMDS
       # passthrough to system if command is not in Aos::Os::CMDS
       Aos::Os::CMDS.values.map{|v| v[:key]}.include?(arg.to_sym)
+    end
+
+    def self.you_flagd?
+      self.instance.you&.name != Aos::Os::YOU
+    end
+
+    def self.sanitize_you(cmd)
+      if cmd.present? && cmd.include?(Aos::Os::YOU_FLAG)
+        cmd_split = cmd.split(" ")
+        i = cmd_split.index(Aos::Os::YOU_FLAG)
+        cmd_split.delete_at(i)
+        cmd_split.delete_at(i)
+        cmd = cmd_split.join(" ")
+      end
+
+      cmd
+    end
+
+    def initialize
+      Aro::Config.instance.load
+      if Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
+        Aro::Dom.new.generate
+      end
+      @db = Aos::Db.new
+      load_libs
+      load_you
+    end
+
+    def load_libs
+      # todo: load from directory of libs.
+      # something like:
+      #
+      # Dir[lib_something_something].each do{|l| Aos::Lib.install(l)}
+
+      # for now static
+      Aos::Amg.load(:crs)
+    end
+
+    def load_you
+      return if @you.present?
+
+      you_name = Aos::Os::YOU
+      if ARGV.include?(Aos::Os::YOU_FLAG)
+        you_name = ARGV[ARGV.index(Aos::Os::YOU_FLAG) + Aro::Mancy::S]
+      end
+
+      @you = Aos::You.find_by(name: you_name)
+      @you = Aos::You.create(name: you_name, pwd: Dir.pwd) if @you.nil?
+
+      self.display_lines = [Aos::Os.osify(@you.pwd, true)]
+    end
+
+    def load_view
+      view_name = Aos::Os.osify(@you.pwd).split("/").last || :dom.to_s
+      view_cls = nil
+      begin
+        view_cls = (Aos::Vw.name + "::#{view_name.capitalize}").constantize
+      rescue
+        view_cls = Aos::Vw::Base
+      end
+
+      Dir.chdir(@you.pwd) do
+        if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
+          view_cls = Aos::Vw::Game
+        end
+      end
+
+      Aro::D.say("loading view #{view_cls}")
+      @view = view_cls
     end
 
     def render
@@ -129,21 +182,25 @@ module Aos
         if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
           system(:aro.to_s)
         else
-          @view.show(@you)
+          @view.show
         end
       end
     end
 
     def process_cmd(cmd)
       Dir.chdir(@you.reload.pwd) do
+        configure_readline
         passthrough = main(cmd)
-        if CLI::Config.is_format_text?
-          IO.console.goto(Aro::Mancy::O, Aro::Mancy::O)
+        if Aro::Config.is_format_text?
+          # IO.console.goto(Aro::Mancy::O, Aro::Mancy::O)
         end
+        nothing = nil
         if passthrough
-          system(cmd)
-          Aos::S.say("\n")
-        else
+          nothing = system(cmd)
+          Aos::S.say(nothing) if nothing.nil?
+        end
+
+        if nothing.nil?
           render
         end
       end
@@ -151,13 +208,24 @@ module Aos
       CLI::EXIT_CODES[:SUCCESS]
     end
 
-    def confgiure_readline
+    def configure_readline
       # configure Readline
-      # Readline.completion_append_character = "/"
+      Readline.completion_append_character = "/"
       Readline.completion_proc = Proc.new{|str|
-        # todo: the reserved_words search is working but the || case is not
-        Aro::Dom::D.reserved_words.grep(/^#{Regexp.escape(str)}/) ||
-        Dir[@you.pwd + str + Aos::Os::STAR.to_s].grep(/^#{Regexp.escape(str)}/)
+        # Aro::V.say(str)
+        dir_matcher = @you.pwd + "/" + str + Aos::Os::STAR.to_s
+        dir_listing = Dir.glob(dir_matcher, File::FNM_DOTMATCH).map{|d| Aos::Os.osify(d)}
+        r_str = Regexp.escape(str)
+
+        # Aro::V.say(dir_listing.join(" ")) if dir_listing.any?
+        # checks pwd
+        matches = dir_listing.grep(/^#{r_str}/)
+        if matches.any?
+          matches
+        else
+          # checks reserved words
+          Aro::Dom::D.reserved_words.grep(/^#{r_str}/)
+        end
       }
     end
 
@@ -170,10 +238,10 @@ module Aos
         cmd = nil
         loop do
           # erase before cursor
-          IO.console.erase_screen(Aro::Mancy::S)
           process_cmd(cmd)
-          IO.console.goto(CLI::Config.display_config[:HEIGHT], Aro::Mancy::O)
+          IO.console.goto(Aro::Config.display_configuration[:HEIGHT], Aro::Mancy::O)
           break unless @running && cmd = Readline.readline(calc_ps1, true)
+          IO.console.erase_screen(Aro::Mancy::S)
         end
 
         out
@@ -189,26 +257,23 @@ module Aos
       return false if cmd.nil?
 
       # get args
-      args = cmd.split(" ")
+      args = Aos::Os.sanitize_you(cmd).split(" ")
       return false if args[0].nil?
       return false if args[0] == :aos.to_s
-
-      # reconfigure for updates to pwd
-      # todo: not working for tab completion
-      confgiure_readline
 
       args = handle_aro_override(args)
 
       passthrough = !Aos::Os.is_aos_command?(args[Aro::Mancy::O]) ||
         args.include?(:aos.to_s)
 
-      return false if handle_room_path(args[Aro::Mancy::O])
-
       # set aos pwd
       unless passthrough
         Dir.chdir(@you.pwd) do
           # process commands
           case args[Aro::Mancy::O].to_sym
+          when Aos::Os::CMDS[:AMG][:key]
+            # inst
+            passthrough = handle_amg(args)
           when Aos::Os::CMDS[:CONFIG][:key]
             # config
             passthrough = handle_config(args)
@@ -225,6 +290,9 @@ module Aos
             # exit
             passthrough = true
             handle_exit(args)
+          when Aos::Os::CMDS[:HELP][:key]
+            # help
+            passthrough = handle_help(args)
           when Aos::Os::CMDS[:CD][:key]
             # cd
             handle_cd(args)
@@ -232,15 +300,34 @@ module Aos
         end
       end
 
+      # if system is going to run
+      # but redirect happens
+      # cancel system run
+      if passthrough && redirect_to_room(args[Aro::Mancy::O])
+        return false
+      end
+
       return passthrough
     end
 
     def calc_ps1
       you_pwd = Aos::Os::osify(@you.pwd)
-      "#{Aos::Os::PS1}" # #{you_pwd.empty? ? "" : "#{you_pwd}:"}$ "
+      "#{Aos::Os::PS1}"
     end
 
-    def handle_room_path(arg)
+    def handle_aro_override(args)
+      if args[0].include?(:aro.to_s)
+        args = "#{args.join(" ")} #{:aos.to_s}".split(" ")
+      end
+      args
+    end
+
+    def handle_config(args)
+      Aro::Config.process_config_command(args)
+      return true
+    end
+
+    def redirect_to_room(arg)
       # search for reserved room path
       handled = false
       room_path = Aro::Dom.room_path(arg)
@@ -254,36 +341,30 @@ module Aos
       handled
     end
 
-    def handle_aro_override(args)
-      if args[0].include?(:aro.to_s)
-        args = "#{args.join(" ")} #{:aos.to_s}".split(" ")
-      end
-      args
+    def handle_amg(args)
+      Aos::Amg.process_cmd(args)
     end
 
-    def handle_config(args)
-      passthrough = false
-      if args[1].nil?
-        # show settings
-        passthrough = true
-        CLI::Config.dump_config.each{|l| Aos::S.say(l)}
-      else
-        CLI::Config.process_config_command(args)
-      end
-      passthrough
+    def handle_help(args)
+      redirect_to_room(Aro::Dom::WAITE)
+      return false
     end
 
     def handle_ls(args)
-      Aos::S.say(Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_EXTGLOB).map{|p| "/" + Aos::Os::osify(p)}.join("\n"))
+      self.display_lines = [
+        Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_EXTGLOB).map{|p| "/" + Aos::Os::osify(p)}.join("\n")
+      ]
     end
 
     def handle_ll(args)
-      Aos::S.say(Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_DOTMATCH).map{|p| "/" + Aos::Os::osify(p)}.join("\n"))
+      self.display_lines = [
+        Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_DOTMATCH).map{|p| Aos::Os::osify(p.strip, true)}.join("\n")
+      ]
     end
 
     def handle_pwd(args)
       osified = "/" + Aos::Os::osify(@you.pwd)
-      Aos::S.say(osified)
+      self.display_lines = [osified]
     end
 
     def handle_exit(args)
@@ -299,7 +380,7 @@ module Aos
         if args[1].include?(Aro::Dom::DOTT.to_s)
           # going up
           if File.dirname(Aro::Dom.ethergeist_path) == @you.pwd
-            Aos::S.say("within #{Aos::Os}, one cannot leave the #{Aro::Dom}.")
+            self.display_lines = ["within #{Aos::Os}, one cannot leave the #{Aro::Dom}."]
           else
             # todo: support dots in paths
             # this only supports moving one level up
@@ -325,7 +406,7 @@ module Aos
             Aro::V.say("new_pwd: #{new_pwd}")
             @you.update(pwd: new_pwd)
           else
-            Aos::S.say("that directory is invalid.")
+            self.display_lines = ["that directory is invalid."]
           end
         end
       end

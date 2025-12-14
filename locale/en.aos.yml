@@ -1,31 +1,70 @@
 en:
   aos:
+    amg:
+      lib:
+        listing_available: "listing available libs..."
+        listing_installed: "listing installed libs..."
+        none_available: "no libs available for install."
+        none_installed: "no libs installed."
+      commands:
+        description:
+          inst: "show installed libs or install a lib."
+          instun: "show uninstalled libs or uninstall a lib."
+        usage:
+          inst: "$ amg inst <lib>"
+          instun: "$ amg instun <lib>"
+      usage: |
+
+        amg [-h | --help] <command>
+          aos system management.
+
+        COMMANDS
+
+          inst
+            show installed libs.
+
+            install a lib named <lib>.
+
+              $ amg inst <lib>
+
+          instun
+            show uninstalled libs.
+
+            uninstall a lib named <lib>.
+
+              $ amg instun <lib>
+
     commands:
       description:
-        cd: "change directory. no args navigates to arodom root."
-        config: "open settings."
+        amg: "manage aos. a tool for package installation/management."
+        cd: "change directory. no args navigates to arodome root."
+        config: "prints loaded config."
         config_set: "sets an ivar to a specified value. the prefix '%{prefix}' can be omitted."
         exit: "exit."
+        help: "help."
         ll: "list files and folders in the pwd including hidden files."
         ls: "list files and folders in the pwd."
         pwd: "show pwd."
       usage:
+        amg: "$ amg [-h | --help] <command>"
         cd: "$ cd <name>"
         config: "$ config"
         config_set: "$ config set <var_name> <var_value>"
         exit: "$ exit"
+        help: "$ help"
         ll: "$ ll"
         ls: "$ ls"
         pwd: "$ pwd"
     constants:
       commands: "COMMANDS"
+      subcommands: "SUBCOMMANDS"
     views:
       dom:
-        title: "welcome to the dom. this is the hub of the arodome running on Aos::Os."
-        description: "this is the root space where you begin. available commands are listed below."
+        title: "ready to go..."
+        description: "awaiting input..."
         quick_navigation: "the following room names are reserved for quick navigation. enter any of them to navigate to that room."
       game:
-        title: "aro"
+        title: "you are playing aro..."
         description: "enter commands to play."
         is_the: "welcome to the %{name} game room."
         designed_for: "originally designed for %{description}"

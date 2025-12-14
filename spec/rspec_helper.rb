@@ -1,6 +1,3 @@
-# to require entire cli use:
-# require_relative :"../sys/cli".to_s
-
 ENV[:ARO_ENV.to_s] = :test.to_s
 
 require :aro.to_s

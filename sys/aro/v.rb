@@ -18,7 +18,7 @@ module Aro
     end
 
     def self.should_print?
-      CLI::Config.ivar(:VERBOSE).to_s == CLI::Config::BOOLS[:TRUE].to_s && super
+      Aro::Config.ivar(:VERBOSE).to_s == Aro::Config::BOOLS[:TRUE].to_s && super
     end
   end
 end

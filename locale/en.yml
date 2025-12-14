@@ -72,6 +72,7 @@ en:
 
         see aro --help for usage.
       deck_created_sucessfully: "%{name} deck created successfully"
+      deck_selected: "%{name} deck selected in the %{room} room."
       drawing: "drawing a card from %{name}"
       drawing_from_dimension: "in the the %{dimension} dimension..."
       ruby_facot_random: |

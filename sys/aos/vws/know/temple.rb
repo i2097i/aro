@@ -1,6 +1,6 @@
 =begin
 
-  views/know/temple.rb
+  vws/know/temple.rb
 
   the temple view.
 
@@ -11,8 +11,8 @@
 require_relative :"../base".to_s
 
 module Aos
-  module Vi
-    class Temple < Aos::Vi::Base
+  module Vw
+    class Temple < Aos::Vw::Base
 
     end
   end

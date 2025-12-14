@@ -12,6 +12,7 @@
 require :active_record.to_s
 require :"active_record/schema_dumper".to_s
 require :base64.to_s
+require :ffi.to_s
 require :fileutils.to_s
 require :"io/console".to_s
 require :i18n.to_s
@@ -22,7 +23,7 @@ require :yaml.to_s
 module Reiquire
   def self.aro
     locale_path = Gem.loaded_specs[:aro.to_s]&.full_gem_path
-    # if CLI::Config.is_test?
+    # if Aro::Config.is_test?
       # locale_path = Dir.pwd
     # end
 
@@ -31,7 +32,7 @@ module Reiquire
     I18n.default_locale = :en    
 
     # require all aro folders
-    Reiquire::requires [:aro, :cli, :dom, :models, :shr, :views, :aos]
+    Reiquire::requires [:aro, :dom, :cli, :models, :shr, :vws, :aos]
 
     # require cli module
     require_relative :"./cli".to_s
@@ -40,7 +41,7 @@ module Reiquire
   def self.requires(dirs)
     dirs.each{|d|
       Dir[
-        File.join(__dir__, d.to_s, :"**/**/*.rb".to_s)
+        File.join(__dir__, d.to_s, :"**/*.rb".to_s)
       ].each { |f| require f}
     }
   end

@@ -1,6 +1,6 @@
 =begin
 
-  views/games.rb
+  vws/games.rb
 
   the games view.
 
@@ -11,8 +11,8 @@
 require_relative :"./base".to_s
 
 module Aos
-  module Vi
-    class Games < Aos::Vi::Base
+  module Vw
+    class Games < Aos::Vw::Base
 
     end
   end

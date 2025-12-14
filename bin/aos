@@ -17,8 +17,8 @@ unless Aro::Dom.in_arodom?
   exit(CLI::EXIT_CODES[:GENERAL_ERROR])
 end
 
-if CLI::ARGV0.nil?
+if CLI::ARGV0.nil? || CLI::ARGV0 == Aos::Os::YOU_FLAG.to_sym
   exit(Aos::run)
-else #if Aos::Os.is_aos_command?(ARGV[Aro::Mancy::O])
+else
   exit(Aos::process)
 end

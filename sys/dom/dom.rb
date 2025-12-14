@@ -43,7 +43,8 @@ module Aro
     # ...
 
     # > setup spaces
-    SETTINGS = :settings
+    CONFIG = :config
+    AMG = :amg
     # ...
 
     def self.create(name)
@@ -74,7 +75,7 @@ module Aro
     end
 
     def self.domain
-      "#{Aro::Dom}#{Aos::Os::A}#{Aro::Dom.ethergeist_name}"
+      "#{Aos::Os.instance.you.nil? ? Aro::Dom : Aos::Os.instance.you.name}#{Aos::Os::A}#{Aro::Dom.ethergeist_name}"
     end
 
     def self.dom_root

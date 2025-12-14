@@ -1,6 +1,6 @@
 =begin
 
-  views/games/game.rb
+  vws/games/game.rb
 
   the game view.
 
@@ -12,8 +12,8 @@ require_relative :"../../../models/deck".to_s
 require_relative :"../base".to_s
 
 module Aos
-  module Vi
-    class Game < Aos::Vi::Base
+  module Vw
+    class Game < Aos::Vw::Base
 
       DECK_PARAMS = [
         :deck,
@@ -22,7 +22,7 @@ module Aos
         :order_o,
       ]
 
-      def self.show(model)
+      def self.show
         unless Aro::Mancy.game.nil?
           Aro::Mancy.game.show
           return
@@ -33,19 +33,19 @@ module Aos
         lines << I18n.t("aos.views.game.description").center(viewport_width)
 
         room_def = Aro::Dom::D::WINGS[:GAMES].values.filter{|gr|
-          "#{Aos::Vi.name}::#{gr[:name].to_s.downcase.capitalize}" == self.name
+          "#{Aos::Vw.name}::#{gr[:name].to_s.downcase.capitalize}" == self.name
         }.first
         unless room_def.nil?
           lines << I18n.t("aos.views.game.is_the", name: room_def[:name].to_s)
           lines << I18n.t("aos.views.game.designed_for", description: room_def[:description])
         end
 
-        draw(lines, model)
+        draw(lines)
       end
 
       def self.show_game(model)
         mk = model.keys
-        dp = Aos::Vi::Game::DECK_PARAMS
+        dp = Aos::Vw::Game::DECK_PARAMS
         return nil unless (mk & dp).count == dp.count
         return nil unless model.values.all?{|v| v != nil}
 
@@ -54,23 +54,24 @@ module Aos
         count_n = model[:count_n]
         order_o = model[:order_o]
 
-        dc = CLI::Config.display_config
+        dc = Aro::Config.display_configuration
         width = count_n == Aro::Mancy::S ? viewport_width : dc[:WIDTH]
         divider = dc[:DIVIDER] * width
         lines = []
+        lines << divider
         lines << "#{deck.name.upcase.center(width)}"
         h_logs.each_with_index{|l, i|
           lines << divider
           lines << ""
-          timestamp = l.created_at.strftime(CLI::Config::DATE_FORMAT)
+          timestamp = l.created_at.strftime(Aro::Config::DATE_FORMAT)
           of_text = "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? deck.logs.count - i : 1 + i} of #{deck.logs.count}"
           lines << of_text.ljust(width - timestamp.length) + timestamp
           lines << divider
           cards = Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM.to_s)
           if !cards.nil? && cards.any?
-            lines << ""
+            # lines << ""
             lines += self.get_display_for_cards(cards)
-            lines << divider
+            # lines << divider
           end
 
           drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM.to_s)
@@ -82,8 +83,8 @@ module Aos
             lines += self.get_display_for_cards(
               drawn_cards
             )
-            lines << ""
-            lines << divider
+            # lines << ""
+            # lines << divider
           end
         }
         if count_n == Aro::Mancy::S
@@ -94,8 +95,8 @@ module Aos
       end
 
       def self.get_display_for_cards(input = [])
-        columns = Aos::Vi::Base::COL_POW.call(
-          CLI::Config.display_config[:WIDTH].to_i
+        columns = Aos::Vw::Base::COL_POW.call(
+          Aro::Config.display_configuration[:WIDTH].to_i
         )
         lines = []
         return lines unless input.any?

@@ -1,6 +1,6 @@
 =begin
 
-  views/welcome/winner.rb
+  vws/welcome/winner.rb
 
   the welcome winner view.
 
@@ -11,8 +11,8 @@
 require_relative :"../base".to_s
 
 module Aos
-  module Vi
-    class Winner < Aos::Vi::Base
+  module Vw
+    class Winner < Aos::Vw::Base
 
     end
   end

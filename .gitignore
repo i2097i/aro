@@ -3,4 +3,5 @@
 *.log
 *.name
 *.sql
+ffi/build/*
 pkg/*

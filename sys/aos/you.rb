@@ -10,10 +10,12 @@
 
 module Aos
   class You < ActiveRecord::Base
-    # after_commit :update_aos_pwd
+    after_update :clear_aos_display
 
-    # def update_aos_pwd
-    #   Dir.chdir(pwd)
-    # end
+    private
+
+    def clear_aos_display
+      Aos::Os.instance.display_lines = [Aos::Os.osify(pwd, true)]
+    end
   end
 end
