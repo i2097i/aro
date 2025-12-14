@@ -23,7 +23,7 @@ end
 # cli parser
 case CLI::ARGV0
 when CLI::CMDS[:ARO][:CONFIG]
-  CLI::config
+  Aro::config
 when CLI::CMDS[:ARO][:CREATE]
   CLI::create
 when CLI::CMDS[:ARO][:DECK]

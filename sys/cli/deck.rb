@@ -30,7 +30,7 @@ module CLI
       if Aro::Mancy.in_aro?
         Aro::Db.new
         deck = Aro::Deck.make(CLI::ARGV2.to_s)
-        Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: Aro::Mancy.game.name))
+        Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: deck.name))
         Aro::Deck.display_selection_menu
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
@@ -50,11 +50,11 @@ module CLI
         Aro::Mancy.game.shuffle
       when CLI::CMDS[:DECK][:DRAW]
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.game.name))
-        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{CLI::Config.ivar(:DIMENSION)}"))
+        Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{Aro::Config.ivar(:DIMENSION)}"))
         Aro::Mancy.game.draw(
           is_dt_dimension: Aro::T::is_dev_tarot?,
-          z_max: CLI::Config.ivar(:Z_MAX).to_i,
-          z: CLI::Config.ivar(:Z)
+          z_max: Aro::Config.ivar(:Z_MAX).to_i,
+          z: Aro::Config.ivar(:Z)
         )
       when CLI::CMDS[:DECK][:REPLACE]
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
@@ -75,6 +75,11 @@ module CLI
       end
 
       Aro::Mancy.game.show(**CLI::shoptions)
+    else
+      Aro::Db.new
+      Aro::Deck.select_deck(
+        Aro::Deck.find_by(name: action)
+      )
     end
   end
   

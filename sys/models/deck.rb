@@ -24,11 +24,7 @@ class Aro::Deck < ActiveRecord::Base
     return nil unless Aro::Mancy.is_initialized?
     Aro::Db.new
     new_deck = Aro::Deck.create(name: new_name)
-    if Aro::Deck.current_deck.nil?
-      File.open(Aro::Deck::DECK_FILE.to_s, "w") do |file|
-        file.write(new_deck.id)
-      end
-    end
+    Aro::Deck.select_deck(new_deck) if Aro::Deck.current_deck.nil?
     new_deck
   end
 
@@ -55,18 +51,17 @@ class Aro::Deck < ActiveRecord::Base
       Aro::P.say(I18n.t("cli.messages.no_decks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
-
-    choose_deck_text = Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_deck")
-    selection = Aro::P.p.select(choose_deck_text) do |menu|
-      Aro::Deck.all.each{|d|
-        if d.id == Aro::Deck.current_deck&.id
-          menu.default d.id
-        end
-        menu.choice(d.name, d.id)
-      }
+    c_d = Aro::Deck.current_deck
+    Aro::Deck.all.each do |d|
+      Aro::P.say("#{d.id == c_d.id ? :*.to_s : " "}#{d.id}): #{d.name}")
     end
+  end
+
+  def self.select_deck(deck)
+    return unless deck.present?
+    Aro::P.say(I18n.t("cli.messages.deck_selected", name: deck.name, room: Aro::Mancy::aro_mancy_name))
     File.open(Aro::Deck::DECK_FILE.to_s, "w") do |file|
-      file.write(selection)
+      file.write(deck.id)
     end
   end
 
@@ -105,11 +100,11 @@ class Aro::Deck < ActiveRecord::Base
     # Aro::V.say("h_logs.count: #{h_logs.count}")
 
     # for now tests just expect text output
-    return h_logs if CLI::Config.is_test?
+    return h_logs if Aro::Config.is_test?
 
     Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
-    Aos::Vi::Game.show_game({
+    Aos::Vw::Game.show_game({
       deck: self,
       h_logs: h_logs,
       count_n: count_n,
@@ -123,7 +118,7 @@ class Aro::Deck < ActiveRecord::Base
       Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Deck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
-      per_page: CLI::Config.display_config[:HEIGHT] - Aro::Mancy::S,
+      per_page: Aro::Config.display_configuration[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )

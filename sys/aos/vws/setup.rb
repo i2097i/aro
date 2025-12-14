@@ -1,8 +1,8 @@
 =begin
 
-  views/know.rb
+  vws/setup.rb
 
-  the know view.
+  the setup view.
 
   by i2097i
 
@@ -11,8 +11,8 @@
 require_relative :"./base".to_s
 
 module Aos
-  module Vi
-    class Know < Aos::Vi::Base
+  module Vw
+    class Setup < Aos::Vw::Base
 
     end
   end

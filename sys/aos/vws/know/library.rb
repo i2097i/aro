@@ -1,6 +1,6 @@
 =begin
 
-  views/know/library.rb
+  vws/know/library.rb
 
   the library view.
 
@@ -11,8 +11,8 @@
 require_relative :"../base".to_s
 
 module Aos
-  module Vi
-    class Library < Aos::Vi::Base
+  module Vw
+    class Library < Aos::Vw::Base
 
     end
   end

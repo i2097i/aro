@@ -11,9 +11,10 @@
 module Aro
   class Db
     DATABASE_YML = :"database.yml"
-    SQL_FILE = :"database.sql"
-    SCHEMA_FILE = :"schema.rb"
+    GEM_DB_PATH = :"sys/aro/db"
     MIGRATIONS_DIR = :"db/migrate"
+    SCHEMA_FILE = :"schema.rb"
+    SQL_FILE = :"database.sql"
 
     def initialize
       Aro::Db.configure_logger
@@ -23,7 +24,7 @@ module Aro
     end
 
     def self.configure_logger
-      if CLI::Config.ivar(:LOG_ARO_DB).to_s == CLI::Config::BOOLS[:TRUE].to_s
+      if Aro::Config.ivar(:LOG_ARO_DB).to_s == Aro::Config::BOOLS[:TRUE].to_s
         ActiveRecord::Base.logger = Logger.new(STDOUT)
       else
         ActiveRecord::Base.logger = nil
@@ -40,7 +41,7 @@ module Aro
 
     def self.base_aro_dir
       base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      CLI::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file
+      Aro::Config.is_test? ? "#{base_aro_file}_test" : base_aro_file
     end
 
     def db_config_filepath
@@ -77,7 +78,7 @@ module Aro
       local_migrate_dir = File.join(Aro::Db.base_aro_dir, Aro::Db::MIGRATIONS_DIR.to_s)
       unless Dir.exist?(local_migrate_dir)
         gem_dir = Dir[Gem.loaded_specs[:aro.to_s]&.full_gem_path || '.'].first
-        FileUtils.cp_r(File.join(gem_dir, "db"), Aro::Db::base_aro_dir)
+        FileUtils.cp_r(File.join(gem_dir, Aro::Db::GEM_DB_PATH.to_s), Aro::Db::base_aro_dir)
       end
 
       migration_version = Dir["#{local_migrate_dir}/*.rb"].map{|n|

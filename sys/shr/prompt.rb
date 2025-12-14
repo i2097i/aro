@@ -23,11 +23,11 @@ module Aro
     end
 
     def self.should_print?
-      CLI::Config::BOOLS[:TRUE]
+      Aro::Config::BOOLS[:TRUE]
     end
 
     def self.should_print?
-      CLI::Config::BOOLS[:TRUE]
+      Aro::Config::BOOLS[:TRUE]
     end
 
     def self.say(message)

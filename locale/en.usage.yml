@@ -3,7 +3,7 @@ en:
     main: |
       NAME
 
-        aro - a cli for tarot games in the arodom.
+        aro - a cli for tarot.
 
       SYNOPSIS
 
@@ -101,7 +101,7 @@ en:
               shuffles the current deck and generates a log record.
 
         dom
-          arodom management.
+          aos arodome management.
 
           $ aro dom <commands>
 

@@ -1,8 +1,8 @@
 =begin
 
-  views/setup.rb
+  vws/welcome.rb
 
-  the setup view.
+  the welcome view.
 
   by i2097i
 
@@ -11,8 +11,8 @@
 require_relative :"./base".to_s
 
 module Aos
-  module Vi
-    class Setup < Aos::Vi::Base
+  module Vw
+    class Welcome < Aos::Vw::Base
 
     end
   end

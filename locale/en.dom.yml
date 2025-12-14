@@ -26,8 +26,8 @@ en:
         description: "definition management."
       temple:
         description: "mindfulness management."
-      settings:
-        description: "user settings and configuration."
+      config:
+        description: "user config and configuration."
     errors:
       directory_exists: "unable to create arodome at %{name}. file or directory already exists."
       failed_already_in_arodom: "unable to create an arodome because you are already in arodom."

@@ -2,7 +2,7 @@
 
   db.rb
 
-  database for aos room.
+  database for aos.
 
   by i2097i
 
@@ -10,10 +10,8 @@
 
 module Aos
   class Db < Aro::Db
-    DATABASE_YML = :"database.yml"
+    GEM_DB_PATH = :"sys/aos/db"
     SQL_FILE = :"aos.sql"
-    SCHEMA_FILE = :"schema.rb"
-    MIGRATIONS_DIR = :"db/migrate"
 
     def initialize
       Aos::Db.configure_logger
@@ -25,7 +23,7 @@ module Aos
     end
 
     def self.configure_logger
-      if CLI::Config.ivar(:LOG_AOS_DB).to_s == CLI::Config::BOOLS[:TRUE].to_s
+      if Aro::Config.ivar(:LOG_AOS_DB).to_s == Aro::Config::BOOLS[:TRUE].to_s
         ActiveRecord::Base.logger = Logger.new(STDOUT)
       else
         ActiveRecord::Base.logger = nil
@@ -37,7 +35,8 @@ module Aos
     end
 
     def db_config_filepath
-      File.join(Aos::Db.base_aro_dir, Aos::Db::DATABASE_YML.to_s)
+      # intentionally using Aro::Db::DATABASE_YML here
+      File.join(Aos::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s)
     end
 
     def set_up_aos
@@ -68,10 +67,10 @@ module Aos
     end
 
     def migrate(name)
-      local_migrate_dir = File.join(Aos::Db.base_aro_dir, Aos::Db::MIGRATIONS_DIR.to_s)
+      local_migrate_dir = File.join(Aos::Db.base_aro_dir, Aro::Db::MIGRATIONS_DIR.to_s)
       unless Dir.exist?(local_migrate_dir)
         gem_dir = Dir[Gem.loaded_specs[:aro.to_s]&.full_gem_path || '.'].first
-        FileUtils.cp_r(File.join(gem_dir, "db"), Aos::Db::base_aro_dir)
+        FileUtils.cp_r(File.join(gem_dir, Aos::Db::GEM_DB_PATH.to_s), Aos::Db::base_aro_dir)
       end
 
       migration_version = Dir["#{local_migrate_dir}/*.rb"].map{|n|
@@ -79,7 +78,7 @@ module Aos
       }.max
       ActiveRecord::MigrationContext.new(local_migrate_dir).migrate(migration_version)
 
-      filename = File.join(Aos::Db.base_aro_dir, Aos::Db::SCHEMA_FILE.to_s)
+      filename = File.join(Aos::Db.base_aro_dir, Aro::Db::SCHEMA_FILE.to_s)
       File.open(filename, "w+") do |f|
         ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection_pool, f)
       end

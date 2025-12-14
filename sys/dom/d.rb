@@ -63,9 +63,13 @@ module Aro
         },
       },
       SETUP: {
-        SETTINGS: {
-          name: Aro::Dom::SETTINGS,
-          description: I18n.t("dom.rooms.settings.description"),
+        CONFIG: {
+          name: Aro::Dom::CONFIG,
+          description: I18n.t("dom.rooms.config.description"),
+        },
+        AMG: {
+          name: Aro::Dom::AMG,
+          description: I18n.t("dom.rooms.amg.description"),
         },
       },
     }
@@ -95,14 +99,15 @@ module Aro
         description: I18n.t("dom.wings.know.description"),
         rooms: [
           Aro::Dom::D::WINGS[:KNOW][:LIBRARY],
-          Aro::Dom::D::WINGS[:KNOW][:TEMPLE]
+          Aro::Dom::D::WINGS[:KNOW][:TEMPLE],
         ],
       },
       SETUP: {
         name: Aro::Dom::SETUP,
         description: I18n.t("dom.wings.setup.description"),
         rooms: [
-          Aro::Dom::D::WINGS[:SETUP][:SETTINGS]
+          Aro::Dom::D::WINGS[:SETUP][:CONFIG],
+          Aro::Dom::D::WINGS[:SETUP][:AMG],
         ],
       }
     }
