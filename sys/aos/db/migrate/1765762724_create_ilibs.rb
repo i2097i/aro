@@ -1,7 +1,7 @@
-class CreateLibs < ActiveRecord::Migration[8.1]
+class CreateIlibs < ActiveRecord::Migration[8.1]
 
   def self.up
-    create_table :libs do |t|
+    create_table :ilibs do |t|
       t.string :name, null: false
       t.string :so_path, null: false
       t.integer :status, default: Aro::Mancy::O
@@ -14,9 +14,9 @@ class CreateLibs < ActiveRecord::Migration[8.1]
   end
 
   def self.down
-    remove_index :libs, :name
-    remove_index :libs, :so_path
-    drop_table :libs
+    remove_index :ilibs, :name
+    remove_index :ilibs, :so_path
+    drop_table :ilibs
   end
 
 end

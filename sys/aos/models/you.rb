@@ -10,7 +10,7 @@
 
 module Aos
   class You < ActiveRecord::Base
-    has_many :input_logs
+    has_many :ilogs
     before_validation :set_pwd
     after_update :clear_aos_display
 
@@ -19,8 +19,8 @@ module Aos
       :root,
     ]
 
-    def generate_input_log(cmd)
-      input_logs.create(
+    def generate_ilog(cmd)
+      ilogs.create(
         pwd: Aos::Os.osify(pwd),
         cmd: cmd
       )

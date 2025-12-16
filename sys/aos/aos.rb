@@ -130,15 +130,15 @@ module Aos
         # Aro::Dom.new.generate unless Aro::Mancy.in_aro?
       # end
       Aos::Db.load
-      load_libs
+      load_ilibs
       load_you
     end
 
-    def load_libs
-      # todo: load from directory of libs.
+    def load_ilibs
+      # todo: load from directory of ilibs.
       # something like:
       #
-      # Dir[lib_something_something].each do{|l| Aos::Lib.install(l)}
+      # Dir[lib_something_something].each do{|l| Aos::Ilib.install(l)}
 
       # for now static
       Aos::Amg.load(:crs)
@@ -214,7 +214,7 @@ module Aos
         end
 
         unless cmd.nil?
-          @you.generate_input_log(cmd)
+          @you.generate_ilog(cmd)
         end
       end
 
@@ -319,13 +319,13 @@ module Aos
       end
 
       if send_to_system_call
-        # process lib commands
-        lib = Aos::Lib.find_by(
+        # process ilib commands
+        ilib = Aos::Ilib.find_by(
           name: args[Aro::Mancy::O],
           status: :installed
         )
-        unless lib.nil?
-          self.display_lines = [lib.usage]
+        unless ilib.nil?
+          self.display_lines = [ilib.usage]
           send_to_system_call = false
         end
 

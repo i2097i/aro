@@ -5,7 +5,7 @@ require :aro.to_s
 # name for aro instance used in tests
 TESTING_NAME = :success
 
-# name for deck used in tests
+# name for teck used in tests
 TESTING_DECK = :test
 
 # rspec cheat sheet:

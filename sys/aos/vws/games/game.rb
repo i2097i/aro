@@ -8,7 +8,7 @@
 
 =end
 
-require_relative :"../../../aro/models/deck".to_s
+require_relative :"../../../aro/models/teck".to_s
 require_relative :"../base".to_s
 
 module Aos
@@ -16,8 +16,8 @@ module Aos
     class Game < Aos::Vw::Base
 
       DECK_PARAMS = [
-        :deck,
-        :h_logs,
+        :teck,
+        :tlog_records,
         :count_n,
         :order_o,
       ]
@@ -49,8 +49,8 @@ module Aos
         return nil unless (mk & dp).count == dp.count
         return nil unless model.values.all?{|v| v != nil}
 
-        deck = model[:deck]
-        h_logs = model[:h_logs]
+        teck = model[:teck]
+        tlog_records = model[:tlog_records]
         count_n = model[:count_n]
         order_o = model[:order_o]
 
@@ -59,22 +59,22 @@ module Aos
         divider = dc[:DIVIDER] * width
         lines = []
         lines << divider
-        lines << "#{deck.name.upcase.center(width)}"
-        h_logs.each_with_index{|l, i|
+        lines << "#{teck.name.upcase.center(width)}"
+        tlog_records.each_with_index{|l, i|
           lines << divider
           lines << ""
           timestamp = l.created_at.strftime(Aro::Config::DATE_FORMAT)
-          of_text = "#{order_o.to_sym == Aro::Log::ORDERING[:DESC] ? deck.logs.count - i : 1 + i} of #{deck.logs.count}"
+          of_text = "#{order_o.to_sym == Aro::Tlog::ORDERING[:DESC] ? teck.tlogs.count - i : 1 + i} of #{teck.tlogs.count}"
           lines << of_text.ljust(width - timestamp.length) + timestamp
           lines << divider
-          cards = Base64::decode64(l.card_data).split(Aro::Deck::CARD_DELIM.to_s)
+          cards = Base64::decode64(l.card_data).split(Aro::Teck::CARD_DELIM.to_s)
           if !cards.nil? && cards.any?
             # lines << ""
             lines += self.get_display_for_cards(cards)
             # lines << divider
           end
 
-          drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Deck::CARD_DELIM.to_s)
+          drawn_cards = Base64::decode64(l.drawn_data).split(Aro::Teck::CARD_DELIM.to_s)
           if !drawn_cards.nil? && drawn_cards.any?
             lines << ""
             lines << I18n.t("cli.messages.history_drawn").center(width)

@@ -4,7 +4,7 @@
 ##### __current version:__
 [![Gem Version](https://badge.fury.io/rb/aro.svg)](https://badge.fury.io/rb/aro)
 
-aro is a command line interface that allows you to manage multiple tarot decks.
+aro is a command line interface that allows you to manage multiple tarot tecks.
 
 
 ### install

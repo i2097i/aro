@@ -1,8 +1,8 @@
 =begin
   
-  deck.rb
+  teck.rb
 
-  process deck commands.
+  process teck commands.
 
   by i2097i
 
@@ -10,7 +10,7 @@
 
 module CLI
   # cli entrypoint
-  def self.deck
+  def self.teck
     action = CLI::ARGV1&.to_sym
 
     if CLI::FLAGS[:HELP].include?(action.to_s)
@@ -18,10 +18,10 @@ module CLI
       CLI.usage::usage
       exit(CLI::EXIT_CODES[:SUCCESS])
     elsif action.nil? || action == :aos
-      # no args, open deck menu
+      # no args, open teck menu
       if Aro::Mancy.in_aro?
         Aro::Db.load
-        Aro::Deck.display_selection_menu
+        Aro::Teck.display_selection_menu
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
@@ -29,15 +29,15 @@ module CLI
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
       if Aro::Mancy.in_aro?
         Aro::Db.load
-        deck = Aro::Deck.make(CLI::ARGV2.to_s)
-        Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: deck.name))
-        Aro::Deck.display_selection_menu
+        teck = Aro::Teck.make(CLI::ARGV2.to_s)
+        Aro::P.say(I18n.t("cli.messages.teck_created_sucessfully", name: teck.name))
+        Aro::Teck.display_selection_menu
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
     elsif CLI::CMDS[:DECK].values.include?(action)    
       if Aro::Mancy.game.nil?
-        Aro::P.say(I18n.t("cli.errors.missing_deck", cmd: Aro::Mancy::I2097I))
+        Aro::P.say(I18n.t("cli.errors.missing_teck", cmd: Aro::Mancy::I2097I))
         exit(CLI::EXIT_CODES[:GENERAL_ERROR])
       end
 
@@ -77,8 +77,8 @@ module CLI
       Aro::Mancy.game.show(**CLI::shoptions)
     else
       Aro::Db.load
-      Aro::Deck.select_deck(
-        Aro::Deck.find_by(name: action)
+      Aro::Teck.select_teck(
+        Aro::Teck.find_by(name: action)
       )
     end
   end
@@ -87,7 +87,7 @@ module CLI
   # todo: better naming
   def self.shoptions
     show_options_count = Aro::Mancy::S
-    show_options_order = Aro::Log::ORDERING[:DESC]
+    show_options_order = Aro::Tlog::ORDERING[:DESC]
     
     # Aro::D.say("ARGV.map{|a| a.to_sym} => #{ARGV.map{|a| a.to_sym}}")
     

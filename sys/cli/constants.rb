@@ -31,7 +31,7 @@ module CLI
     ARO: {
       CREATE: :create,
       CONFIG: :config,
-      DECK: :deck,
+      DECK: :teck,
       DOM: :dom,
       INIT: :init,
     },

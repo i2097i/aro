@@ -15,10 +15,10 @@ module Aos
     attr_accessor :display_lines
 
     CMDS = {
-      LOGS: {
-        key: :logs,
-        description: I18n.t("data.commands.description.logs"),
-        usage: I18n.t("data.commands.usage.logs"),
+      ILOGS: {
+        key: :ilogs,
+        description: I18n.t("data.commands.description.ilogs"),
+        usage: I18n.t("data.commands.usage.ilogs"),
       },
       YOUS: {
         key: :yous,
@@ -40,8 +40,8 @@ module Aos
       end
 
       case args[Aro::Mancy::S].to_sym
-      when Aos::Data::CMDS[:LOGS][:key]
-        Aos::Data.logs
+      when Aos::Data::CMDS[:ILOGS][:key]
+        Aos::Data.ilogs
         return true
       when Aos::Data::CMDS[:YOUS][:key]
         Aos::Data.yous
@@ -51,8 +51,8 @@ module Aos
       return false
     end
 
-    def self.logs
-      self.instance.display_lines = Aos::Data.log_lines
+    def self.ilogs
+      self.instance.display_lines = Aos::Data.ilog_lines
     end
 
     def self.yous
@@ -78,16 +78,16 @@ module Aos
       lines
     end
 
-    def self.log_lines
-      # list input logs
+    def self.ilog_lines
+      # list input ilogs
       lines = []
       lines << ""
-      input_logs = Aos::InputLog.all
-      unless input_logs.any?
-        lines << I18n.t("data.messages.no_logs")
+      iilogs = Aos::Ilog.all
+      unless iilogs.any?
+        lines << I18n.t("data.messages.no_ilogs")
       else
-        lines << I18n.t("data.messages.listing_logs")
-        input_logs.each{|il|
+        lines << I18n.t("data.messages.listing_ilogs")
+        iilogs.each{|il|
           lines += il.get_lines
         }
       end

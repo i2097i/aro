@@ -2,19 +2,19 @@ en:
   data:
     commands:
       description:
-        logs: "show aos logs."
-        yous: "show aos logs."
+        ilogs: "show aos ilogs."
+        yous: "show aos ilogs."
       usage:
-        logs: "$ data logs"
+        ilogs: "$ data ilogs"
         yous: "$ data yous"
-    logs:
+    ilogs:
       display: "%{you} entered '%{cmd}' at %{timestamp} in %{pwd}."
     yous:
       display: "name: %{name}, access: %{access}, pwd: %{pwd}."
     messages:
-      listing_logs: "listing aos input logs..."
+      listing_ilogs: "listing aos input ilogs..."
       listing_yous: "listing yous..."
-      no_logs: "no input logs."
+      no_ilogs: "no input ilogs."
       no_yous: "no yous."
     usage: |
 
@@ -23,8 +23,8 @@ en:
 
       COMMANDS
 
-        logs
-          show aos logs.
+        ilogs
+          show aos ilogs.
 
         yous
           show aos yous.

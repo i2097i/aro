@@ -1,7 +1,7 @@
-class CreateDecks < ActiveRecord::Migration[8.1]
+class CreateTecks < ActiveRecord::Migration[8.1]
 
   def self.up
-    create_table :decks do |t|
+    create_table :tecks do |t|
       t.string :name
       t.string :cards, null: false, default: ""
       t.string :drawn, null: false, default: ""
@@ -9,12 +9,12 @@ class CreateDecks < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :decks, :name, unique: true
+    add_index :tecks, :name, unique: true
   end
 
   def self.down
-    remove_index :decks, :name
-    drop_table :decks
+    remove_index :tecks, :name
+    drop_table :tecks
   end
 
 end
