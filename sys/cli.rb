@@ -13,8 +13,8 @@ module CLI
   argv_sanitized = Aos::Os.sanitize_you(ARGV.join(" ")).split(" ")
 
   if CLI::CMDS[:DECK].values.include?(argv_sanitized[0]&.to_sym)
-    # enable deck shortcut (skip typing deck while in-game)
-    ARGV0 = :deck
+    # enable teck shortcut (skip typing teck while in-game)
+    ARGV0 = :teck
     ARGV1 = argv_sanitized[0]&.to_sym
     ARGV2 = argv_sanitized[1]&.to_sym
   else

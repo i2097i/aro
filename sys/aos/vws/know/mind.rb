@@ -1,8 +1,8 @@
 =begin
 
-  vws/know/library.rb
+  vws/know/mind.rb
 
-  the library view.
+  the mind view.
 
   by i2097i
 
@@ -12,7 +12,7 @@ require_relative :"../base".to_s
 
 module Aos
   module Vw
-    class Library < Aos::Vw::Base
+    class Mind < Aos::Vw::Base
 
     end
   end

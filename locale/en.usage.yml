@@ -34,18 +34,18 @@ en:
 
                 $ aro config <var_name> <var_value>
 
-        deck
-          manage decks in the current room.
+        teck
+          manage tecks in the current room.
 
-            $ aro deck <commands>
+            $ aro teck <commands>
 
           passing no args opens the selection menu.
 
           note:
 
-            deck subcommands do not require typing 'deck'. for example,
+            teck subcommands do not require typing 'teck'. for example,
 
-            $ aro deck show
+            $ aro teck show
 
             is the same thing as:
 
@@ -53,29 +53,29 @@ en:
 
           SUBCOMMANDS
             draw
-              draw a random card from the current deck.
+              draw a random card from the current teck.
 
             explore
-              allows user to browse each card in the current deck.
+              allows user to browse each card in the current teck.
 
             new
-              create a new deck with the specified name.
+              create a new teck with the specified name.
 
                 example:
 
-                  $ aro deck new <name>
+                  $ aro teck new <name>
 
             replace
               replaces all drawn cards FIFO and puts them on the bottom of
-              the deck. this will preserve all card orientations.
+              the teck. this will preserve all card orientations.
 
             reset
-              completely reset the deck. replace all drawn and reset order.
+              completely reset the teck. replace all drawn and reset order.
               all orientations will be set to upright. you must enter 'aroyes'
               to continue.
 
             show
-              displays the current deck's log record(s).
+              displays the current teck's log record(s).
 
               the default behavior is to display only the most recent log record.
 
@@ -85,11 +85,11 @@ en:
 
               OPTIONS
 
-                [-n | --count]  specify number of deck logs to show.
+                [-n | --count]  specify number of teck tlogs to show.
 
                                   default is 1 (latest/current state)
 
-                                  passing 'all' display all logs
+                                  passing 'all' display all tlogs
 
                 [-o | --order]  specify the output order of the log records.
 
@@ -98,7 +98,7 @@ en:
                                   possible values: ['asc', 'desc']
 
             shuffle
-              shuffles the current deck and generates a log record.
+              shuffles the current teck and generates a log record.
 
         dom
           aos arodome management.

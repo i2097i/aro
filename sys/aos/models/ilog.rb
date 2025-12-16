@@ -1,21 +1,21 @@
 =begin
 
-  input_log.rb
+  ilog.rb
 
-  aos input log object.
+  aos ilog object.
 
   by i2097i
 
 =end
 
 module Aos
-  class InputLog < ActiveRecord::Base
+  class Ilog < ActiveRecord::Base
     belongs_to :you
 
     def get_lines
       [
         I18n.t(
-          "data.logs.display",
+          "data.ilogs.display",
           you: self.you.name,
           cmd: self.cmd,
           timestamp: self.created_at.strftime(Aos::Os::DATE_FORMAT),

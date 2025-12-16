@@ -1,8 +1,8 @@
 =begin
 
-  deck.rb
+  teck.rb
 
-  deck object.
+  teck object.
 
   by i2097i
 
@@ -10,10 +10,10 @@
 
 require :base64.to_s
 
-class Aro::Deck < ActiveRecord::Base
-  has_many :logs
+class Aro::Teck < ActiveRecord::Base
+  has_many :tlogs
 
-  DECK_FILE = :".deck"
+  DECK_FILE = :".teck"
   CARD_DELIM = :","
 
   before_create :populate_cards
@@ -22,23 +22,23 @@ class Aro::Deck < ActiveRecord::Base
   def self.make(new_name)
     return nil unless Aro::Mancy.is_initialized?
     Aro::Db.load
-    new_deck = Aro::Deck.create(name: new_name)
-    Aro::Deck.select_deck(new_deck) if Aro::Deck.current_deck.nil?
-    new_deck
+    new_teck = Aro::Teck.create(name: new_name)
+    Aro::Teck.select_teck(new_teck) if Aro::Teck.current_teck.nil?
+    new_teck
   end
 
   def self.fresh_cards
-    I18n.t("cards.index").map{|c| "+#{c}"}.join(Aro::Deck::CARD_DELIM.to_s)
+    I18n.t("cards.index").map{|c| "+#{c}"}.join(Aro::Teck::CARD_DELIM.to_s)
   end
 
   def populate_cards
-    self.cards = Aro::Deck.fresh_cards
+    self.cards = Aro::Teck.fresh_cards
   end
 
   def generate_log
-    prev_cards = Base64::decode64(logs.last.card_data) if logs.any?
+    prev_cards = Base64::decode64(tlogs.last.card_data) if tlogs.any?
     if (prev_cards.present? && prev_cards != cards) || (prev_cards.nil? || prev_cards.empty?)
-      logs.create(
+      tlogs.create(
         card_data: Base64::encode64(cards || ""),
         drawn_data: Base64::encode64(drawn || "")
       )
@@ -46,28 +46,28 @@ class Aro::Deck < ActiveRecord::Base
   end
 
   def self.display_selection_menu
-    unless Aro::Deck.any?
-      Aro::P.say(I18n.t("cli.messages.no_decks"))
+    unless Aro::Teck.any?
+      Aro::P.say(I18n.t("cli.messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
-    c_d = Aro::Deck.current_deck
-    Aro::Deck.all.each do |d|
+    c_d = Aro::Teck.current_teck
+    Aro::Teck.all.each do |d|
       Aro::P.say("#{d.id == c_d.id ? :*.to_s : " "}#{d.id}): #{d.name}")
     end
   end
 
-  def self.select_deck(deck)
-    return unless deck.present?
-    Aro::P.say(I18n.t("cli.messages.deck_selected", name: deck.name, room: Aro::Mancy::aro_mancy_name))
-    File.open(Aro::Deck::DECK_FILE.to_s, "w") do |file|
-      file.write(deck.id)
+  def self.select_teck(teck)
+    return unless teck.present?
+    Aro::P.say(I18n.t("cli.messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
+    File.open(Aro::Teck::DECK_FILE.to_s, "w") do |file|
+      file.write(teck.id)
     end
   end
 
-  def self.current_deck
+  def self.current_teck
     if File.exist?(DECK_FILE.to_s)
-      current_deck_id = File.read(DECK_FILE.to_s)
-      return Aro::Deck.find_by(id: current_deck_id)
+      current_teck_id = File.read(DECK_FILE.to_s)
+      return Aro::Teck.find_by(id: current_teck_id)
     end
   end
 
@@ -75,54 +75,54 @@ class Aro::Deck < ActiveRecord::Base
     card.gsub(/[+-]/, "").strip
   end
 
-  def show(count_n: Aro::Mancy::S, order_o: Aro::Log::ORDERING[:DESC])
+  def show(count_n: Aro::Mancy::S, order_o: Aro::Tlog::ORDERING[:DESC])
     unless count_n.kind_of?(Numeric) && count_n.to_i > Aro::Mancy::O
       if count_n&.to_s&.to_sym == Aro::Mancy::ALL
-        count_n = logs.count
+        count_n = tlogs.count
       else
         count_n = Aro::Mancy::S
       end
     end
-    count_n = [[Aro::Mancy::S, count_n.to_i].max, logs.count].min
+    count_n = [[Aro::Mancy::S, count_n.to_i].max, tlogs.count].min
     Aro::V.say("count_n: #{count_n}")
     Aro::V.say("order_o: #{order_o}")
 
-    unless Aro::Log::ORDERING.values.include?(order_o)
+    unless Aro::Tlog::ORDERING.values.include?(order_o)
       Aro::P.say(I18n.t("cli.warnings.invalid_order"))
-      order_o = Aro::Log::ORDERING[:DESC]
+      order_o = Aro::Tlog::ORDERING[:DESC]
     end
 
     # perform query
-    h_logs = logs.order(created_at: order_o).first(count_n)
+    tlog_records = tlogs.order(created_at: order_o).first(count_n)
 
     # todo: this is doing more work than it needs to. needs debugging.
-    # Aro::V.say("h_logs.count: #{h_logs.count}")
+    # Aro::V.say("tlog_records.count: #{tlog_records.count}")
 
     # for now tests just expect text output
-    return h_logs if Aro::Config.is_test?
+    return tlog_records if Aro::Config.is_test?
 
     Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
     Aos::Vw::Game.show_game({
-      deck: self,
-      h_logs: h_logs,
+      teck: self,
+      tlog_records: tlog_records,
       count_n: count_n,
       order_o: order_o
     })
   end
 
   def explore
-    # allows user to browse each card in the current deck.
+    # allows user to browse each card in the current teck.
     answer = Aro::P.p.select(
       Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
-      cards.split(Aro::Deck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Deck.card_strip(c)}.name"), c]}.to_h,
+      cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
       per_page: Aro::Config.display_configuration[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )
     # {name: "four of swords", tag_list: ["lord of rest from strife", "libra", "jupiter", "introspection", "recuperation", "regain strength", "rest", "solitude", "stability"], reversed_tag_list: ["lord of rest from strife", "libra", "jupiter", "burnt out", "inundated", "need a break", "overwhelmed"], summary: "", reversed_summary: ""}
-    definition = I18n.t("cards.#{Aro::Deck.card_strip(answer)}")
+    definition = I18n.t("cards.#{Aro::Teck.card_strip(answer)}")
     indent = Aro::Mancy::N
     Aro::P.say(definition[:name])
     Aro::P.say(definition[:summary])
@@ -134,27 +134,27 @@ class Aro::Deck < ActiveRecord::Base
   end
 
   def shuffle
-    # shuffles the current deck and generates a log record.
-    update(cards: cards.split(Aro::Deck::CARD_DELIM.to_s).shuffle.join(Aro::Deck::CARD_DELIM.to_s))
+    # shuffles the current teck and generates a log record.
+    update(cards: cards.split(Aro::Teck::CARD_DELIM.to_s).shuffle.join(Aro::Teck::CARD_DELIM.to_s))
   end
 
   def reset
-    # completely reset the deck. replace all drawn and reset order.
+    # completely reset the teck. replace all drawn and reset order.
     # all orientations will be set to upright.
-    update(cards: Aro::Deck.fresh_cards, drawn: "")
+    update(cards: Aro::Teck.fresh_cards, drawn: "")
   end
 
   def replace
     # replaces all drawn cards FIFO and puts them on the bottom of
-    # the deck. this will preserve all card orientations.
-    cards_arr = cards.split(Aro::Deck::CARD_DELIM.to_s) || []
-    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
+    # the teck. this will preserve all card orientations.
+    cards_arr = cards.split(Aro::Teck::CARD_DELIM.to_s) || []
+    drawn_arr = drawn&.split(Aro::Teck::CARD_DELIM.to_s) || []
 
     # append each drawn card to cards
     drawn_arr.each{|dc| cards_arr << dc }
 
     # clear drawn
-    update(drawn: "", cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s))
+    update(drawn: "", cards: cards_arr.join(Aro::Teck::CARD_DELIM.to_s))
   end
 
   def draw(is_dt_dimension: true, z_max: 7, z: 1)
@@ -165,11 +165,11 @@ class Aro::Deck < ActiveRecord::Base
     dev_tarot = nil
 
     # get cards
-    cards_arr = cards.split(Aro::Deck::CARD_DELIM.to_s) || []
+    cards_arr = cards.split(Aro::Teck::CARD_DELIM.to_s) || []
     # get abs_cards
-    abs_cards_arr = cards_arr.map{|c| Aro::Deck.card_strip(c)}
+    abs_cards_arr = cards_arr.map{|c| Aro::Teck.card_strip(c)}
     # get drawn
-    drawn_arr = drawn&.split(Aro::Deck::CARD_DELIM.to_s) || []
+    drawn_arr = drawn&.split(Aro::Teck::CARD_DELIM.to_s) || []
 
     if cards_arr.empty?
       Aro::P.say("there are no cards left to draw.")
@@ -218,8 +218,8 @@ class Aro::Deck < ActiveRecord::Base
 
     # update database 
     update(
-      cards: cards_arr.join(Aro::Deck::CARD_DELIM.to_s),
-      drawn: drawn_arr.join(Aro::Deck::CARD_DELIM.to_s)
+      cards: cards_arr.join(Aro::Teck::CARD_DELIM.to_s),
+      drawn: drawn_arr.join(Aro::Teck::CARD_DELIM.to_s)
     )
   end
 end

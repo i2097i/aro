@@ -1,8 +1,8 @@
 =begin
 
-  vws/know/temple.rb
+  vws/know/body.rb
 
-  the temple view.
+  the body view.
 
   by i2097i
 
@@ -12,7 +12,7 @@ require_relative :"../base".to_s
 
 module Aos
   module Vw
-    class Temple < Aos::Vw::Base
+    class Body < Aos::Vw::Base
 
     end
   end

@@ -63,7 +63,7 @@ module Aro
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         Aro::Config.instance.load
         Aro::Mancy.init
-        self.game = Aro::Deck.current_deck
+        self.game = Aro::Teck.current_teck
       end
     end
 
@@ -80,7 +80,7 @@ module Aro
       
       # create the new aro directory and database
       if !Dir.exist?(name)
-        Aro::P.say(I18n.t("cli.messages.no_decks"))
+        Aro::P.say(I18n.t("cli.messages.no_tecks"))
         FileUtils.mkdir(name)
       else
         return false

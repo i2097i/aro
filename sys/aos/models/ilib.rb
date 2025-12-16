@@ -1,8 +1,8 @@
 =begin
 
-  lib.rb
+  ilib.rb
 
-  aos lib object.
+  aos ilib object.
 
   by i2097i
 
@@ -14,7 +14,7 @@ module CRS
   SO_FILE = :"libcrs.so".to_s
   SO_PATH = File.join(
     Reiquire::GEM_PATH,
-    :"sys/shr/lib/crs".to_s,
+    :"sys/shr/ilib/crs".to_s,
     CRS::SO_FILE
   )
   extend FFI::Library
@@ -24,7 +24,7 @@ end
 
 # installed lib modules section
 
-class Aos::Lib < ActiveRecord::Base
+class Aos::Ilib < ActiveRecord::Base
   before_create :set_so_path
 
   enum :status, [
