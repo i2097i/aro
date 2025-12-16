@@ -14,11 +14,7 @@ module CRS
   SO_FILE = :"libcrs.so".to_s
   SO_PATH = File.join(
     Reiquire::GEM_PATH,
-<<<<<<<< HEAD:sys/aos/models/ilib.rb
     :"sys/shr/ilib/crs".to_s,
-========
-    :"sys/shr/lib/crs".to_s,
->>>>>>>> 1f50e46 (WIP: v0.2.2):sys/aos/models/lib.rb
     CRS::SO_FILE
   )
   extend FFI::Library

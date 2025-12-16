@@ -22,15 +22,9 @@ class Aro::Teck < ActiveRecord::Base
   def self.make(new_name)
     return nil unless Aro::Mancy.is_initialized?
     Aro::Db.load
-<<<<<<<< HEAD:sys/aro/models/teck.rb
     new_teck = Aro::Teck.create(name: new_name)
     Aro::Teck.select_teck(new_teck) if Aro::Teck.current_teck.nil?
     new_teck
-========
-    new_deck = Aro::Deck.create(name: new_name)
-    Aro::Deck.select_deck(new_deck) if Aro::Deck.current_deck.nil?
-    new_deck
->>>>>>>> 1f50e46 (WIP: v0.2.2):sys/aro/models/deck.rb
   end
 
   def self.fresh_cards

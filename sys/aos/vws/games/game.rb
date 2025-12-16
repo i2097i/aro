@@ -8,11 +8,7 @@
 
 =end
 
-<<<<<<< HEAD
 require_relative :"../../../aro/models/teck".to_s
-=======
-require_relative :"../../../aro/models/deck".to_s
->>>>>>> 1f50e46 (WIP: v0.2.2)
 require_relative :"../base".to_s
 
 module Aos
