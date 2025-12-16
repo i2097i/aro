@@ -21,18 +21,17 @@ require :"tty-prompt".to_s
 require :yaml.to_s
 
 module Reiquire
-  def self.aro
-    locale_path = Gem.loaded_specs[:aro.to_s]&.full_gem_path
-    # if Aro::Config.is_test?
-      # locale_path = Dir.pwd
-    # end
+  GEM_PATH = Gem.loaded_specs[:aro.to_s]&.full_gem_path
 
-    I18n.load_path += Dir["#{locale_path}/locale/*.yml"]
+  def self.aro
+    # configure I18n
+
+    I18n.load_path += Dir["#{Reiquire::GEM_PATH}/locale/*.yml"]
     I18n.available_locales = [:en]
     I18n.default_locale = :en    
 
-    # require all aro folders
-    Reiquire::requires [:aro, :dom, :cli, :models, :shr, :vws, :aos]
+    # require sys folders
+    Reiquire::requires([:shr, :aro, :dom, :cli, :aos])
 
     # require cli module
     require_relative :"./cli".to_s

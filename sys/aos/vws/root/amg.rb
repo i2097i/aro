@@ -1,6 +1,6 @@
 =begin
 
-  vws/setup/amg.rb
+  vws/root/amg.rb
 
   the amg view.
 
@@ -14,7 +14,6 @@ module Aos
   module Vw
     class Amg < Aos::Vw::Base
       def self.show
-        # draw output
         draw(Aos::Amg.instance.display_lines)
       end
     end

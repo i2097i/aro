@@ -7,8 +7,8 @@ en:
         description: "aro game rooms."
       know:
         description: "information space."
-      setup:
-        description: "user configuration space."
+      root:
+        description: "aos system space."
     rooms:
       waite:
         description: "sign up."
@@ -22,10 +22,12 @@ en:
         description: "human and artificial beings."
       vipps:
         description: "only dev_tarot users. no ruby_facots allowed."
-      library:
-        description: "definition management."
-      temple:
-        description: "mindfulness management."
+      body:
+        description: "body."
+      mind:
+        description: "mind."
+      spirit:
+        description: "spirit."
       config:
         description: "user config and configuration."
     errors:

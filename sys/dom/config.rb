@@ -12,6 +12,7 @@ module Aro
 
   # cli entrypoint
   def self.config
+    Aro::Config.instance.load
     Aro::Config.process_config_command(ARGV)
   end
 
@@ -20,8 +21,8 @@ module Aro
 
     attr_accessor :config_path, :display_lines
 
-    ARO_CONFIG_PREFIX = :ARO_CONFIG_
-    ARO_ENV_PREFIX = :ARO_ENV_
+    ARO_IVA_PREFIX = :ARO_IVA_
+    ARO_OVA_PREFIX = :ARO_OVA_
 
     CONFIG_FILE = :".config"
 
@@ -44,6 +45,15 @@ module Aro
     FORMATS = {
       TEXT: :text,
       JSON: :json,
+    }
+
+    # possible interfaces
+    #
+    # example usage:
+    # Aro::Config::INTERFACES[:TERMINAL]
+    INTERFACES = {
+      TERMINAL: :terminal,
+      LANIMRET: :lanimret,
     }
 
     # possible dimensions
@@ -97,7 +107,7 @@ module Aro
         }
       },
       INT: {
-        name: :int,
+        name: Aro::Config::TYPES[:INT],
         description: I18n.t("cli.config.type.int_description"),
         converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
@@ -113,7 +123,7 @@ module Aro
         }
       },
       STRING: {
-        name: :string,
+        name: Aro::Config::TYPES[:STRING],
         description: I18n.t("cli.config.type.string_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
@@ -122,7 +132,7 @@ module Aro
         }
       },
       VALUES: {
-        name: :values,
+        name: Aro::Config::TYPES[:VALUES],
         description: I18n.t("cli.config.type.values_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
@@ -181,7 +191,7 @@ module Aro
     end
 
     # adapts I18n translations to generate bash environment vars.
-    # 
+    #
     # example usage:
     # Aro::Config::DEF[:Z_MAX]
     DEF = {
@@ -218,7 +228,7 @@ module Aro
         value: Aro::Config::BOOLS[:FALSE],
         description: I18n.t("cli.config.log_aro_db_description"),
       },
-      FORMAT: { # not implemented yet.
+      FORMAT: {
         type: Aro::Config::TYPES[:VALUES],
         implemented: false,
         access: Aro::Config::DEF_ACCESS[:WRITE],
@@ -227,6 +237,17 @@ module Aro
         possible_values: {
           text: I18n.t("cli.config.format.text_description"),
           json: I18n.t("cli.config.format.json_description")
+        }
+      },
+      INTERFACE: {
+        type: Aro::Config::TYPES[:VALUES],
+        implemented: false,
+        access: Aro::Config::DEF_ACCESS[:WRITE],
+        value: Aro::Config::INTERFACES[:TERMINAL],
+        description: I18n.t("cli.config.interface.description"),
+        possible_values: {
+          terminal: I18n.t("cli.config.interface.terminal_description"),
+          lanimret: I18n.t("cli.config.interface.lanimret_description")
         }
       },
       DIMENSION: {
@@ -291,61 +312,61 @@ module Aro
       #
       # => ovars
       #
-      ARO_ENV_O: {
+      O: {
         type: Aro::Config::TYPES[:INT],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::O,
         description: I18n.t("cli.config.aro_env.O_description"),
       },
-      ARO_ENV_S: {
+      S: {
         type: Aro::Config::TYPES[:INT],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::S,
         description: I18n.t("cli.config.aro_env.S_description"),
       },
-      ARO_ENV_OS: {
+      OS: {
         type: Aro::Config::TYPES[:INT],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::OS,
         description: I18n.t("cli.config.aro_env.OS_description"),
       },
-      ARO_ENV_E: {
+      E: {
         type: Aro::Config::TYPES[:INT],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::E,
         description: I18n.t("cli.config.aro_env.E_description"),
       },
-      ARO_ENV_N: {
+      N: {
         type: Aro::Config::TYPES[:INT],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::N,
         description: I18n.t("cli.config.aro_env.N_description"),
       },
-      ARO_ENV_PS1: {
+      PS1: {
         type: Aro::Config::TYPES[:STRING],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::PS1,
         description: I18n.t("cli.config.aro_env.PS1_description"),
       },
-      ARO_ENV_NAME_FILE: {
+      NAME_FILE: {
         type: Aro::Config::TYPES[:STRING],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::NAME_FILE,
         description: I18n.t("cli.config.aro_env.NAME_FILE_description"),
       },
-      ARO_ENV_I2097I: {
+      I2097I: {
         type: Aro::Config::TYPES[:STRING],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::I2097I,
         description: I18n.t("cli.config.aro_env.I2097I_description"),
       },
-      ARO_ENV_YES: {
+      YES: {
         type: Aro::Config::TYPES[:STRING],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::YES,
         description: I18n.t("cli.config.aro_env.YES_description"),
       },
-      ARO_ENV_ALL: {
+      ALL: {
         type: Aro::Config::TYPES[:STRING],
         access: Aro::Config::DEF_ACCESS[:READ],
         value: Aro::Mancy::ALL,
@@ -354,6 +375,13 @@ module Aro
     }
 
     def load
+      self.config_path = ""
+      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
+        self.config_path = Aro::Config.aro_config_path
+      elsif Aro::Dom.in_arodom?
+        self.config_path = Aro::Config.dom_config_path
+      end
+
       unless File.exist?(Aro::Config.config_filepath)
         generate_config
       end
@@ -374,17 +402,20 @@ module Aro
       # print config commands
       lines << ""
       lines << I18n.t("aos.constants.commands")
+      lines << ""
       lines += Aos::Vw::Base.lines_for_cmd(Aos::Os::CMDS[:CONFIG])
       lines
     end
 
-    def self.config_filepath
-      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        self.instance.config_path = File.join(Dir.pwd, Aro::Db.base_aro_dir)
-      elsif Aro::Dom.in_arodom? && Aro::Dom.is_initialized?
-        self.instance.config_path = File.join(Aro::Dom::dom_root, Aro::Dom.room_path(:config))
-      end
+    def self.aro_config_path
+      File.join(Dir.pwd, Aro::Db.base_aro_dir)
+    end
 
+    def self.dom_config_path
+      File.join(Aro::Dom::dom_root, Aro::Dom.room_path(:config))
+    end
+
+    def self.config_filepath
       File.join(
         self.instance.config_path,
         Aro::Config::CONFIG_FILE.to_s
@@ -412,8 +443,21 @@ module Aro
     end
 
     def self.process_config_command(args)
-      if [args[2],args[3]].compact.any? && args[1] == Aos::Os::CMDS[:CONFIG][:cmds][:SET][:key].to_s
-        Aro::Config.set_ivar(args[2], args[3])
+      k = Aro::Config::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
+      unless k.nil?
+        unless args[Aro::Mancy::OS].nil?
+          # config <var_name> <var_value>
+          Aro::Config.set_ivar(args[Aro::Mancy::S], args[Aro::Mancy::OS])
+        end
+
+        # basic show var description and value
+        self.instance.display_lines = self.instance.lines_var(k, Aro::Config::DEF[k], ENV[Aro::Config.ivar_k(k)])
+      else
+        self.instance.display_lines = Aro::Config.base_lines
+      end
+
+      if Aro::Mancy.in_aro? && !Aro::Dom.in_arodom?
+        Aro::P.say(self.instance.display_lines.join("\n"))
       end
     end
 
@@ -423,7 +467,7 @@ module Aro
     end
     # out vars
     def self.ovar_k(suffix)
-      "#{Aro::Config::ARO_ENV_PREFIX}#{suffix}"
+      "#{Aro::Config::ARO_OVA_PREFIX}#{suffix}"
     end
 
     # in vars
@@ -432,7 +476,7 @@ module Aro
     end
     # in vars
     def self.ivar_k(suffix)
-      "#{Aro::Config::ARO_CONFIG_PREFIX}#{suffix}"
+      "#{Aro::Config::ARO_IVA_PREFIX}#{suffix}"
     end
 
     def self.set_ivar(k, new_value)
@@ -464,21 +508,21 @@ module Aro
 
     def setup_env
       # do not change - update $ARO_CONFIG_ENV .aro/.config file
-      # 
+      #
       # default is production
       varenv = Aro::Config.ivar(:ENV)
       is_valid = valid_var?(varenv, :ENV, Aro::Config::DEF[:ENV])
       ENV[:ARO_ENV.to_s] = is_valid ? varenv : Aro::Config::ENVS[:PRODUCTION].to_s
-      Aro::D.say("setup_env: #{ENV[:ARO_ENV.to_s]}")
+      Aro::D.say("running in #{ENV[:ARO_ENV.to_s]} env.")
     end
 
     def self.dump_config
       dump = []
       Aro::Config::DEF.each{|k, v|
         if v[:access] == Aro::Config::DEF_ACCESS[:WRITE]
-          dump << "$#{Aro::Config.ivar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Config.ivar(k)}"
+          dump << "#{Aro::Config.ivar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Config.ivar(k)}"
         else
-          dump << "$#{Aro::Config.ovar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Config.ovar(k)}"
+          dump << "#{Aro::Config.ovar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Config.ovar(k)}"
         end
       }
 
@@ -488,15 +532,15 @@ module Aro
     def source_config
       Aro::D.say(I18n.t("cli.config.source", name: Aro::Config.config_filepath))
       File.read(Aro::Config.config_filepath).split("\n").select{|line|
-        line.match?(/export #{Aro::Config::ARO_CONFIG_PREFIX}/)
-      }.map{|line| 
+        line.match?(/export #{Aro::Config::ARO_IVA_PREFIX}/)
+      }.map{|line|
         line.gsub("export ", "").split("=")
       }.each{|kv|
         Aro::V.say("variable to set: #{kv}")
         ENV[kv[0]] = kv[1] # source
         Aro::V.say("value actually set: #{ENV[kv[0]]}")
       }
-      
+
       # todo: implement
       invalid_defs = validate_config
       Aro::Config.dump_config.each{|l| Aro::V.say(l)}
@@ -510,155 +554,164 @@ module Aro
       }
     end
 
+    # from_memory true means write current config to file
     def generate_config(from_memory = false)
       # todo: localize generated config text
       Aro::D.say(I18n.t("cli.config.generate", name: Aro::Config.config_filepath))
+
+      lines = []
+
+      # intro
+      Aro::Mancy::OS.times do
+        lines += lines_div
+      end
+
+      # header
+      lines += lines_div
+      lines += lines_newline_comment
+      lines += lines_config_header
+      lines += lines_newline_comment
+      lines += lines_div
+
+      lines += lines_newline_comment_os
+
+      # def_types
+      lines += lines_div
+      lines += lines_newline_comment
+      lines += lines_def_type_description
+      lines += lines_newline_comment
+      lines += lines_div
+
+      lines += lines_newline_comment_os
+
+      # var section
+      lines += lines_div
+      lines += lines_newline_comment
+      lines += lines_var_section_div
+      lines += lines_newline_comment
+      lines += lines_div
+
+      lines += lines_newline_comment_os
+
+      # vars
+      Aro::Config::DEF.each{|k, v|
+        lines += lines_var(k, v, (from_memory ? ENV[Aro::Config.ivar_k(k)] : nil))
+      }
+
+      lines += lines_newline_comment_os
+
+      # var section
+      lines += lines_div
+      lines += lines_newline_comment
+      lines += lines_var_section_div
+      lines += lines_newline_comment
+      lines += lines_div
+
+      lines += lines_newline_comment_os
+      # outro
+      Aro::Mancy::OS.times do
+        lines += lines_div
+      end
+      write_config(lines)
+    end
+
+    def write_config(lines)
       File.open(Aro::Config.config_filepath, "w+") do |file|
-        # intro
-        Aro::Mancy::OS.times do
-          print_div file.object_id
-        end
-        # header
-        print_div file.object_id
-          print_sr file.object_id
-            print_config_header file.object_id
-          print_sr file.object_id
-        print_div file.object_id
-        
-        print_osr file.object_id
-        
-        # def_types
-        print_div file.object_id
-          print_sr file.object_id
-            print_def_types file.object_id
-          print_sr file.object_id
-        print_div file.object_id
-
-        print_osr file.object_id
-        
-        # var section
-        print_div file.object_id
-          print_sr file.object_id
-            print_var_section file.object_id
-          print_sr file.object_id
-        print_div file.object_id
-
-        print_osr file.object_id
-
-        # vars
-        Aro::Config::DEF.each{|k, v|
-          print_var file.object_id, k, v, (from_memory ? ENV[Aro::Config.ivar_k(k)] : nil)
-        }
-
-        print_osr file.object_id
-        
-        # var section
-        print_div file.object_id
-          print_sr file.object_id
-            print_var_section file.object_id
-          print_sr file.object_id
-        print_div file.object_id
-
-        print_osr file.object_id
-        # outro
-        Aro::Mancy::OS.times do
-          print_div file.object_id
-        end
+        file.write(lines.join("\n"))
         file.write("\n")
       end
     end
 
-    def print_div f_object_id
-      file = ObjectSpace._id2ref f_object_id
-      file.write("#{"#" * Aro::Mancy::NUMERALS[:VIII].pow(2)}\n")
+    def lines_div
+      ["#" * Aro::Mancy::NUMERALS[:VIII].pow(Aro::Mancy::OS)]
     end
 
-    def print_sr f_object_id
-      file = ObjectSpace._id2ref f_object_id
-      Aro::Mancy::S.times do
-        file.write("#\n")
-      end
+    def lines_newline_comment
+      ["#"]
     end
 
-    def print_osr f_object_id
+    def lines_newline_comment_os
+      lines = []
       Aro::Mancy::OS.times do
-        print_sr f_object_id
+        lines += lines_newline_comment
       end
+      lines
     end
 
-    def print_config_header f_object_id
-      file = ObjectSpace._id2ref f_object_id
-      file.write("# #{Aro::Mancy::PS1} configuration file.\n")
-      file.write("# this file was auto generated by the aro cli.\n")
+    def lines_config_header
+      [
+        "# #{Aro::Mancy::PS1} configuration file.",
+        "# this file was auto generated by the aro cli."
+      ]
     end
 
-    def print_var_section f_object_id
-      file = ObjectSpace._id2ref f_object_id
-      file.write("# VARIABLE SECTION!\n")
+    def lines_var_section_div
+      ["# VARIABLE SECTION!"]
     end
 
-    def print_def_types f_object_id
-      file = ObjectSpace._id2ref f_object_id
-      file.write("# Aro::Config::DEF_TYPES\n")
-      file.write("# describes the possible types of variables.\n")
+    def lines_def_type_description
+      lines = []
+      lines << "# Aro::Config::DEF_TYPES"
+      lines << "# describes the possible types of variables."
       Aro::Config::DEF_TYPES.each{|k, v|
-        file.write("# #{k}: #{v[:description]}\n")
+        lines << "# #{k}: #{v[:description]}"
       }
-      print_osr f_object_id
-      file.write("# Aro::Config::DEF\n")
-      file.write("# define & expose an aro bash api via ENV variables.\n")
-      file.write("# there are two types of bash vars in aro.\n")
-      file.write("# 1) in vars (ivars). \n")
-      file.write("#     => ivars enter aro from this file during aro init.\n")
-      file.write("#     => aro validates them and uses them unless unvalid.\n")
-      file.write("#     => otherwise aro will use the defaults listed below.\n")
-      file.write("# 2) out vars (ovars).\n")
-      file.write("#     => ovars are read-only vars that aro exposes to bash.\n")
-      file.write("#     => this is useful because it provides a bash interface\n")
-      file.write("#     => which can be used to write programs on top of aro.\n")
+      lines += lines_newline_comment_os
+      lines << "# Aro::Config::DEF"
+      lines << "# define & expose an aro bash api via ENV variables."
+      lines << "# there are two types of bash vars in aro."
+      lines << "# 1) in vars (ivars). "
+      lines << "#     => ivars enter aro from this file during aro init."
+      lines << "#     => aro validates them and uses them unless unvalid."
+      lines << "#     => otherwise aro will use the defaults listed below."
+      lines << "# 2) out vars (ovars)."
+      lines << "#     => ovars are read-only vars that aro exposes to bash."
+      lines << "#     => this is useful because it provides a bash interface"
+      lines << "#     => which can be used to write programs on top of aro."
     end
 
-    def print_var f_object_id, k, v, mem_v
-      file = ObjectSpace._id2ref f_object_id
-
+    def lines_var(k, v, mem_v = nil)
+      lines = []
       is_ovar = Aro::Config::DEF[k][:access] == Aro::Config::DEF_ACCESS[:READ]
       if is_ovar
-        var_name = k
+        var_name = Aro::Config.ovar_k(k)
       else
         var_name = Aro::Config.ivar_k(k)
       end
       Aro::V.say("access for #{k} is #{Aro::Config::DEF[k][:access]}")
       Aro::V.say("using var_name: #{var_name}")
-      file.write("# [#{var_name}] (#{is_ovar ? :ovar : :ivar})\n")
-      file.write("#   => Aro::Config::DEF_TYPES: #{v[:type]}\n")
+      lines << "# [#{var_name}] (#{is_ovar ? :ovar : :ivar})"
+      lines << "#   => Aro::Config::DEF_TYPES: #{v[:type]}"
       case v[:type]
+      when Aro::Config::DEF_TYPES[:BOOL][:name]
+        lines << "#   => #{I18n.t("cli.config.type.bool_description")}"
       when Aro::Config::DEF_TYPES[:INT][:name]
-        file.write("#   => #{I18n.t("cli.config.type.int_description")}\n")
-        file.write("#   => #{I18n.t("cli.config.minimum")}: #{v[:min]}\n")
-        file.write("#   => #{I18n.t("cli.config.maximum")}: #{v[:max]}\n")
+        lines << "#   => #{I18n.t("cli.config.type.int_description")}"
+        lines << "#   => #{I18n.t("cli.config.minimum")}: #{v[:min]}"
+        lines << "#   => #{I18n.t("cli.config.maximum")}: #{v[:max]}"
       when Aro::Config::DEF_TYPES[:STRING][:name]
-        file.write("#   => #{I18n.t("cli.config.type.string_description")}\n")
-        file.write("#   => use \"double quotes\" if there are any spaces.\n")
+        lines << "#   => #{I18n.t("cli.config.type.string_description")}"
+        lines << "#   => use \"double quotes\" if there are any spaces."
       when Aro::Config::DEF_TYPES[:VALUES][:name]
-        file.write("#   => #{I18n.t("cli.config.type.values_description")}\n")
-        file.write("#   => #{I18n.t("cli.config.possible_values")}:\n")
-        print_sr f_object_id
+        lines << "#   => #{I18n.t("cli.config.type.values_description")}"
+        lines << "#   => #{I18n.t("cli.config.possible_values")}:"
+        lines += lines_newline_comment
         v[:possible_values].each{|name, description|
-          file.write("#     => #{name}\n")
-          print_sr f_object_id
-          file.write("#           =>#{description}\n")
-          print_sr f_object_id
+          lines << "#     => #{name}"
+          lines += lines_newline_comment
+          lines << "#           =>#{description}"
+          lines += lines_newline_comment
         }
       end
-      print_osr f_object_id
-      file.write("#   => description:\n")
-      file.write("#   => #{v[:description]}\n")
+      lines += lines_newline_comment_os
+      lines << "#   => description:"
+      lines << "#   => #{v[:description]}"
       if is_ovar && Aro::Config::DEF_TYPES[:STRING][:name] == v[:type]
-        file.write("export #{var_name}=\"#{v[:value]}\"\n")
+        lines << "export #{var_name}=\"#{v[:value]}\""
       else
-        file.write("export #{var_name}=#{mem_v || v[:value]}\n")
+        lines << "export #{var_name}=#{mem_v || v[:value]}"
       end
-      print_osr f_object_id
+      lines += lines_newline_comment_os
     end
 
   end

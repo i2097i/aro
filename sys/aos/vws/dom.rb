@@ -13,7 +13,6 @@ require_relative :"./base".to_s
 module Aos
   module Vw
     class Dom < Aos::Vw::Base
-
       def self.show
         lines = []
         lines << I18n.t("aos.views.dom.title")

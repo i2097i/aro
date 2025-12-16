@@ -30,7 +30,7 @@ describe Aro::Dom do
         Aro::Dom::D::LAYOUT.values.each{|wing|
           expect(Dir.exist?(wing[:name].to_s)).to be(false)
         }
-        Aro::Dom.new.generate
+        Aro::Dom.new.generate(:test, :user)
         Aro::Dom::D::LAYOUT.values.each{|wing|
           expect(Dir.exist?(wing[:name].to_s)).to be(true)
         }

@@ -1,5 +1,0 @@
-# record of changes that could impact old versions
-en:
-  cngelog:
-    1765093549_rename_display_column: "rename(ivar): ARO_CONFIG_DISPLAY_COLUMN -> ARO_CONFIG_WIDTH"
-    1765094034_add_height_env_var: "add(ivar): ARO_CONFIG_HEIGHT"

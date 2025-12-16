@@ -10,16 +10,18 @@
 
 module Aro
   class Db
+    include Singleton
+
     DATABASE_YML = :"database.yml"
     GEM_DB_PATH = :"sys/aro/db"
     MIGRATIONS_DIR = :"db/migrate"
     SCHEMA_FILE = :"schema.rb"
-    SQL_FILE = :"database.sql"
+    SQL_FILE = :"aro.sql"
 
-    def initialize
+    def self.load
       Aro::Db.configure_logger
       if Aro::Mancy.in_aro?
-        setup_local_aro
+        self.instance.setup_local_aro
       end
     end
 
@@ -29,14 +31,6 @@ module Aro
       else
         ActiveRecord::Base.logger = nil
       end
-    end
-
-    def connect(name)
-      ActiveRecord::Base.establish_connection(config)
-    end
-
-    def config
-      @config ||= YAML.load_file(db_config_filepath)
     end
 
     def self.base_aro_dir
@@ -72,6 +66,12 @@ module Aro
 
       connect(name)
       migrate(name)
+    end
+
+    def connect(name)
+      ActiveRecord::Base.establish_connection(
+        YAML.load_file(db_config_filepath)
+      )
     end
 
     def migrate(name)

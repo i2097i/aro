@@ -8,24 +8,22 @@
 
 =end
 
-require_relative :"../aos/s".to_s
-
 module Aro
   class Dom
     PS1 = :">[#{Aro::Dom.name}]>: "
     DOT = :"."
     DOTT = :"#{DOT}#{DOT}"
-    ETHERGEIST = :ethergeist
+    ETHERGEIST = :eg
     ETHER_FILE = :".#{Aro::Dom::ETHERGEIST}"
 
-    # < root space
+    # < aro space
     ARODOME = :arodome
 
     # < user spaces
     WELCOME = :welcome
     GAMES = :games
     KNOW = :know
-    SETUP = :setup
+    ROOT = :root
 
     # > welcome spaces
     WAITE = :waite
@@ -38,13 +36,15 @@ module Aro
     VIPPS = :vipps
 
     # > know spaces
-    LIBRARY = :library
-    TEMPLE = :temple
+    BODY = :body
+    MIND = :mind
+    SPIRIT = :spirit
     # ...
 
-    # > setup spaces
-    CONFIG = :config
+    # > root spaces
     AMG = :amg
+    CONFIG = :config
+    DATA = :data
     # ...
 
     def self.create(name)
@@ -71,7 +71,7 @@ module Aro
     def self.is_initialized?
       return false if !Aro::Dom.in_arodom?
 
-      File.exist?(File.join(Aro::Dom::ethergeist_path, Aos::Db::SQL_FILE.to_s))
+      File.exist?(File.join(Aro::Dom.room_path(:data), Aos::Db::SQL_FILE.to_s))
     end
 
     def self.domain
@@ -132,13 +132,22 @@ module Aro
       )
     end
 
-    def generate
-      return unless Aro::Dom.in_arodom?
+    def generate(r_you, r_password)
+      unless r_password.present?
+        Aro::Dom::P.say("missing password argument.")
+        return
+      end
+
+      unless Aro::Dom.in_arodom?
+        Aro::Dom::P.say("unable to init arodom here.")
+        return
+      end
 
       # todo: add file permissions to Aro::Dom::ARODOME and all WINGS
       Aro::Dom::P.say(I18n.t("dom.messages.generating_wings"))
       Aro::Dom::D::LAYOUT.values.each{|w| generate_wing w}
-      Aos::Db::new
+      Aos::Db.load(r_password)
+      Aos::You.create(name: r_you, access: :root)
       Aro::Dom::P.say(I18n.t("dom.messages.initialization_complete", name: Aro::Dom.name))
     end
 

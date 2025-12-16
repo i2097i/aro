@@ -20,7 +20,7 @@ module CLI
     elsif action.nil? || action == :aos
       # no args, open deck menu
       if Aro::Mancy.in_aro?
-        Aro::Db.new
+        Aro::Db.load
         Aro::Deck.display_selection_menu
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
@@ -28,7 +28,7 @@ module CLI
     elsif action == CLI::CMDS[:DECK][:NEW]
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
       if Aro::Mancy.in_aro?
-        Aro::Db.new
+        Aro::Db.load
         deck = Aro::Deck.make(CLI::ARGV2.to_s)
         Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: deck.name))
         Aro::Deck.display_selection_menu
@@ -76,7 +76,7 @@ module CLI
 
       Aro::Mancy.game.show(**CLI::shoptions)
     else
-      Aro::Db.new
+      Aro::Db.load
       Aro::Deck.select_deck(
         Aro::Deck.find_by(name: action)
       )

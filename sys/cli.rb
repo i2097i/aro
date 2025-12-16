@@ -2,13 +2,14 @@
   
   cli
 
-  the very first file loaded.
+  aro cli module.
 
   by i2097i
 
 =end
 
 module CLI
+  # todo: set an Aro::Mancy.instance.you variable here:
   argv_sanitized = Aos::Os.sanitize_you(ARGV.join(" ")).split(" ")
 
   if CLI::CMDS[:DECK].values.include?(argv_sanitized[0]&.to_sym)

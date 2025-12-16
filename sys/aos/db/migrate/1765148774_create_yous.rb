@@ -4,6 +4,7 @@ class CreateYous < ActiveRecord::Migration[8.1]
     create_table :yous do |t|
       t.string :name, null: false
       t.string :pwd
+      t.integer :access, default: Aro::Mancy::O
 
       t.timestamps
 
