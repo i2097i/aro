@@ -21,7 +21,11 @@ module CLI
       # no args, open teck menu
       if Aro::Mancy.in_aro?
         Aro::Db.load
+<<<<<<< HEAD:sys/cli/teck.rb
         Aro::Teck.display_selection_menu
+=======
+        Aro::Deck.display_selection_menu
+>>>>>>> 1f50e46 (WIP: v0.2.2):sys/cli/deck.rb
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
@@ -29,9 +33,15 @@ module CLI
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
       if Aro::Mancy.in_aro?
         Aro::Db.load
+<<<<<<< HEAD:sys/cli/teck.rb
         teck = Aro::Teck.make(CLI::ARGV2.to_s)
         Aro::P.say(I18n.t("cli.messages.teck_created_sucessfully", name: teck.name))
         Aro::Teck.display_selection_menu
+=======
+        deck = Aro::Deck.make(CLI::ARGV2.to_s)
+        Aro::P.say(I18n.t("cli.messages.deck_created_sucessfully", name: deck.name))
+        Aro::Deck.display_selection_menu
+>>>>>>> 1f50e46 (WIP: v0.2.2):sys/cli/deck.rb
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
@@ -77,8 +87,13 @@ module CLI
       Aro::Mancy.game.show(**CLI::shoptions)
     else
       Aro::Db.load
+<<<<<<< HEAD:sys/cli/teck.rb
       Aro::Teck.select_teck(
         Aro::Teck.find_by(name: action)
+=======
+      Aro::Deck.select_deck(
+        Aro::Deck.find_by(name: action)
+>>>>>>> 1f50e46 (WIP: v0.2.2):sys/cli/deck.rb
       )
     end
   end
