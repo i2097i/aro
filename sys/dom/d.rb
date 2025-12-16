@@ -9,6 +9,7 @@
 =end
 
 require_relative :dom.to_s
+require_relative :"../shr/prompt".to_s
 
 module Aro
   class Dom::D
@@ -26,6 +27,8 @@ module Aro
     WINGS = {
       WELCOME: {
         WAITE: {
+          # todo: make a wai/wait/wae learning tool for practicing
+          # command usage in a sandbox.
           name: Aro::Dom::WAITE,
           description: I18n.t("dom.rooms.waite.description"),
         },
@@ -52,24 +55,32 @@ module Aro
           description: I18n.t("dom.rooms.vipps.description"),
         },
       },
-      KNOW: { 
-        LIBRARY: {
-          name: Aro::Dom::LIBRARY,
-          description: I18n.t("dom.rooms.library.description"),
+      KNOW: {
+        BODY: {
+          name: Aro::Dom::BODY,
+          description: I18n.t("dom.rooms.body.description"),
         },
-        TEMPLE: {
-          name: Aro::Dom::TEMPLE,
-          description: I18n.t("dom.rooms.temple.description"),
+        MIND: {
+          name: Aro::Dom::MIND,
+          description: I18n.t("dom.rooms.mind.description"),
+        },
+        SPIRIT: {
+          name: Aro::Dom::SPIRIT,
+          description: I18n.t("dom.rooms.spirit.description"),
         },
       },
-      SETUP: {
+      ROOT: {
+        AMG: {
+          name: Aro::Dom::AMG,
+          description: I18n.t("dom.rooms.amg.description"),
+        },
         CONFIG: {
           name: Aro::Dom::CONFIG,
           description: I18n.t("dom.rooms.config.description"),
         },
-        AMG: {
-          name: Aro::Dom::AMG,
-          description: I18n.t("dom.rooms.amg.description"),
+        DATA: {
+          name: Aro::Dom::DATA,
+          description: I18n.t("dom.rooms.data.description"),
         },
       },
     }
@@ -98,16 +109,18 @@ module Aro
         name: Aro::Dom::KNOW,
         description: I18n.t("dom.wings.know.description"),
         rooms: [
-          Aro::Dom::D::WINGS[:KNOW][:LIBRARY],
-          Aro::Dom::D::WINGS[:KNOW][:TEMPLE],
+          Aro::Dom::D::WINGS[:KNOW][:BODY],
+          Aro::Dom::D::WINGS[:KNOW][:MIND],
+          Aro::Dom::D::WINGS[:KNOW][:SPIRIT],
         ],
       },
-      SETUP: {
-        name: Aro::Dom::SETUP,
-        description: I18n.t("dom.wings.setup.description"),
+      ROOT: {
+        name: Aro::Dom::ROOT,
+        description: I18n.t("dom.wings.root.description"),
         rooms: [
-          Aro::Dom::D::WINGS[:SETUP][:CONFIG],
-          Aro::Dom::D::WINGS[:SETUP][:AMG],
+          Aro::Dom::D::WINGS[:ROOT][:AMG],
+          Aro::Dom::D::WINGS[:ROOT][:CONFIG],
+          Aro::Dom::D::WINGS[:ROOT][:DATA],
         ],
       }
     }

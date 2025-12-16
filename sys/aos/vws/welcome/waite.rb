@@ -18,6 +18,7 @@ module Aos
         lines = []
         lines << ""
         lines << I18n.t("aos.constants.commands")
+        lines << ""
         Aos::Os::CMDS.values.each{|v|
           lines += lines_for_cmd(v)
         }

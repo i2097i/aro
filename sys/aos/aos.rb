@@ -29,7 +29,11 @@ module Aos
   class Os
     include Singleton
 
-    attr_accessor :you, :libs, :running, :view, :db, :display_lines
+    attr_accessor :display_lines,
+      :running,
+      :view,
+      :you,
+      :you_flag
 
     A = :"@"
     STAR = :"*"
@@ -53,13 +57,11 @@ module Aos
         key: :config,
         description: I18n.t("aos.commands.description.config"),
         usage: I18n.t("aos.commands.usage.config"),
-        cmds: {
-          SET: {
-            key: :set,
-            description: I18n.t("aos.commands.description.config_set", prefix: Aro::Config::ARO_CONFIG_PREFIX),
-            usage: I18n.t("aos.commands.usage.config_set"),
-          }
-        }
+      },
+      DATA: {
+        key: :data,
+        description: I18n.t("aos.commands.description.data"),
+        usage: I18n.t("aos.commands.usage.data"),
       },
       EXIT: {
         key: :exit,
@@ -102,12 +104,11 @@ module Aos
 
     def self.is_aos_command?(arg)
       # determine if command is Aos::Os::CMDS
-      # passthrough to system if command is not in Aos::Os::CMDS
       Aos::Os::CMDS.values.map{|v| v[:key]}.include?(arg.to_sym)
     end
 
     def self.you_flagd?
-      self.instance.you&.name != Aos::Os::YOU
+      self.instance.you_flag
     end
 
     def self.sanitize_you(cmd)
@@ -123,11 +124,12 @@ module Aos
     end
 
     def initialize
+      self.you_flag = false
       Aro::Config.instance.load
-      if Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
-        Aro::Dom.new.generate
-      end
-      @db = Aos::Db.new
+      # if Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
+        # Aro::Dom.new.generate unless Aro::Mancy.in_aro?
+      # end
+      Aos::Db.load
       load_libs
       load_you
     end
@@ -145,13 +147,17 @@ module Aos
     def load_you
       return if @you.present?
 
-      you_name = Aos::Os::YOU
       if ARGV.include?(Aos::Os::YOU_FLAG)
+        self.you_flag = true
         you_name = ARGV[ARGV.index(Aos::Os::YOU_FLAG) + Aro::Mancy::S]
+        @you = Aos::You.find_by(name: you_name)
+        if @you.nil?
+          @you = Aos::You.create(name: you_name)
+        end
+      else
+        # todo: make more secure
+        @you = Aos::You.find_by(access: :root)
       end
-
-      @you = Aos::You.find_by(name: you_name)
-      @you = Aos::You.create(name: you_name, pwd: Dir.pwd) if @you.nil?
 
       self.display_lines = [Aos::Os.osify(@you.pwd, true)]
     end
@@ -159,8 +165,11 @@ module Aos
     def load_view
       view_name = Aos::Os.osify(@you.pwd).split("/").last || :dom.to_s
       view_cls = nil
+
+      cls_name = (Aos::Vw.name + "::#{view_name.capitalize}")
+      Aro::D.say("attempting to load view class #{cls_name}")
       begin
-        view_cls = (Aos::Vw.name + "::#{view_name.capitalize}").constantize
+        view_cls = cls_name.constantize
       rescue
         view_cls = Aos::Vw::Base
       end
@@ -190,18 +199,22 @@ module Aos
     def process_cmd(cmd)
       Dir.chdir(@you.reload.pwd) do
         configure_readline
-        passthrough = main(cmd)
+        send_to_system_call = main(cmd)
         if Aro::Config.is_format_text?
           # IO.console.goto(Aro::Mancy::O, Aro::Mancy::O)
         end
         nothing = nil
-        if passthrough
+        if send_to_system_call
           nothing = system(cmd)
           Aos::S.say(nothing) if nothing.nil?
         end
 
         if nothing.nil?
           render
+        end
+
+        unless cmd.nil?
+          @you.generate_input_log(cmd)
         end
       end
 
@@ -263,51 +276,67 @@ module Aos
 
       args = handle_aro_override(args)
 
-      passthrough = !Aos::Os.is_aos_command?(args[Aro::Mancy::O]) ||
+      # send to "system" call in process_cmd method
+      # if args[Aro::Mancy::O] is not in Aos::Os::CMDS
+      send_to_system_call = !Aos::Os.is_aos_command?(args[Aro::Mancy::O]) ||
         args.include?(:aos.to_s)
 
       # set aos pwd
-      unless passthrough
+      unless send_to_system_call
         Dir.chdir(@you.pwd) do
           # process commands
           case args[Aro::Mancy::O].to_sym
           when Aos::Os::CMDS[:AMG][:key]
-            # inst
-            passthrough = handle_amg(args)
-          when Aos::Os::CMDS[:CONFIG][:key]
-            # config
-            passthrough = handle_config(args)
-          when Aos::Os::CMDS[:LS][:key]
-            # ls
-            handle_ls(args)
-          when Aos::Os::CMDS[:LL][:key]
-            # ll
-            handle_ll(args)
-          when Aos::Os::CMDS[:PWD][:key]
-            # pwd
-            handle_pwd(args)
-          when Aos::Os::CMDS[:EXIT][:key]
-            # exit
-            passthrough = true
-            handle_exit(args)
-          when Aos::Os::CMDS[:HELP][:key]
-            # help
-            passthrough = handle_help(args)
+            # amg
+            send_to_system_call = handle_amg(args)
           when Aos::Os::CMDS[:CD][:key]
             # cd
             handle_cd(args)
+          when Aos::Os::CMDS[:CONFIG][:key]
+            # config
+            send_to_system_call = handle_config(args)
+          when Aos::Os::CMDS[:DATA][:key]
+            # data
+            send_to_system_call = handle_data(args)
+          when Aos::Os::CMDS[:EXIT][:key]
+            # exit
+            send_to_system_call = true
+            handle_exit(args)
+          when Aos::Os::CMDS[:HELP][:key]
+            # help
+            send_to_system_call = handle_help(args)
+          when Aos::Os::CMDS[:LL][:key]
+            # ll
+            handle_ll(args)
+          when Aos::Os::CMDS[:LS][:key]
+            # ls
+            handle_ls(args)
+          when Aos::Os::CMDS[:PWD][:key]
+            # pwd
+            handle_pwd(args)
           end
         end
       end
 
-      # if system is going to run
-      # but redirect happens
-      # cancel system run
-      if passthrough && redirect_to_room(args[Aro::Mancy::O])
-        return false
+      if send_to_system_call
+        # process lib commands
+        lib = Aos::Lib.find_by(
+          name: args[Aro::Mancy::O],
+          status: :installed
+        )
+        unless lib.nil?
+          self.display_lines = [lib.usage]
+          send_to_system_call = false
+        end
+
+        # if system is going to run, but redirect happens,
+        # cancel system run.
+        if redirect_to_room(args[Aro::Mancy::O])
+          send_to_system_call = false
+        end
       end
 
-      return passthrough
+      return send_to_system_call
     end
 
     def calc_ps1
@@ -343,6 +372,10 @@ module Aos
 
     def handle_amg(args)
       Aos::Amg.process_cmd(args)
+    end
+
+    def handle_data(args)
+      Aos::Data.process_cmd(args)
     end
 
     def handle_help(args)

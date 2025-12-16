@@ -1,8 +1,8 @@
 =begin
 
-  vws/setup.rb
+  vws/root.rb
 
-  the setup view.
+  the root view.
 
   by i2097i
 
@@ -12,7 +12,7 @@ require_relative :"./base".to_s
 
 module Aos
   module Vw
-    class Setup < Aos::Vw::Base
+    class Root < Aos::Vw::Base
 
     end
   end

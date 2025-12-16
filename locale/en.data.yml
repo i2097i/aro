@@ -1,0 +1,30 @@
+en:
+  data:
+    commands:
+      description:
+        logs: "show aos logs."
+        yous: "show aos logs."
+      usage:
+        logs: "$ data logs"
+        yous: "$ data yous"
+    logs:
+      display: "%{you} entered '%{cmd}' at %{timestamp} in %{pwd}."
+    yous:
+      display: "name: %{name}, access: %{access}, pwd: %{pwd}."
+    messages:
+      listing_logs: "listing aos input logs..."
+      listing_yous: "listing yous..."
+      no_logs: "no input logs."
+      no_yous: "no yous."
+    usage: |
+
+      data [-h | --help] <command>
+        aos data management.
+
+      COMMANDS
+
+        logs
+          show aos logs.
+
+        yous
+          show aos yous.

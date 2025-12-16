@@ -22,5 +22,5 @@ RSpec.configure do |config|
   config.formatter = :documentation # :progress
 
   # suppress stdout
-  config.before { allow($stdout).to receive(:puts) }
+  # config.before { allow($stdout).to receive(:puts) }
 end

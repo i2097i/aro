@@ -9,7 +9,6 @@
 =end
 
 require :base64.to_s
-require_relative :"../shr/t".to_s
 
 class Aro::Deck < ActiveRecord::Base
   has_many :logs
@@ -22,7 +21,7 @@ class Aro::Deck < ActiveRecord::Base
 
   def self.make(new_name)
     return nil unless Aro::Mancy.is_initialized?
-    Aro::Db.new
+    Aro::Db.load
     new_deck = Aro::Deck.create(name: new_name)
     Aro::Deck.select_deck(new_deck) if Aro::Deck.current_deck.nil?
     new_deck

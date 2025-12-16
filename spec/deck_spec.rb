@@ -3,7 +3,7 @@ require_relative :rspec_helper.to_s
 describe Aro::Deck do
   before :all do
     name = TESTING_NAME.to_s
-    Aro::Mancy::create(name)
+    Aro::Mancy.create(name)
     Dir.chdir(name)
     Aro::Deck.make(TESTING_DECK.to_s)
   end

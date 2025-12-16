@@ -17,13 +17,13 @@ module Aos
     CMDS = {
       INST: {
         key: :inst,
-        description: I18n.t("aos.amg.commands.description.inst"),
-        usage: I18n.t("aos.amg.commands.usage.inst"),
+        description: I18n.t("amg.commands.description.inst"),
+        usage: I18n.t("amg.commands.usage.inst"),
       },
       INSTUN: {
         key: :instun,
-        description: I18n.t("aos.amg.commands.description.instun"),
-        usage: I18n.t("aos.amg.commands.usage.instun"),
+        description: I18n.t("amg.commands.description.instun"),
+        usage: I18n.t("amg.commands.usage.instun"),
       },
     }
 
@@ -46,19 +46,19 @@ module Aos
           lib = Aos::Lib.find_by(name: lib_name)
           unless lib.nil?
             if lib.installed?
-              self.instance.display_lines << "#{lib_name} lib is already installed."
+              self.instance.display_lines << I18n.t("amg.messages.already_installed", name: lib_name)
             else
               Aos::Amg.install(lib)
               if lib.reload.installed?
-                self.instance.display_lines << "#{lib_name} installed successfully."
+                self.instance.display_lines << I18n.t("amg.messages.install_success", name: lib_name)
                 self.instance.display_lines += self.inst_lines
                 return true
               else
-                self.instance.display_lines << "failed to install #{lib_name}."
+                self.instance.display_lines << I18n.t("amg.messages.install_failure", name: lib_name)
               end
             end
           else
-            self.instance.display_lines << "could not find #{lib_name} lib."
+            self.instance.display_lines << I18n.t("amg.messages.cannot_locate", name: lib_name)
           end
         else
           # list installed libs
@@ -71,19 +71,19 @@ module Aos
           lib = Aos::Lib.find_by(name: lib_name)
           unless lib.nil?
             if lib.available?
-              self.instance.display_lines << "#{lib_name} lib is not installed."
+              self.instance.display_lines << I18n.t("amg.messages.not_installed", name: lib_name)
             else
               Aos::Amg.uninstall(lib)
               if lib.reload.available?
-                self.instance.display_lines << "#{lib_name} uninstalled successfully."
+                self.instance.display_lines << I18n.t("amg.messages.uninstall_success", name: lib_name)
                 self.instance.display_lines += self.instun_lines
                 return true
               else
-                self.instance.display_lines << "failed to uninstall #{lib_name}."
+                self.instance.display_lines << I18n.t("amg.messages.uninstall_failure", name: lib_name)
               end
             end
           else
-            self.instance.display_lines << "could not find #{lib_name} lib."
+            self.instance.display_lines << I18n.t("amg.messages.cannot_locate", name: lib_name)
           end
         else
           # list available libs
@@ -142,15 +142,10 @@ module Aos
       lines << ""
       installed_libs = Aos::Lib.where(status: :installed)
       unless installed_libs.any?
-        lines << I18n.t("aos.amg.lib.none_installed")
+        lines << I18n.t("amg.messages.none_installed")
       else
-        lines << I18n.t("aos.amg.lib.listing_installed")
-        installed_libs.each_with_index{|lib, i|
-          lines << "[#{i + Aro::Mancy::S} of #{Aos::Lib.count}]"
-          lines << "name: #{lib.name}"
-          lines << "path: " + lib.so_path.split("/").last(Aro::Mancy::N).join("/")
-          lines << "usage: #{lib.usage}"
-        }
+        lines << I18n.t("amg.messages.listing_installed")
+        lines += Aos::Amg.lib_lines(installed_libs)
       end
       lines << ""
 
@@ -163,17 +158,24 @@ module Aos
       lines << ""
       available_libs = Aos::Lib.where(status: :available)
       unless available_libs.any?
-        lines << I18n.t("aos.amg.lib.none_available")
+        lines << I18n.t("amg.messages.none_available")
       else
-        lines << I18n.t("aos.amg.lib.listing_available")
-        available_libs.each_with_index{|lib, i|
-          lines << "[#{i + Aro::Mancy::S} of #{Aos::Lib.count}]"
-          lines << "name: #{lib.name}"
-          lines << "path: " + lib.so_path.split("/").last(Aro::Mancy::N).join("/")
-          lines << "usage: #{lib.usage}"
-        }
+        lines << I18n.t("amg.messages.listing_available")
+        lines += Aos::Amg.lib_lines(available_libs)
       end
       lines << ""
+
+      lines
+    end
+
+    def self.lib_lines(libs)
+      lines = []
+      libs.each_with_index{|lib, i|
+        lines << "[#{i + Aro::Mancy::S} of #{libs.count}]"
+        lines << I18n.t("amg.messages.lib_name", name: lib.name)
+        lines << I18n.t("amg.messages.lib_path", path: lib.so_path.split("/").last(Aro::Mancy::N).join("/"))
+        lines << I18n.t("amg.messages.lib_usage", usage: lib.usage)
+      }
 
       lines
     end

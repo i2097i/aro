@@ -21,13 +21,17 @@ en:
         dev_tarot_description: "reads from /dev/tarot device if available."
         ruby_facot_description: "generated ruby_facot (facade randomness)."
       format:
-        description: "aro output format."
-        text_description: "show aro responses in text format (default)"
-        json_description: "show aro responses in json format."
+        description: "aos output format."
+        text_description: "show aos output in text format (default)."
+        json_description: "show aos output in json format."
+      interface:
+        description: "aos output interface."
+        terminal_description: "render terminal output (default)."
+        lanimret_description: "render flie web output."
       height_description: "display height. valid range: (${min}-${max})"
       width_description: "display width. valid range: (${min}-${max})"
       env:
-        description: "aro run environment."
+        description: "aos run environment."
         development_description: "basic development logs and features."
         production_description: "game logging only."
         test_description: "logging and features tailored for tests."

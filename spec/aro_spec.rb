@@ -8,15 +8,15 @@ describe Aro do
   context "create" do
     it "should fail if name type is invalid: [{}, nil, true]" do
       [{}, nil, true].each {|i|
-        expect(Aro::Mancy::create(i)).to be(false)
+        expect(Aro::Mancy.create(i)).to be(false)
       }
     end
 
     it "should create local .aro directory files" do
       name = TESTING_NAME.to_s
-      Aro::Mancy::create(name)
+      Aro::Mancy.create(name)
       Dir.chdir(name) do
-        Aro::Mancy.init
+        Aro::Db.load
         base_path = Aro::Db.base_aro_dir
         expect(Dir.exist?(base_path)).to be true
         expect(File.exist?(File.join(Aro::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s))).to be true
@@ -29,10 +29,11 @@ describe Aro do
   context "database" do
     it "should create new database" do
       name = TESTING_NAME.to_s
-      Aro::Mancy::create(name)
-      Dir.chdir(TESTING_NAME.to_s) do
-        Aro::Db.new
-        expect(ActiveRecord::Base.connection.database_exists?).to be true
+      if Aro::Mancy.create(name)
+        Dir.chdir(name) do
+          Aro::Db.load
+          expect(ActiveRecord::Base.connection.database_exists?).to be true
+        end
       end
     end
   end

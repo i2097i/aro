@@ -1,0 +1,44 @@
+en:
+  amg:
+    commands:
+      description:
+        inst: "show installed libs or install a lib."
+        instun: "show uninstalled libs or uninstall a lib."
+      usage:
+        inst: "$ amg inst <lib>"
+        instun: "$ amg instun <lib>"
+    messages:
+      already_installed: "%{name} lib is already installed."
+      cannot_locate: "could not find %{name} lib."
+      install_success: "%{name} installed successfully."
+      install_failure: "failed to install %{name}."
+      lib_name: "name: %{name}"
+      lib_path: "path: %{path}"
+      lib_usage: "usage: %{usage}"
+      listing_available: "listing available libs..."
+      listing_installed: "listing installed libs..."
+      none_available: "no libs available for install."
+      none_installed: "no libs installed."
+      not_installed: "%{name} lib is not installed."
+      uninstall_success: "%{name} uninstalled successfully."
+      uninstall_failure: "failed to uninstall %{name}."
+    usage: |
+
+      amg [-h | --help] <command>
+        aos system management.
+
+      COMMANDS
+
+        inst
+          show installed libs.
+
+          install a lib named <lib>.
+
+            $ amg inst <lib>
+
+        instun
+          show uninstalled libs.
+
+          uninstall a lib named <lib>.
+
+            $ amg instun <lib>

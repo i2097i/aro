@@ -8,8 +8,6 @@
 
 =end
 
-require :aro.to_s
-
 module Aos
   module Vw
     class Base
@@ -22,43 +20,12 @@ module Aos
         draw([self.name])
       end
 
-      def self.get_json(lines)
-        {
-          body: lines,
-          you: Aos::Os.instance.you.to_json,
-          domain: self.get_domain,
-          clock: self.get_clock,
-          dimension: self.get_dimension,
-          dev_tarot: self.get_dt,
-        }
-      end
-
       def self.draw(body_lines)
-        unless Aro::Config.is_format_text?
-          Aos::S.say(self.get_json(lines))
-          return true
-        end
-
         return false unless body_lines.kind_of?(Array)
         lines = []
         dc = Aro::Config.display_configuration
         height = dc[:HEIGHT]
         width = dc[:WIDTH]
-
-        # header
-        # lines << "".center(width, "=")
-        # lines << "".center(width)
-
-        # half = ((width - self.name.length) / Aro::Mancy::OS.to_f).ceil
-        # domain = self.get_domain
-        # clock = self.get_clock
-        # lines << (
-        #   (
-        #     domain.ljust(half) + self.name.to_s.upcase
-        #   ).ljust(width - clock.length) + clock
-        # )
-
-        # lines << "".center(width, dc[:DIVIDER])
 
         # top vertical margin
         Aos::Vw::Base::MARGIN_V.times do
@@ -70,15 +37,7 @@ module Aos
           lines << get_body_line(line)
         }
 
-        lines += get_aos_display_lines
-
-        # footer
-        # display_dim = self.get_display_dimension
-        # lines << (
-        #   (
-        #     ">[#{domain}]>#{Aos::Os::osify(Aos::Os.instance.you&.pwd || Dir.pwd)}"
-        #   ).ljust(width - display_dim.length) + display_dim
-        # )
+        lines += get_aos_display_lines if Aro::Dom.in_arodom?
 
         # print everything
         Aos::S.say(lines.join("\n"))
@@ -100,8 +59,8 @@ module Aos
           }
           lines << "".center(width)
           lines << "v#{Aro::VERSION.to_s}".ljust(width - display_dim.length) + display_dim
-          # lines << "".center(width, "=")
         end
+
         lines
       end
 
@@ -144,21 +103,13 @@ module Aos
 
       def self.lines_for_cmd(cmd)
         just_cmds = Aro::Mancy::NUMERALS[:IX]
-        cmd_lines = []
-        key_proc = Proc.new{|k| "$ #{k}"}
-        desc_proc = Proc.new{|desc| "#{"desc:".rjust(just_cmds)} #{desc}"}
-        usage_proc = Proc.new{|usage| "#{"usage:".rjust(just_cmds)} #{usage}"}
-
-        cmd_lines << key_proc.call(cmd[:key])
-        cmd_lines << desc_proc.call(cmd[:description])
-        cmd_lines << usage_proc.call(cmd[:usage])
-        (cmd[:cmds] || []).each{|k, v|
-          cmd_lines << key_proc.call("#{cmd[:key]} #{v[:key]}")
-          cmd_lines << desc_proc.call(v[:description])
-          cmd_lines << usage_proc.call(v[:usage])
-        }
-
-        cmd_lines
+        lines = []
+        lines << "\"#{cmd[:key]}\""
+        lines << "  => #{cmd[:description]}"
+        lines << ""
+        lines << "#{"  ".rjust(just_cmds)} #{cmd[:usage]}"
+        lines << ""
+        lines
       end
 
       def self.debug_log(lines)

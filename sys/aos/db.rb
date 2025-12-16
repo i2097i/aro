@@ -9,14 +9,19 @@
 =end
 
 module Aos
-  class Db < Aro::Db
+  class Db
+    include Singleton
+
+    DATABASE_YML = :"database.yml"
     GEM_DB_PATH = :"sys/aos/db"
+    MIGRATIONS_DIR = :"db/migrate"
+    SCHEMA_FILE = :"schema.rb"
     SQL_FILE = :"aos.sql"
 
-    def initialize
+    def self.load(password = nil)
       Aos::Db.configure_logger
       if Aro::Dom.in_arodom?
-        set_up_aos
+        self.instance.set_up_aos(password)
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Dom.name))
       end
@@ -31,7 +36,8 @@ module Aos
     end
 
     def self.base_aro_dir
-      Aro::Dom.ethergeist_path
+      # Aro::Dom.ethergeist_path
+      File.join(Aro::Dom.dom_root, Aro::Dom.room_path(:data))
     end
 
     def db_config_filepath
@@ -39,7 +45,7 @@ module Aos
       File.join(Aos::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s)
     end
 
-    def set_up_aos
+    def set_up_aos(password)
       name = Aro::Dom.ethergeist_name
       return if name.nil?
 
@@ -49,21 +55,35 @@ module Aos
       end
 
       unless File.exist?(db_config_filepath)
-        Aro::D.say("creating database: #{db_config_filepath}")
-        # create database config yaml file
-        c = {
-          adapter: :sqlite3.to_s,
-          database: File.join(Aos::Db.base_aro_dir, Aos::Db::SQL_FILE.to_s),
-          username: name,
-          password: name
-        }.to_yaml
-        File.open(db_config_filepath, "w") do |file|
-          file.write(c)
+        unless password.nil?
+          Aro::D.say("creating database: #{db_config_filepath}")
+          # create database config yaml file
+          db_file_path = File.join(Aos::Db.base_aro_dir, Aos::Db::SQL_FILE.to_s)
+          File.open(db_config_filepath, "w") do |file|
+            file.write({
+              adapter: :sqlite3.to_s,
+              database: db_file_path,
+              username: name,
+              password: password,
+            }.to_yaml)
+          end
+        else
+          Aro::D.say("unable to create database without root password.")
         end
       end
 
-      connect(name)
-      migrate(name)
+      if File.exist?(db_config_filepath)
+        connect(name)
+        migrate(name)
+      else
+        Aro::D.say("unable to set up database without root password.")
+      end
+    end
+
+    def connect(name)
+      ActiveRecord::Base.establish_connection(
+        YAML.load_file(db_config_filepath)
+      )
     end
 
     def migrate(name)

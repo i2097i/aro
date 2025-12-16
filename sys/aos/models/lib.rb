@@ -8,12 +8,15 @@
 
 =end
 
-# todo: put in separate file and require it
 # installed lib modules section
 
 module CRS
   SO_FILE = :"libcrs.so".to_s
-  SO_PATH = File.join(File.dirname(__dir__), :lib.to_s, :crs.to_s, CRS::SO_FILE)
+  SO_PATH = File.join(
+    Reiquire::GEM_PATH,
+    :"sys/shr/lib/crs".to_s,
+    CRS::SO_FILE
+  )
   extend FFI::Library
   ffi_lib CRS::SO_PATH
   attach_function :hello, [], :string
@@ -37,7 +40,7 @@ class Aos::Lib < ActiveRecord::Base
   private
 
   def set_so_path
-    # todo make configurable
+    # todo make configurable for other modules
     self.so_path = CRS::SO_PATH
   end
 end

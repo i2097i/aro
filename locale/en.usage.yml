@@ -16,7 +16,7 @@ en:
             $ aro create <name>
 
         init
-          set up the .aro directory that contains database and config
+          sets up the .aro directory that contains database and config
 
           note:
             this runs by default after create and has no effect if init is complete.
@@ -24,15 +24,15 @@ en:
         config
           aro config management.
 
-            $ aro config <commands>
+            $ aro config <var_name> <var_value>
 
-          passing no args opens prints the current config.
+          passing no args or only <var_name> prints the current config or <var_value>.
 
           SUBCOMMANDS
             set
               sets an ivar to a specified value. the aro var prefix can be omitted.
 
-                $ aro config set <var_name> <var_value>
+                $ aro config <var_name> <var_value>
 
         deck
           manage decks in the current room.
@@ -106,7 +106,7 @@ en:
           $ aro dom <commands>
 
           SUBCOMMANDS
-            init
+            init <username> <password>
               generate the arodome
             new
               create a new arodome with the specified name.

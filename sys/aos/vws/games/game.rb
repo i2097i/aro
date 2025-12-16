@@ -8,7 +8,7 @@
 
 =end
 
-require_relative :"../../../models/deck".to_s
+require_relative :"../../../aro/models/deck".to_s
 require_relative :"../base".to_s
 
 module Aos
