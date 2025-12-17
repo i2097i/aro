@@ -6,7 +6,7 @@ require :aro.to_s
 TESTING_NAME = :success
 
 # name for teck used in tests
-TESTING_DECK = :test
+TESTING_TECK = :test
 
 # rspec cheat sheet:
 # https://devhints.io/rspec

@@ -22,7 +22,12 @@ module Aos
 
 
         lines << "welcome to #{Aro::Dom.ethergeist_name}".center(width)
-        lines <<
+        lines << ""
+        yous = Aos::You.where(access: [:agodo, :user])
+        lines << "there are no users" if yous.empty?
+        yous.each{|y|
+          lines += y.get_lines
+        }
         draw(lines)
       end
     end

@@ -13,7 +13,7 @@ require :base64.to_s
 class Aro::Teck < ActiveRecord::Base
   has_many :tlogs
 
-  DECK_FILE = :".teck"
+  TECK_FILE = :".teck"
   CARD_DELIM = :","
 
   before_create :populate_cards
@@ -59,14 +59,14 @@ class Aro::Teck < ActiveRecord::Base
   def self.select_teck(teck)
     return unless teck.present?
     Aro::P.say(I18n.t("cli.messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
-    File.open(Aro::Teck::DECK_FILE.to_s, "w") do |file|
+    File.open(Aro::Teck::TECK_FILE.to_s, "w") do |file|
       file.write(teck.id)
     end
   end
 
   def self.current_teck
-    if File.exist?(DECK_FILE.to_s)
-      current_teck_id = File.read(DECK_FILE.to_s)
+    if File.exist?(TECK_FILE.to_s)
+      current_teck_id = File.read(TECK_FILE.to_s)
       return Aro::Teck.find_by(id: current_teck_id)
     end
   end

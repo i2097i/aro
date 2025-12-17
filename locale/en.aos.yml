@@ -2,6 +2,7 @@ en:
   aos:
     commands:
       description:
+        abot: "fun with cron."
         amg: "manage aos. a tool for package installation/management."
         cd: "change directory. no args navigates to arodome root."
         config: "read/write aos vars. (enter vars lowercase excluding bash prefix)."
@@ -12,6 +13,7 @@ en:
         ls: "list files and folders in the pwd."
         pwd: "show pwd."
       usage:
+        abot: "$ abot [-h | --help] <command>"
         amg: "$ amg [-h | --help] <command>"
         cd: "$ cd <name>"
         config: "$ config <var_name> <var_value>"

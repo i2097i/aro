@@ -9,7 +9,6 @@
 =end
 
 module CLI
-  # cli entrypoint
   def self.teck
     action = CLI::ARGV1&.to_sym
 
@@ -25,7 +24,7 @@ module CLI
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
-    elsif action == CLI::CMDS[:DECK][:NEW]
+    elsif action == CLI::CMDS[:TECK][:NEW]
       CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
       if Aro::Mancy.in_aro?
         Aro::Db.load
@@ -35,20 +34,20 @@ module CLI
       else
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
-    elsif CLI::CMDS[:DECK].values.include?(action)    
+    elsif CLI::CMDS[:TECK].values.include?(action)
       if Aro::Mancy.game.nil?
         Aro::P.say(I18n.t("cli.errors.missing_teck", cmd: Aro::Mancy::I2097I))
         exit(CLI::EXIT_CODES[:GENERAL_ERROR])
       end
 
       case action
-      when CLI::CMDS[:DECK][:EXPLORE]
+      when CLI::CMDS[:TECK][:EXPLORE]
         Aro::Mancy.game.explore
         exit(CLI::EXIT_CODES[:SUCCESS])
-      when CLI::CMDS[:DECK][:SHUFFLE]
+      when CLI::CMDS[:TECK][:SHUFFLE]
         Aro::P.say(I18n.t("cli.messages.shuffling", name: Aro::Mancy.game.name))
         Aro::Mancy.game.shuffle
-      when CLI::CMDS[:DECK][:DRAW]
+      when CLI::CMDS[:TECK][:DRAW]
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.game.name))
         Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{Aro::Config.ivar(:DIMENSION)}"))
         Aro::Mancy.game.draw(
@@ -56,10 +55,10 @@ module CLI
           z_max: Aro::Config.ivar(:Z_MAX).to_i,
           z: Aro::Config.ivar(:Z)
         )
-      when CLI::CMDS[:DECK][:REPLACE]
+      when CLI::CMDS[:TECK][:REPLACE]
         Aro::P.say(I18n.t("cli.messages.replacing_drawn", name: Aro::Mancy.game.name))
         Aro::Mancy.game.replace
-      when CLI::CMDS[:DECK][:RESET]
+      when CLI::CMDS[:TECK][:RESET]
         if Aro::Mancy::YES.to_s != Aro::P.p.ask("#{Aro::Mancy::PS1}#{I18n.t("cli.messages.confirmation_prompt", name: Aro::Mancy.game.name)}")
           Aro::P.say(I18n.t("cli.messages.understood", name: Aro::Mancy.game.name))
           exit(CLI::EXIT_CODES[:SUCCESS])

@@ -55,6 +55,7 @@ module Aro
       XXII:    22,
       XXXVII:  37,
       XLII:    42,
+      LX:      60,
       C:       100,
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }

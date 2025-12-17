@@ -11,10 +11,12 @@
 module Aos
   class You < ActiveRecord::Base
     has_many :ilogs
+    has_one :agodo
     before_validation :set_pwd
     after_update :clear_aos_display
 
     enum :access, [
+      :agodo,
       :user,
       :root,
     ]
@@ -31,7 +33,7 @@ module Aos
         I18n.t(
           "data.yous.display",
           name: name,
-          access: Aos::You::accesses[access],
+          access: access,
           pwd: Aos::Os.osify(pwd)
         )
       ]

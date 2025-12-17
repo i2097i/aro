@@ -17,7 +17,13 @@ module Aos
       MARGIN_H = Aro::Mancy::S
 
       def self.show
-        draw([self.name])
+        draw([
+          "the #{self.name} room.",
+          "",
+          "getting directory listing...",
+          "",
+          Aos::Os.instance.get_ls([], true)
+        ])
       end
 
       def self.draw(body_lines)
@@ -65,11 +71,7 @@ module Aos
       end
 
       def self.get_display_dimension
-        "#{self.get_dt.rjust(Aro::Mancy::V)} :<[#{self.get_dimension}]<"
-      end
-
-      def self.get_dt
-        Aro::T.read_dev_tarot.strip[Aro::Mancy::S..]
+        "#{Aro::T.read_dev_tarot(true).rjust(Aro::Mancy::V)} :<[#{self.get_dimension}]<"
       end
 
       def self.get_dimension

@@ -14,6 +14,8 @@ en:
         description: "sign up."
       winner:
         description: "win."
+      abot:
+        description: "abot."
       abpps:
         description: "artificial beings."
       hbpps:
@@ -33,8 +35,8 @@ en:
     errors:
       directory_exists: "unable to create arodome at %{name}. file or directory already exists."
       failed_already_in_arodom: "unable to create an arodome because you are already in arodom."
-      failed_in_aro_space: "unable to create an arodome inside of aro space."
       failed_already_initialized: "arodome is already initialized. doing nothing."
+      failed_in_aro_space: "unable to create an arodome inside of aro space."
     messages:
       arodome_created: "%{name} arodome created. enter the following commands to begin: $ cd %{name}"
       creating_arodome: "creating arodome named %{name}"

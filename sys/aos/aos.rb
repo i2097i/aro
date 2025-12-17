@@ -43,6 +43,11 @@ module Aos
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
 
     CMDS = {
+      ABOT: {
+        key: :abot,
+        description: I18n.t("aos.commands.description.abot"),
+        usage: I18n.t("aos.commands.usage.abot"),
+      },
       AMG: {
         key: :amg,
         description: I18n.t("aos.commands.description.amg"),
@@ -123,6 +128,11 @@ module Aos
       cmd
     end
 
+    def self.cron
+      Aos::Abot.cron
+      # ...
+    end
+
     def initialize
       self.you_flag = false
       Aro::Config.instance.load
@@ -132,6 +142,7 @@ module Aos
       Aos::Db.load
       load_ilibs
       load_you
+      Aos::Abot.abot
     end
 
     def load_ilibs
@@ -214,7 +225,6 @@ module Aos
         end
 
         unless cmd.nil?
-
         end
       end
 
@@ -245,6 +255,9 @@ module Aos
     def run
       # run condition
       @running = true
+
+      # start cron
+      Aos::Os.cron
 
       original_stdout = $stdout
       $stdout = StringIO.open do |out|
@@ -281,23 +294,28 @@ module Aos
       send_to_system_call = !Aos::Os.is_aos_command?(args[Aro::Mancy::O]) ||
         args.include?(:aos.to_s)
 
-      # set aos pwd
+      # the command is valid
       unless send_to_system_call
+
         Dir.chdir(@you.pwd) do
           # process commands
           case args[Aro::Mancy::O].to_sym
+          when Aos::Os::CMDS[:ABOT][:key]
+            # abot
+            send_to_system_call = Aos::Abot.process_cmd(args)
           when Aos::Os::CMDS[:AMG][:key]
             # amg
-            send_to_system_call = handle_amg(args)
+            send_to_system_call = Aos::Amg.process_cmd(args)
           when Aos::Os::CMDS[:CD][:key]
             # cd
             handle_cd(args)
           when Aos::Os::CMDS[:CONFIG][:key]
             # config
-            send_to_system_call = handle_config(args)
+            send_to_system_call = true
+            Aro::Config.process_command(args)
           when Aos::Os::CMDS[:DATA][:key]
             # data
-            send_to_system_call = handle_data(args)
+            send_to_system_call = Aos::Data.process_cmd(args)
           when Aos::Os::CMDS[:EXIT][:key]
             # exit
             send_to_system_call = true
@@ -351,11 +369,6 @@ module Aos
       args
     end
 
-    def handle_config(args)
-      Aro::Config.process_config_command(args)
-      return true
-    end
-
     def redirect_to_room(arg)
       # search for reserved room path
       handled = false
@@ -370,23 +383,25 @@ module Aos
       handled
     end
 
-    def handle_amg(args)
-      Aos::Amg.process_cmd(args)
-    end
-
-    def handle_data(args)
-      Aos::Data.process_cmd(args)
-    end
-
     def handle_help(args)
       redirect_to_room(Aro::Dom::WAITE)
       return false
     end
 
     def handle_ls(args)
-      self.display_lines = [
-        Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_EXTGLOB).map{|p| "/" + Aos::Os::osify(p)}.join("\n")
-      ]
+      self.display_lines = [get_ls(args)]
+    end
+
+    def get_ls(args, split = false)
+      Dir.glob(
+        File.join(
+          @you.pwd,
+          (args[1] || "") + Aos::Os::STAR.to_s
+        ),
+        File::FNM_EXTGLOB
+      ).map{|p|
+        "#{split ? "\n/" :"/"}" + Aos::Os::osify(p)
+      }.join("\n")
     end
 
     def handle_ll(args)
@@ -403,6 +418,10 @@ module Aos
     def handle_exit(args)
       Aos::S.say("#{Aos::Os} is exiting...")
       @running = false
+      if File.exist?(Aos::Abot.cron_pid_file)
+        system("kill -9 #{File.read(Aos::Abot.cron_pid_file)}")
+        FileUtils.rm(Aos::Abot.cron_pid_file)
+      end
     end
 
     def handle_cd(args)

@@ -26,7 +26,7 @@ when CLI::CMDS[:ARO][:CONFIG]
   Aro::config
 when CLI::CMDS[:ARO][:CREATE]
   CLI::create
-when CLI::CMDS[:ARO][:DECK]
+when CLI::CMDS[:ARO][:TECK]
   CLI::teck
 when CLI::CMDS[:ARO][:DOM]
   CLI::dom

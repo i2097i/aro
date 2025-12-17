@@ -24,21 +24,15 @@ module CLI
   }
 
   CMDS = {
-    AOS: {
-      RUN: :run,
-      WATCH: :watch,
-    },
     ARO: {
       CREATE: :create,
       CONFIG: :config,
-      DECK: :teck,
+      TECK: :teck,
       DOM: :dom,
       INIT: :init,
     },
-    CONFIG: {
-      # ...
-    },
-    DECK: {
+    CONFIG: {}, # see Aro::Config
+    TECK: {
       DRAW: :draw,
       EXPLORE: :explore,
       NEW: :new,

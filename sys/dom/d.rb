@@ -38,6 +38,10 @@ module Aro
         },
       },
       GAMES: {
+        ABOT: {
+          name: Aro::Dom::ABOT,
+          description: I18n.t("dom.rooms.abot.description"),
+        },
         ABPPS: {
           name: Aro::Dom::ABPPS,
           description: I18n.t("dom.rooms.abpps.description"),
@@ -99,6 +103,7 @@ module Aro
         name: Aro::Dom::GAMES,
         description: I18n.t("dom.wings.games.description"),
         rooms: [
+          Aro::Dom::D::WINGS[:GAMES][:ABOT],
           Aro::Dom::D::WINGS[:GAMES][:ABPPS],
           Aro::Dom::D::WINGS[:GAMES][:HBPPS],
           Aro::Dom::D::WINGS[:GAMES][:SHPPS],

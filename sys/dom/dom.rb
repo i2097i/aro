@@ -30,6 +30,7 @@ module Aro
     WINNER = :winner
     
     # > game spaces
+    ABOT = :abot
     ABPPS = :abpps
     HBPPS = :hbpps
     SHPPS = :shpps

@@ -5,7 +5,7 @@ describe Aro::Teck do
     name = TESTING_NAME.to_s
     Aro::Mancy.create(name)
     Dir.chdir(name)
-    Aro::Teck.make(TESTING_DECK.to_s)
+    Aro::Teck.make(TESTING_TECK.to_s)
   end
 
   after :all do
@@ -17,7 +17,7 @@ describe Aro::Teck do
 
     it "should :CREATE" do
       expect(Aro::Teck.count).to eq Aro::Mancy::S
-      expect(Aro::Teck.current_teck&.name).to eq TESTING_DECK.to_s
+      expect(Aro::Teck.current_teck&.name).to eq TESTING_TECK.to_s
     end
 
     it "should :SHOW" do

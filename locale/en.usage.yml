@@ -9,6 +9,10 @@ en:
 
         aro [-v | --version] [-h | --help] <command1> <command2>
 
+        quickstart or tldr;
+
+          $ aro create <name> && cd <name> && aro teck new <teck> && aro
+
       COMMANDS
         create
           create and init an aro game room named <name>:
@@ -27,12 +31,6 @@ en:
             $ aro config <var_name> <var_value>
 
           passing no args or only <var_name> prints the current config or <var_value>.
-
-          SUBCOMMANDS
-            set
-              sets an ivar to a specified value. the aro var prefix can be omitted.
-
-                $ aro config <var_name> <var_value>
 
         teck
           manage tecks in the current room.

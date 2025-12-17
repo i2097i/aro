@@ -15,7 +15,7 @@ module Aos
   module Vw
     class Game < Aos::Vw::Base
 
-      DECK_PARAMS = [
+      TECK_PARAMS = [
         :teck,
         :tlog_records,
         :count_n,
@@ -45,7 +45,7 @@ module Aos
 
       def self.show_game(model)
         mk = model.keys
-        dp = Aos::Vw::Game::DECK_PARAMS
+        dp = Aos::Vw::Game::TECK_PARAMS
         return nil unless (mk & dp).count == dp.count
         return nil unless model.values.all?{|v| v != nil}
 

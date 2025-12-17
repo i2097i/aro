@@ -13,7 +13,7 @@ module Aro
   # cli entrypoint
   def self.config
     Aro::Config.instance.load
-    Aro::Config.process_config_command(ARGV)
+    Aro::Config.process_command(ARGV)
   end
 
   class Config
@@ -442,7 +442,7 @@ module Aro
       Aro::Config.ivar(:FORMAT)&.to_sym == Aro::Config::FORMATS[:TEXT]
     end
 
-    def self.process_config_command(args)
+    def self.process_command(args)
       k = Aro::Config::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
       unless k.nil?
         unless args[Aro::Mancy::OS].nil?

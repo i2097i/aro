@@ -11,7 +11,7 @@
 require_relative :"./teck".to_s
 
 class Aro::Tlog < ActiveRecord::Base
-  belongs_to :teck, :class_name => :"#{Aro::Teck.name}".to_s
+  belongs_to :teck
 
   ORDERING = {
     ASC: :asc,
