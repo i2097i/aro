@@ -69,9 +69,11 @@ module Aos
     end
 
     def self.process_cmd(args)
-      if args[Aro::Mancy::S].nil? ||
-        CLI::FLAGS[:HELP].include?(args[Aro::Mancy::S].to_sym)
+      if args[Aro::Mancy::S].nil?
         Aos::Abot.abot
+        return true
+      elsif CLI::FLAGS[:HELP].include?(args[Aro::Mancy::S].to_sym)
+        self.instance.display_lines = [I18n.t("abot.usage")]
         return true
       end
 
@@ -164,10 +166,12 @@ module Aos
         agodo_record&.destroy
         agodo_you.ilogs.destroy_all
         agodo_you.destroy
-      end
-      requery = Aos::You.find_by(name: n)
-      if requery.nil? && requery&.agodo.nil?
-        self.instance.display_lines << "successfully destroyed #{n} agodo."
+        requery = Aos::You.find_by(name: n)
+        if requery.nil? && requery&.agodo.nil?
+          self.instance.display_lines << "successfully destroyed #{n} agodo."
+        else
+          self.instance.display_lines << "unable to destroyed the #{n} agodo."
+        end
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
       end

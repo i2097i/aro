@@ -28,6 +28,12 @@ en:
       abot [-h | --help] <command>
         fun with cron and agodos.
 
+        go to the directory where you want to spawn an agodo
+        and use the 'abot agodo' command to create one there.
+        note: passing no arguments to abot agodo will bring
+        you back to the abot room unless you pass args for
+        <go> <do> and <rate>.
+
       COMMANDS
 
         agodo

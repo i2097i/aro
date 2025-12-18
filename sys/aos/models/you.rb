@@ -32,9 +32,9 @@ module Aos
       [
         I18n.t(
           "data.yous.display",
-          name: name,
-          access: access,
-          pwd: Aos::Os.osify(pwd)
+          name: name&.ljust(Aro::Mancy::NUMERALS[:XIV]),
+          access: access&.ljust(Aro::Mancy::NUMERALS[:XIV]),
+          pwd: Aos::Os.osify(pwd)&.ljust(Aro::Mancy::NUMERALS[:XIV])
         )
       ]
     end
@@ -46,6 +46,7 @@ module Aos
     end
 
     def clear_aos_display
+      return unless Aos::Os.instance.you = self
       Aos::Os.instance.display_lines = [Aos::Os.osify(pwd, true)]
     end
   end

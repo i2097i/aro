@@ -43,7 +43,9 @@ module Aos
           lines << get_body_line(line)
         }
 
-        lines += get_aos_display_lines if Aro::Dom.in_arodom?
+        if Aro::Dom.in_arodom?
+          lines += get_aos_display_lines
+        end
 
         # print everything
         Aos::S.say(lines.join("\n"))
@@ -64,6 +66,21 @@ module Aos
             lines << line
           }
           lines << "".center(width)
+          present_users = Aos::You.order(
+            name: :asc
+          ).where(
+            pwd: Aos::Os.instance.you.pwd,
+            access: [:agodo, :user]
+          ).map{|y|
+            (Aos::Os.instance.you == y ? Aos::Os::STAR.to_s : "") +
+            y.name
+          }
+
+          if present_users.any?
+            lines << "[ yous in the room ]".center(width)
+            lines << ("[  " + present_users.join("    ") + "  ]").center(width)
+            lines << ":you_are_root".center(width) if Aos::Os.instance.you.root?
+          end
           lines << "v#{Aro::VERSION.to_s}".ljust(width - display_dim.length) + display_dim
         end
 
