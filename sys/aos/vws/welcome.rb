@@ -17,7 +17,6 @@ module Aos
         lines = []
 
         dc = Aro::Config.display_configuration
-        height = dc[:HEIGHT]
         width = dc[:WIDTH]
 
         lines << "welcome to #{Aro::Dom.ethergeist_name}".center(width)
@@ -56,6 +55,7 @@ module Aos
           lines << "".ljust(hwidth, dc[:DIVIDER])
           lines << ""
           yous.each{|y|
+            next if y.root? && !Aos::Os.instance.you.root?
             lines += y.get_lines.map{|l| l.center(hwidth)}
           }
         end

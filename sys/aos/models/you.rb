@@ -12,7 +12,9 @@ module Aos
   class You < ActiveRecord::Base
     has_many :ilogs
     has_one :agodo
+    has_many :fpxies
     before_validation :set_pwd
+    after_create :create_home_directory
     after_update :clear_aos_display
 
     enum :access, [
@@ -25,6 +27,22 @@ module Aos
       ilogs.create(
         pwd: Aos::Os.osify(pwd),
         cmd: cmd
+      )
+    end
+
+    def home!
+      update(pwd: home)
+    end
+
+    def home?
+      self.pwd == self.home
+    end
+
+    def home
+      File.join(
+        Aro::Dom::dom_root,
+        Aro::Dom.room_path(root? ? Aro::Dom::CONFIG : Aro::Dom::HOME),
+        root? ? "" : self.name
       )
     end
 
@@ -43,6 +61,11 @@ module Aos
 
     def set_pwd
       self.pwd = Dir.pwd if self.pwd.nil?
+    end
+
+    def create_home_directory
+      return if root? || Dir.exist?(File.join(Aro::Dom.room_path(Aro::Dom::HOME), self.name))
+      Aro::Dom.instance.generate_room(Aro::Dom::D::LAYOUT[:HOME], {name: self.name.to_sym})
     end
 
     def clear_aos_display

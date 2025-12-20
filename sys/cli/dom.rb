@@ -25,8 +25,7 @@ module CLI
       if Aro::Dom.is_initialized?
         Aro::P.say(I18n.t("dom.errors.failed_already_initialized"))
       elsif Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
-        arodome = Aro::Dom.new
-        arodome.generate(ARGV[Aro::Mancy::OS], ARGV[Aro::Mancy::E])
+        Aro::Dom.instance.generate(ARGV[Aro::Mancy::OS], ARGV[Aro::Mancy::E])
       else
         CLI::Nterface.exit_error_invalid_usage!
       end

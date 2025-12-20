@@ -43,6 +43,7 @@ module Aro
           description: I18n.t("dom.rooms.abot.description"),
         },
       },
+      HOME: {},
       KNOW: {
         BODY: {
           name: Aro::Dom::BODY,
@@ -93,6 +94,11 @@ module Aro
         rooms: [
           Aro::Dom::D::WINGS[:GAMES][:ABOT],
         ],
+      },
+      HOME: {
+        name: Aro::Dom::HOME,
+        description: I18n.t("dom.wings.home.description"),
+        rooms: [],
       },
       KNOW: {
         name: Aro::Dom::KNOW,

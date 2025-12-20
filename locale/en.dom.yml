@@ -4,7 +4,9 @@ en:
       welcome:
         description: "sign up process."
       games:
-        description: "aro game rooms."
+        description: "game rooms."
+      home:
+        description: "user space."
       know:
         description: "information space."
       root:

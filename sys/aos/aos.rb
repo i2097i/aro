@@ -103,7 +103,9 @@ module Aos
     def self.osify(path, leading_slash = false)
       return path unless Aro::Dom.in_arodom?
       path_arr = path.split("/")
-      Aro::Dom::dom_root.split("/").each{|rdp| path_arr.delete_at(path_arr.index(rdp))}
+      Aro::Dom::dom_root.split("/").each{|rdp|
+        path_arr.delete_at(path_arr.index(rdp)) unless path_arr.index(rdp).nil?
+      }
       result = path_arr.join("/")
       if leading_slash
         result = "/" + result
@@ -140,10 +142,6 @@ module Aos
 
     def initialize
       self.you_flag = false
-      Aro::Config.instance.load
-      # if Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
-        # Aro::Dom.new.generate unless Aro::Mancy.in_aro?
-      # end
       Aos::Db.load
       load_ilibs
       load_you
@@ -182,17 +180,21 @@ module Aos
       view_name = Aos::Os.osify(@you.pwd).split("/").last || :dom.to_s
       view_cls = nil
 
-      cls_name = (Aos::Vw.name + "::#{view_name.capitalize}")
-      Aro::D.say("attempting to load view class #{cls_name}")
-      begin
-        view_cls = cls_name.constantize
-      rescue
-        view_cls = Aos::Vw::Base
-      end
+      if @you.home?
+        view_cls = Aos::Vw::Home
+      else
+        cls_name = (Aos::Vw.name + "::#{view_name.capitalize}")
+        Aro::D.say("attempting to load view class #{cls_name}")
+        begin
+          view_cls = cls_name.constantize
+        rescue
+          view_cls = Aos::Vw::Base
+        end
 
-      Dir.chdir(@you.pwd) do
-        if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-          view_cls = Aos::Vw::Teck
+        Dir.chdir(@you.pwd) do
+          if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
+            view_cls = Aos::Vw::Teck
+          end
         end
       end
 
@@ -213,6 +215,8 @@ module Aos
     end
 
     def process_cmd(cmd)
+      # load config
+      Aro::Config.instance.load
       Dir.chdir(@you.reload.pwd) do
         configure_readline
         send_to_system_call = main(cmd)
@@ -270,7 +274,8 @@ module Aos
         loop do
           # erase before cursor
           process_cmd(cmd)
-          IO.console.goto(Aro::Config.display_configuration[:HEIGHT], Aro::Mancy::O)
+          height, width = IO.console.winsize
+          IO.console.goto(height, Aro::Mancy::O)
           break unless @running && cmd = Readline.readline(calc_ps1, true)
           IO.console.erase_screen(Aro::Mancy::S)
         end
@@ -380,13 +385,25 @@ module Aos
     def redirect_to_room(arg)
       # search for reserved room path
       handled = false
-      room_path = Aro::Dom.room_path(arg)
-      if !room_path.empty?
+      if arg.to_sym == Aro::Dom::CONFIG
         handled = true
-        @you.update(pwd: File.join(
-          File.dirname(Aro::Dom.ethergeist_path),
-          room_path
-        ))
+        @you.home!
+      else
+        room_path = Aro::Dom.room_path(arg)
+        if !@you.root? &&
+          room_path.include?(Aro::Dom::ROOT.to_s)
+          self.display_lines += ["invalid access to #{room_path}. doing nothing."]
+        elsif !room_path.empty?
+          handled = true
+          if room_path == Aro::Dom::HOME.to_s
+            @you.home!
+          else
+            @you.update(pwd: File.join(
+              Aro::Dom.dom_root,
+              room_path
+            ))
+          end
+        end
       end
       handled
     end
@@ -432,6 +449,18 @@ module Aos
       end
     end
 
+    def handle_new_pwd(new_pwd)
+      if !you.root? &&
+        new_pwd.include?(Aro::Dom::ROOT.to_s)
+        self.display_lines = ["invalid access to #{Aos::Os.osify(new_pwd)}. doing nothing."]
+      elsif Aos::Os.osify(new_pwd) == Aro::Dom::HOME.to_s
+        @you.home!
+      else
+        Aro::V.say("new_pwd: #{new_pwd}")
+        @you.update(pwd: new_pwd)
+      end
+    end
+
     def handle_cd(args)
       if args[1].nil? || args[1] == "~/"
         # no arg takes you to arodom root
@@ -448,23 +477,19 @@ module Aos
             pwd_arr = @you.pwd.split("/")
             new_pwd = (pwd_arr.first(pwd_arr.length - 1)).join("/")
 
-            @you.update(pwd: new_pwd)
+            handle_new_pwd(new_pwd)
           end
         else
           # this particular block needs to be better
           if args[1][0] == "/"
-            Aro::V.say("handling cd to root (/) arg...")
-            Aro::V.say(Aro::Dom::dom_root)
-            Aro::V.say(args[1][1..])
             args[1] = args[1][1..]
             new_pwd = File.join(Aro::Dom.dom_root, args[1])
             if Dir.exist?(new_pwd)
-              @you.update(pwd: new_pwd)
+              handle_new_pwd(new_pwd)
             end
           elsif Dir.exist?(args[1]) && args[1] != Aro::Dom::DOT.to_s
             new_pwd = File.join(@you.pwd, args[1])
-            Aro::V.say("new_pwd: #{new_pwd}")
-            @you.update(pwd: new_pwd)
+            handle_new_pwd(new_pwd)
           else
             self.display_lines = ["that directory is invalid."]
           end

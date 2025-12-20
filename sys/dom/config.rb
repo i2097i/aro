@@ -19,7 +19,7 @@ module Aro
   class Config
     include Singleton
 
-    attr_accessor :config_path, :display_lines
+    attr_accessor :base_lines_def, :config_path, :display_lines
 
     ARO_IVA_PREFIX = :ARO_IVA_
     ARO_OVA_PREFIX = :ARO_OVA_
@@ -375,13 +375,6 @@ module Aro
     }
 
     def load
-      self.config_path = ""
-      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        self.config_path = Aro::Config.aro_config_path
-      elsif Aro::Dom.in_arodom?
-        self.config_path = Aro::Config.dom_config_path
-      end
-
       unless File.exist?(Aro::Config.config_filepath)
         generate_config
       end
@@ -393,18 +386,40 @@ module Aro
     end
 
     def self.base_lines
-      # print Aro::Config::DEF
-      lines = []
-      lines << "loaded config at: #{Aos::Os.osify(Aro::Config.config_filepath)}"
-      lines << "<Aro::Config::DEF>"
-      lines += Aro::Config.dump_config
+      if self.instance.base_lines_def.nil?
+        # print Aro::Config::DEF
+        lines = []
+        lines << "loaded config at: #{Aos::Os.osify(Aro::Config.config_filepath)}"
+        lines << "<Aro::Config::DEF>"
+        lines += Aro::Config.dump_config
 
-      # print config commands
-      lines << ""
-      lines << I18n.t("aos.constants.commands")
-      lines << ""
-      lines += Aos::Vw::Base.lines_for_cmd(Aos::Os::CMDS[:CONFIG])
-      lines
+        # print config commands
+        lines << ""
+        lines << I18n.t("aos.constants.commands")
+        lines << ""
+        lines += Aos::Vw::Base.lines_for_cmd(Aos::Os::CMDS[:CONFIG])
+        lines
+
+        self.instance.base_lines_def = lines
+      end
+
+      return self.instance.base_lines_def
+    end
+
+    def self.get_config_path
+      if self.instance.config_path.nil?
+        if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
+          self.instance.config_path = Aro::Config.aro_config_path
+        elsif Aro::Dom.in_arodom?
+          if Aos::Os.instance.you.nil? || Aos::Os.instance.you.root?
+            self.instance.config_path = Aro::Config.dom_config_path
+          else
+            self.instance.config_path = Aos::Os.instance.you.home
+          end
+        end
+      end
+
+      return self.instance.config_path
     end
 
     def self.aro_config_path
@@ -417,7 +432,7 @@ module Aro
 
     def self.config_filepath
       File.join(
-        self.instance.config_path,
+        Aro::Config.get_config_path,
         Aro::Config::CONFIG_FILE.to_s
       )
     end
@@ -427,10 +442,14 @@ module Aro
     end
 
     def self.display_configuration
-      height, width = IO.console.winsize
+      height = Aro::Config.ivar(:HEIGHT).to_i
+      width = Aro::Config.ivar(:WIDTH).to_i
+      if Aro::Config.ivar(:INTERFACE) == Aro::Config::INTERFACES[:TERMINAL].to_s
+        height, width = IO.console.winsize
+      end
       result = {
-        HEIGHT: height, #Aro::Config.ivar(:HEIGHT).to_i,
-        WIDTH: width - Aro::Mancy::O,
+        HEIGHT: height,
+        WIDTH: width,
         DIVIDER: :".".to_s
       }
       # Aro::V.say(result)
@@ -483,6 +502,13 @@ module Aro
       k = k.upcase.to_sym
 
       current_value = Aro::Config.ivar(k)
+      if k == :DIMENSION &&
+        new_value == Aro::Config::DMS[:DEV_TAROT].to_s &&
+        !Aro::T.is_dev_tarot_avail?
+        Aro::Dom::P.say("unable to set dimension dev_tarot. device not present.")
+        return
+      end
+
       # ensure the var name is valid
       unless current_value.nil?
         Aro::Dom::P.say("validating #{k} with value #{new_value}")
@@ -712,6 +738,7 @@ module Aro
         lines << "export #{var_name}=#{mem_v || v[:value]}"
       end
       lines += lines_newline_comment_os
+      lines
     end
 
   end

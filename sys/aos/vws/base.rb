@@ -30,7 +30,6 @@ module Aos
         return false unless body_lines.kind_of?(Array)
         lines = []
         dc = Aro::Config.display_configuration
-        height = dc[:HEIGHT]
         width = dc[:WIDTH]
 
         # top vertical margin

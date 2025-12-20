@@ -10,6 +10,10 @@
 
 module Aro
   class Dom
+    include Singleton
+
+    attr_accessor :eg_path
+
     PS1 = :">[#{Aro::Dom.name}]>: "
     DOT = :"."
     DOTT = :"#{DOT}#{DOT}"
@@ -22,6 +26,7 @@ module Aro
     # < user spaces
     WELCOME = :welcome
     GAMES = :games
+    HOME = :home
     KNOW = :know
     ROOT = :root
 
@@ -105,19 +110,22 @@ module Aro
     end
 
     def self.ethergeist_path
-      path = nil
-      search_path = Dir.pwd.split("/").reject{|p| p.empty?}
-      search_pwd = "/"
+      if self.instance.eg_path.nil?
+        path = nil
+        search_path = Dir.pwd.split("/").reject{|p| p.empty?}
+        search_pwd = "/"
+        search_path.any?{|step|
+          search_pwd = File.join(search_pwd, step)
+          ls = Dir.glob("#{search_pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
 
-      search_path.any?{|step|
-        search_pwd = File.join(search_pwd, step)
-        ls = Dir.glob("#{search_pwd}/#{ETHER_FILE}", File::FNM_DOTMATCH)
+          path = ls.first if ls.any?
+          !path.nil?
+        }
 
-        path = ls.first if ls.any?
-        !path.nil?
-      }
+        self.instance.eg_path = path unless path.nil?
+      end
 
-      return path
+      return self.instance.eg_path
     end
 
     def self.ethergeist_name
@@ -158,17 +166,24 @@ module Aro
     end
 
     def generate_room(wing, room)
-      return unless Aro::Dom::D::WINGS[wing[:name].upcase].values.include?(room)
+      return unless Aro::Dom::D::WINGS[wing[:name].upcase].values.include?(room) ||
+        wing[:name] == Aro::Dom::HOME
 
       Aro::Dom::P.say(I18n.t("dom.messages.generating_room", room: room[:name].to_s))
 
-      room_path = File.join(wing[:name].to_s, room[:name].to_s)
-      FileUtils.mkdir(room_path)
+      r_path = File.join(wing[:name].to_s, room[:name].to_s)
+      FileUtils.mkdir(r_path)
 
       if wing[:name] == Aro::Dom::GAMES
-        File.open(File.join(room_path, Aro::Mancy::NAME_FILE.to_s), "w") do |f|
+        File.open(File.join(r_path, Aro::Mancy::NAME_FILE.to_s), "w") do |f|
           f.write(room[:name])
         end
+      elsif wing[:name] == Aro::Dom::HOME
+        # config_file = File.join(Aro::Dom.room_path(Aro::Dom::CONFIG), Aro::Config::CONFIG_FILE.to_s)
+        # FileUtils.cp(
+
+        #   File.join(r_path, Aro::Config::CONFIG_FILE.to_s)
+        # )
       end
     end
 

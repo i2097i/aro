@@ -1,7 +1,7 @@
 class CreateFpxys < ActiveRecord::Migration[8.1]
 
   def self.up
-    create_table :fpxys do |t|
+    create_table :fpxies do |t|
       t.belongs_to :you, null: false, foreign_key: true
       t.string :cmd, null: false
 
@@ -10,7 +10,7 @@ class CreateFpxys < ActiveRecord::Migration[8.1]
   end
 
   def self.down
-    drop_table :fpxys
+    drop_table :fpxies
   end
 
 end

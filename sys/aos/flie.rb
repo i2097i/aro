@@ -57,11 +57,21 @@ module Aos
 
           case answer.to_sym
           when Aos::Flie::PXY_CMDS[:CREATE]
-            self.instance.display_lines = ["todo: :CREATE fpxy"]
+            cmd = Aos::S.p.ask("#{Aos::Os::PS1}#{I18n.t("flie.messages.enter_cmd")}")
+            you.fpxies.create(cmd: cmd)
+            self.instance.display_lines = you.fpxies.map{|f| f.display_lines}
           when Aos::Flie::PXY_CMDS[:LIST]
-            self.instance.display_lines = ["todo: :LIST fpxy"]
+            if you.fpxies.any?
+              self.instance.display_lines = you.fpxies.map{|f| f.display_lines}
+            else
+              self.instance.display_lines = [I18n.t("flie.messages.no_fpxies")]
+            end
           when Aos::Flie::PXY_CMDS[:DEREZ]
-            self.instance.display_lines = ["todo: :DEREZ fpxy"]
+            derez_answer = Aro::P.p.select(
+              Aos::Os::PS1.to_s + I18n.t("flie.messages.derez_menu"),
+              you.fpxies.map{|f| [f.cmd, f.id]}.to_h,
+              default: Aro::Mancy::O
+            )
           when Aos::Flie::PXY_CMDS[:HELP]
             Aos::Flie.flie
           when Aos::Flie::PXY_CMDS[:EXIT]
