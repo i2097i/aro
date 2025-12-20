@@ -8,22 +8,16 @@ en:
       know:
         description: "information space."
       root:
-        description: "aos system space."
+        description: "aos root space."
     rooms:
+      amg:
+        description: "aos package management."
       waite:
         description: "sign up."
       winner:
         description: "win."
       abot:
         description: "abot."
-      abpps:
-        description: "artificial beings."
-      hbpps:
-        description: "human beings."
-      shpps:
-        description: "human and artificial beings."
-      vipps:
-        description: "only dev_tarot users. no ruby_facots allowed."
       body:
         description: "body."
       mind:
@@ -32,6 +26,8 @@ en:
         description: "spirit."
       config:
         description: "user config and configuration."
+      flie:
+        description: "flie management."
     errors:
       directory_exists: "unable to create arodome at %{name}. file or directory already exists."
       failed_already_in_arodom: "unable to create an arodome because you are already in arodom."

@@ -13,7 +13,7 @@ require_relative :"../base".to_s
 
 module Aos
   module Vw
-    class Game < Aos::Vw::Base
+    class Teck < Aos::Vw::Base
 
       TECK_PARAMS = [
         :teck,
@@ -45,7 +45,7 @@ module Aos
 
       def self.show_game(model)
         mk = model.keys
-        dp = Aos::Vw::Game::TECK_PARAMS
+        dp = Aos::Vw::Teck::TECK_PARAMS
         return nil unless (mk & dp).count == dp.count
         return nil unless model.values.all?{|v| v != nil}
 

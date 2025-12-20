@@ -73,6 +73,11 @@ module Aos
         description: I18n.t("aos.commands.description.exit"),
         usage: I18n.t("aos.commands.usage.exit"),
       },
+      FLIE: {
+        key: :flie,
+        description: I18n.t("aos.commands.description.flie"),
+        usage: I18n.t("aos.commands.usage.flie"),
+      },
       HELP: {
         key: :help,
         description: I18n.t("aos.commands.description.help"),
@@ -98,7 +103,7 @@ module Aos
     def self.osify(path, leading_slash = false)
       return path unless Aro::Dom.in_arodom?
       path_arr = path.split("/")
-      Aro::Dom::dom_root.split("/").each{|rdp| path_arr.delete(rdp)}
+      Aro::Dom::dom_root.split("/").each{|rdp| path_arr.delete_at(path_arr.index(rdp))}
       result = path_arr.join("/")
       if leading_slash
         result = "/" + result
@@ -187,7 +192,7 @@ module Aos
 
       Dir.chdir(@you.pwd) do
         if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-          view_cls = Aos::Vw::Game
+          view_cls = Aos::Vw::Teck
         end
       end
 
@@ -320,6 +325,9 @@ module Aos
             # exit
             send_to_system_call = true
             handle_exit(args)
+          when Aos::Os::CMDS[:FLIE][:key]
+            # amg
+            send_to_system_call = Aos::Flie.process_cmd(args)
           when Aos::Os::CMDS[:HELP][:key]
             # help
             send_to_system_call = handle_help(args)

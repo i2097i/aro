@@ -31,10 +31,6 @@ module Aro
     
     # > game spaces
     ABOT = :abot
-    ABPPS = :abpps
-    HBPPS = :hbpps
-    SHPPS = :shpps
-    VIPPS = :vipps
 
     # > know spaces
     BODY = :body
@@ -46,6 +42,7 @@ module Aro
     AMG = :amg
     CONFIG = :config
     DATA = :data
+    FLIE = :flie
     # ...
 
     def self.create(name)

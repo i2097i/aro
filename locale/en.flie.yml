@@ -1,0 +1,26 @@
+en:
+  flie:
+    commands:
+      description:
+        pxy: "manage flie proxies."
+      usage:
+        pxy: "$ flie pxy"
+    fpxys:
+      display: "%{you} cmd: %{cmd}"
+    messages:
+      main_menu: "editing %{name}'s fpxys. make a selection:"
+      pxy_starting: "flie pxy is starting..."
+      pxy_exited: "flie pxy exited."
+      enter_email: "enter email address for the you you want to manage:"
+      invalid_email: "that email address is invalid."
+      listing_fpxys: "listing fpxys..."
+      no_fpxys: "no fpxys."
+    usage: |
+
+      flie [-h | --help] <command>
+        flie management.
+
+      COMMANDS
+
+        pxy
+          manage flie fpxys.

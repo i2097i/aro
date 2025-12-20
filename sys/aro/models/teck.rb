@@ -103,7 +103,7 @@ class Aro::Teck < ActiveRecord::Base
 
     Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
-    Aos::Vw::Game.show_game({
+    Aos::Vw::Teck.show_game({
       teck: self,
       tlog_records: tlog_records,
       count_n: count_n,

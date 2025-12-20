@@ -42,22 +42,6 @@ module Aro
           name: Aro::Dom::ABOT,
           description: I18n.t("dom.rooms.abot.description"),
         },
-        ABPPS: {
-          name: Aro::Dom::ABPPS,
-          description: I18n.t("dom.rooms.abpps.description"),
-        },
-        HBPPS: {
-          name: Aro::Dom::HBPPS,
-          description: I18n.t("dom.rooms.hbpps.description"),
-        },
-        SHPPS: {
-          name: Aro::Dom::SHPPS,
-          description: I18n.t("dom.rooms.shpps.description"),
-        },
-        VIPPS: {
-          name: Aro::Dom::VIPPS,
-          description: I18n.t("dom.rooms.vipps.description"),
-        },
       },
       KNOW: {
         BODY: {
@@ -86,6 +70,10 @@ module Aro
           name: Aro::Dom::DATA,
           description: I18n.t("dom.rooms.data.description"),
         },
+        FLIE: {
+          name: Aro::Dom::FLIE,
+          description: I18n.t("dom.rooms.flie.description"),
+        }
       },
     }
 
@@ -104,10 +92,6 @@ module Aro
         description: I18n.t("dom.wings.games.description"),
         rooms: [
           Aro::Dom::D::WINGS[:GAMES][:ABOT],
-          Aro::Dom::D::WINGS[:GAMES][:ABPPS],
-          Aro::Dom::D::WINGS[:GAMES][:HBPPS],
-          Aro::Dom::D::WINGS[:GAMES][:SHPPS],
-          Aro::Dom::D::WINGS[:GAMES][:VIPPS],
         ],
       },
       KNOW: {
@@ -126,6 +110,7 @@ module Aro
           Aro::Dom::D::WINGS[:ROOT][:AMG],
           Aro::Dom::D::WINGS[:ROOT][:CONFIG],
           Aro::Dom::D::WINGS[:ROOT][:DATA],
+          Aro::Dom::D::WINGS[:ROOT][:FLIE],
         ],
       }
     }
