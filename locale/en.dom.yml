@@ -26,8 +26,8 @@ en:
         description: "mind."
       spirit:
         description: "spirit."
-      config:
-        description: "user config and configuration."
+      cor:
+        description: "cor configuration."
       flie:
         description: "flie management."
     errors:
@@ -42,3 +42,5 @@ en:
       generating_wing: "generating the %{wing} wing..."
       generating_room: "generating the %{room} room."
       initialization_complete: "%{name} initialization complete! use aos to begin."
+      missing_root_username: "missing <root_username> argument."
+      missing_root_password: "missing <root_password> argument."

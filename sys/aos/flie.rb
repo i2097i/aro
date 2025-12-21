@@ -35,13 +35,15 @@ module Aos
       EXIT: :exit,
     }
     def self.pxy
-      em = Aos::S.p.ask("#{Aos::Os::PS1}#{I18n.t("flie.messages.enter_email")}")
+      Aos::Os.say(I18n.t("flie.messages.enter_email"))
+      Aos::Os.say("\n")
+      em = Aos::S.p.ask("#{Aos::Os::PS1}")
       if you = Aos::You.find_by(name: em)
         Aos::Os.instance.display_lines = []
         self.instance.pxy_running = true
         self.instance.display_lines = [I18n.t("flie.messages.pxy_starting")]
         while self.instance.pxy_running
-          answer = Aro::P.p.select(
+          answer = Aos::S.p.select(
             Aos::Os::PS1.to_s + I18n.t("flie.messages.main_menu", name: you.name),
             Aos::Flie::PXY_CMDS,
             default: Aro::Mancy::S
@@ -49,7 +51,9 @@ module Aos
 
           case answer.to_sym
           when Aos::Flie::PXY_CMDS[:CREATE]
-            cmd = Aos::S.p.ask("#{Aos::Os::PS1}#{I18n.t("flie.messages.enter_cmd")}")
+            Aos::Os.say(I18n.t("flie.messages.enter_cmd"))
+            Aos::Os.say("\n")
+            cmd = Aos::S.p.ask("#{Aos::Os::PS1}")
             you.fpxies.create(cmd: cmd)
             self.instance.display_lines = you.fpxies.map{|f| f.get_lines.join("\n")}
           when Aos::Flie::PXY_CMDS[:LIST]
@@ -62,7 +66,7 @@ module Aos
             unless you.fpxies.any?
               self.instance.display_lines = [I18n.t("flie.messages.no_fpxies")]
             else
-              derez_answer = Aro::P.p.select(
+              derez_answer = Aos::S.p.select(
                 Aos::Os::PS1.to_s + I18n.t("flie.messages.derez_menu"),
                 ([[:cancel, Aro::Mancy::O]] + you.fpxies.map{|f| [f.cmd, f.id]}).to_h,
                 default: Aro::Mancy::S

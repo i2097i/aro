@@ -4,52 +4,6 @@ en:
     very_important: "VERY IMPORTANT! %{dev_tarot}"
     # VERY IMPORTANT!
 
-    config:
-      aro_env:
-        O_description: "read-only env var for holding O."
-        S_description: "read-only env var for holding S."
-        OS_description: "read-only env var for holding OS."
-        E_description: "read-only env var for holding E."
-        N_description: "read-only env var for holding N"
-        PS1_description: "read-only env var for holding default PS1."
-        NAME_FILE_description: "read-only env var for name file."
-        I2097I_description: "read-only env var for i2097i."
-        YES_description: "read-only env var for 'aroyes'."
-        ALL_description: "read-only env var for 'all'."
-      dimension:
-        description: "selected dimension of aro space."
-        dev_tarot_description: "reads from /dev/tarot device if available."
-        ruby_facot_description: "generated ruby_facot (facade randomness)."
-      format:
-        description: "aos output format."
-        text_description: "show aos output in text format (default)."
-        json_description: "show aos output in json format."
-      interface:
-        description: "aos output interface."
-        terminal_description: "render terminal output (default)."
-        lanimret_description: "render flie web output."
-      height_description: "display height. valid range: (${min}-${max})"
-      width_description: "display width. valid range: (${min}-${max})"
-      env:
-        description: "aos run environment."
-        development_description: "basic development logs and features."
-        production_description: "game logging only."
-        test_description: "logging and features tailored for tests."
-      verbose_description: "enable verbose logging in development env."
-      log_aos_db_description: "show aos database transactions."
-      log_aro_db_description: "show aro database transactions"
-      generate: "generating default config file at %{name}."
-      source: "installing ivars from %{name}..."
-      maximum: "max"
-      minimum: "min"
-      possible_values: "possible values"
-      type:
-        bool_description: "true or false."
-        int_description: "a primitive decimal-less numeric."
-        string_description: "a blank-space-terminated string of characters."
-        values_description: "an enumerated type."
-      z_description: "sleep time between attempts to read /dev/tarot. valid range (%{min}-%{max})"
-      z_max_description: "max number of z long sleeps before giving up. valid range (%{min}-%{max})"
     errors:
       header: "%{cmd} says there was a problem."
       invalid_usage: "%{cmd} says you're not supposed to be here."
@@ -57,6 +11,7 @@ en:
       missing_teck: "%{cmd} says no teck selected. use 'aro teck' to select one or 'aro teck new <name>' to create one."
       not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
       not_in_aos: "%{cmd} says you are not in aos space. that command will not work here."
+      not_initialized_dom: "%{cmd} says you need to initialize dom. $ aro dom init <root_username> <root_password>"
       not_initialized: "%{cmd} says you need to initialize aro. run 'aro init' to do so"
     warnings:
       invalid_order: "the order specified for displaying tlogs in invalid. using default (desc)."
@@ -97,4 +52,4 @@ en:
       replacing_drawn: "replacing all drawn cards to %{name}..."
       resetting: "resetting %{name}'s cards..."
       understood: "%{name} says: 'understood.'"
-      welcome: "welcome.to.the.%{name}."
+      welcome: "summoned %{name}"

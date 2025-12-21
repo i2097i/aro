@@ -13,14 +13,27 @@ require_relative :"../shr/prompt".to_s
 
 module Aro
   class Dom::D
-    def self.reserved_words
-      reserved = []
-      Aro::Dom::D::LAYOUT.values.each{|wing|
-        reserved << wing[:name].to_s
-        wing[:rooms].each{|room| reserved << room[:name].to_s}
-      }
+    include Singleton
 
-      reserved.sort
+    attr_accessor :reserved_words_def
+
+    def self.reserved_words(include_root = false)
+      if Aro::Dom::D.instance.reserved_words_def.nil?
+
+        reserved = []
+        Aro::Dom::D::LAYOUT.values.each{|wing|
+          if wing == Aro::Dom::D::LAYOUT[:ROOT]&& !include_root
+            next
+          end
+
+          reserved << wing[:name].to_s
+          wing[:rooms].each{|room| reserved << room[:name].to_s}
+        }
+
+        Aro::Dom::D.instance.reserved_words_def = reserved.sort
+      end
+
+      return Aro::Dom::D.instance.reserved_words_def
     end
 
     # definition of rooms in each layout wing
@@ -63,8 +76,8 @@ module Aro
           name: Aro::Dom::AMG,
           description: I18n.t("dom.rooms.amg.description"),
         },
-        CONFIG: {
-          name: Aro::Dom::CONFIG,
+        COR: {
+          name: Aro::Dom::COR,
           description: I18n.t("dom.rooms.config.description"),
         },
         DATA: {
@@ -114,7 +127,7 @@ module Aro
         description: I18n.t("dom.wings.root.description"),
         rooms: [
           Aro::Dom::D::WINGS[:ROOT][:AMG],
-          Aro::Dom::D::WINGS[:ROOT][:CONFIG],
+          Aro::Dom::D::WINGS[:ROOT][:COR],
           Aro::Dom::D::WINGS[:ROOT][:DATA],
           Aro::Dom::D::WINGS[:ROOT][:FLIE],
         ],

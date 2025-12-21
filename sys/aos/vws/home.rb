@@ -15,7 +15,7 @@ module Aos
     class Home < Aos::Vw::Base
       def self.show
         if Aos::Os.instance.you.home?
-          draw(Aro::Config.instance.display_lines)
+          draw(Aos::Cor.instance.display_lines)
         end
       end
     end

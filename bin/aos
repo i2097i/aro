@@ -17,8 +17,15 @@ unless Aro::Dom.in_arodom?
   exit(CLI::EXIT_CODES[:GENERAL_ERROR])
 end
 
-if CLI::ARGV0.nil? || CLI::ARGV0 == Aos::Os::YOU_FLAG.to_sym
-  exit(Aos::run)
+unless Aro::Dom.is_initialized?
+  Aos::S.say(I18n.t("cli.errors.not_initialized_dom" , cmd: Aro::Dom.name))
+  exit(CLI::EXIT_CODES[:GENERAL_ERROR])
+end
+
+if CLI::ARGV0 == :fpx
+  Aos.fpx
+elsif CLI::ARGV0.nil? || CLI::ARGV0 == Aos::Os::YOU_FLAG.to_sym
+  exit(Aos.run)
 else
-  exit(Aos::process)
+  exit(Aos.process)
 end

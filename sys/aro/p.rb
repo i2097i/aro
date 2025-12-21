@@ -17,7 +17,7 @@ module Aro
       if Aro::Mancy.in_aro? && !Aro::T.is_dev_tarot?
         Aro::R.say(message)
       else
-        Aro::P::p.say("#{Aro::Mancy::PS1}#{message}")
+        super(["#{Aro::Mancy::PS1}#{message}"])
       end
     end
   end

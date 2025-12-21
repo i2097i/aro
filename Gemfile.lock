@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    aro (0.2.1)
+    aro (0.2.3)
       activerecord (~> 8.1, >= 8.1.1)
       ffi (~> 1.17, >= 1.17.2)
       i18n (~> 1.14, >= 1.14.7)

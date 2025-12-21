@@ -12,7 +12,7 @@ module Aro
   class Mancy
     include Singleton
 
-    attr_accessor :game
+    attr_accessor :current
 
     O  = 0
     S  = 1
@@ -21,13 +21,11 @@ module Aro
     N  = 4
     V  = 5
     PS1 = :">[#{Aro::Mancy.name}]>: "
-    NAME_FILE = :".name"
+    NAME_FILE = :".aro_space"
     ARO_FILE = :".aro"
     I2097I = :i2097i
     YES = :aroyes
     ALL = :all
-
-    ARO_ENV_DEBUG_MODES = [:development, :test]
 
     NUMERALS = {
       O:       0,
@@ -60,16 +58,11 @@ module Aro
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
 
-    def initialize
+    def self.teck
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        Aro::Db.load
-        Aro::Mancy.init
-        self.game = Aro::Teck.current_teck
+        self.instance.current = Aro::Teck.current_teck
       end
-    end
-
-    def self.game
-      Aro::Mancy.instance.game
+      self.instance.current
     end
 
     def self.create(name)
@@ -78,7 +71,6 @@ module Aro
       # explicitly only allow String/Symbol types for name
       return false unless name.kind_of?(String) || name.kind_of?(Symbol)
       name = name.to_s.strip
-      
       # create the new aro directory and database
       if !Dir.exist?(name)
         Aro::P.say(I18n.t("cli.messages.no_tecks"))
@@ -87,18 +79,23 @@ module Aro
         return false
       end
 
-      # create name file
-      File.open(File.join(name, Aro::Mancy::NAME_FILE.to_s), "w+") do |file|
-        file.write(name)
-      end
-
       Dir.chdir(name) do
+        Aos::Cor.instance.load
         Aro::Mancy.init
       end
       return true
     end
 
     def self.init
+      unless Aro::Mancy.in_aro? || Aos::Cor.is_test?
+        Aro::P.say("init aro running in present directory...")
+        new_name = File.basename(Dir.pwd)
+        Aro::P.say("echo #{new_name} > #{Aro::Mancy::NAME_FILE.to_s}")
+        File.open(Aro::Mancy::NAME_FILE.to_s, "w") do |file|
+          file.write(new_name)
+        end
+      end
+
       Aro::Db.load
     end
 
@@ -115,8 +112,6 @@ module Aro
     end
 
     def self.aro_mancy_name
-      return nil unless Aro::Mancy.in_aro?
-
       File.read(Aro::Mancy::NAME_FILE.to_s).strip
     end
   end

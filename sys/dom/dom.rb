@@ -12,9 +12,9 @@ module Aro
   class Dom
     include Singleton
 
-    attr_accessor :eg_path
+    attr_accessor :eg_path, :is_initializing
 
-    PS1 = :">[#{Aro::Dom.name}]>: "
+    PS1 = :">[#{Aro::Dom.name}]>:"
     DOT = :"."
     DOTT = :"#{DOT}#{DOT}"
     ETHERGEIST = :eg
@@ -45,10 +45,14 @@ module Aro
 
     # > root spaces
     AMG = :amg
-    CONFIG = :config
+    COR = :cor
     DATA = :data
     FLIE = :flie
     # ...
+
+    def initialize
+      self.is_initializing = false
+    end
 
     def self.create(name)
       if Dir.exist?(name) || File.exist?(name)
@@ -72,9 +76,15 @@ module Aro
     end
 
     def self.is_initialized?
-      return false if !Aro::Dom.in_arodom?
+      return false if !Aro::Dom.in_arodom? || self.instance.is_initializing
 
-      File.exist?(File.join(Aro::Dom.room_path(:data), Aos::Db::SQL_FILE.to_s))
+      File.exist?(
+        File.join(
+          Aro::Dom.dom_root,
+          Aro::Dom.room_path(:data),
+          Aos::Db::SQL_FILE.to_s
+        )
+      )
     end
 
     def self.domain
@@ -139,22 +149,39 @@ module Aro
     end
 
     def generate(r_you, r_password)
-      unless r_password.present?
-        Aro::Dom::P.say("missing password argument.")
+      if r_you.nil? || r_you.empty?
+        Aro::Dom::P.say(I18n.t("dom.messages.missing_root_username"))
+        return
+      end
+
+      if r_password.nil? || r_password.empty?
+        Aro::Dom::P.say(I18n.t("dom.messages.missing_root_password"))
         return
       end
 
       unless Aro::Dom.in_arodom?
-        Aro::Dom::P.say("unable to init arodom here.")
+        Aro::Dom::P.say(I18n.t("dom.errors.failed_already_initialized"))
         return
       end
 
-      # todo: add file permissions to Aro::Dom::ARODOME and all WINGS
+      self.is_initializing = true
       Aro::Dom::P.say(I18n.t("dom.messages.generating_wings"))
       Aro::Dom::D::LAYOUT.values.each{|w| generate_wing w}
+      # generate a dom aro instance and teck named same as dom
+      Dir.chdir(Aro::Dom.ethergeist_path) do
+        Aro::Dom::P.say(I18n.t("dom.messages.generating_dom_aro"))
+        Aro::Mancy.init
+        Aro::Teck.select_teck(
+          Aro::Teck.make(Aro::Dom.ethergeist_name)
+        )
+      end
       Aos::Db.load(r_password)
       Aos::You.create(name: r_you, access: :root)
       Aro::Dom::P.say(I18n.t("dom.messages.initialization_complete", name: Aro::Dom.name))
+      # todo: make this better and make an initial commit
+      system(:"git init".to_s) if `which git`&.strip&.split("/")&.include?(:git.to_s)
+
+      self.is_initializing = false
     end
 
     def generate_wing(wing)
@@ -178,21 +205,7 @@ module Aro
         File.open(File.join(r_path, Aro::Mancy::NAME_FILE.to_s), "w") do |f|
           f.write(room[:name])
         end
-      elsif wing[:name] == Aro::Dom::HOME
-        # config_file = File.join(Aro::Dom.room_path(Aro::Dom::CONFIG), Aro::Config::CONFIG_FILE.to_s)
-        # FileUtils.cp(
-
-        #   File.join(r_path, Aro::Config::CONFIG_FILE.to_s)
-        # )
       end
-    end
-
-    def self.ethergeist_name
-      File.read(
-        File.join(
-          Aro::Dom.ethergeist_path, Aro::Mancy::NAME_FILE.to_s
-        )
-      )
     end
   end
 end # aroadhome

@@ -9,6 +9,7 @@
 =end
 
 require :base64.to_s
+require_relative :"./base_model".to_s
 
 class Aos::Agodo < ActiveRecord::Base
   belongs_to :you
@@ -82,7 +83,7 @@ class Aos::Agodo < ActiveRecord::Base
     #   )
     # end
 
-    unless errors.empty? && Aro::Config::int_valid?(self.rate)
+    unless errors.empty? && Aos::Cor.int_valid?(self.rate)
       errors.add(
         :rate,
         :invalid,

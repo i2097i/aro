@@ -5,3 +5,4 @@
 *.sql
 ffi/build/*
 pkg/*
+success/*

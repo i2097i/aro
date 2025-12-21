@@ -78,8 +78,6 @@ module Aos
       lines
     end
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     def self.ilog_lines
       # list input ilogs
       lines = []

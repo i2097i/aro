@@ -17,4 +17,5 @@ class Aro::Tlog < ActiveRecord::Base
     ASC: :asc,
     DESC: :desc
   }
+
 end

@@ -9,19 +9,20 @@
 =end
 
 require :base64.to_s
+require_relative :"./base_model".to_s
 
 class Aro::Teck < ActiveRecord::Base
   has_many :tlogs
 
-  TECK_FILE = :".teck"
+  TECK_FILE = :".aro_teck"
   CARD_DELIM = :","
 
   before_create :populate_cards
   after_commit :generate_log
 
   def self.make(new_name)
-    return nil unless Aro::Mancy.is_initialized?
     Aro::Db.load
+    return nil unless Aro::Mancy.is_initialized?
     new_teck = Aro::Teck.create(name: new_name)
     Aro::Teck.select_teck(new_teck) if Aro::Teck.current_teck.nil?
     new_teck
@@ -32,6 +33,7 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def populate_cards
+    Aro::Db.load
     self.cards = Aro::Teck.fresh_cards
   end
 
@@ -59,14 +61,15 @@ class Aro::Teck < ActiveRecord::Base
   def self.select_teck(teck)
     return unless teck.present?
     Aro::P.say(I18n.t("cli.messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
-    File.open(Aro::Teck::TECK_FILE.to_s, "w") do |file|
+    File.open(File.join(Aro::Db.base_aro_dir, Aro::Teck::TECK_FILE.to_s), "w") do |file|
       file.write(teck.id)
     end
   end
 
   def self.current_teck
-    if File.exist?(TECK_FILE.to_s)
-      current_teck_id = File.read(TECK_FILE.to_s)
+    Aro::Db.load
+    if File.exist?(File.join(Aro::Db.base_aro_dir, TECK_FILE.to_s))
+      current_teck_id = File.read(File.join(Aro::Db.base_aro_dir, TECK_FILE.to_s))
       return Aro::Teck.find_by(id: current_teck_id)
     end
   end
@@ -76,14 +79,15 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def show(count_n: Aro::Mancy::S, order_o: Aro::Tlog::ORDERING[:DESC])
+    tlogs_count = tlogs.count
     unless count_n.kind_of?(Numeric) && count_n.to_i > Aro::Mancy::O
       if count_n&.to_s&.to_sym == Aro::Mancy::ALL
-        count_n = tlogs.count
+        count_n = tlogs_count
       else
         count_n = Aro::Mancy::S
       end
     end
-    count_n = [[Aro::Mancy::S, count_n.to_i].max, tlogs.count].min
+    count_n = [[Aro::Mancy::S, count_n.to_i].max, tlogs_count].min
     Aro::V.say("count_n: #{count_n}")
     Aro::V.say("order_o: #{order_o}")
 
@@ -98,8 +102,8 @@ class Aro::Teck < ActiveRecord::Base
     # todo: this is doing more work than it needs to. needs debugging.
     # Aro::V.say("tlog_records.count: #{tlog_records.count}")
 
-    # for now tests just expect text output
-    return tlog_records if Aro::Config.is_test?
+    # for now tests just expect count
+    return tlog_records if Aos::Cor.is_test?
 
     Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
 
@@ -113,11 +117,11 @@ class Aro::Teck < ActiveRecord::Base
 
   def explore
     # allows user to browse each card in the current teck.
-    answer = Aro::P.p.select(
+    answer = Aos::S.p.select(
       Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aro::Config.display_configuration[:HEIGHT] - Aro::Mancy::S,
+      per_page: Aos::Cor.display_configuration[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )

@@ -2,9 +2,11 @@ require_relative :rspec_helper.to_s
 
 describe Aro::Teck do
   before :all do
-    name = TESTING_NAME.to_s
-    Aro::Mancy.create(name)
-    Dir.chdir(name)
+    Aro::Mancy.create(TESTING_NAME.to_s)
+    Dir.chdir(TESTING_NAME.to_s)
+    Aos::Cor.instance.load
+    Aos::Cor.set_ivar(:ENV, Aos::Cor::ENVS[:TEST].to_s)
+    # Aos::Cor.set_ivar(:VERBOSE, Aos::Cor::BOOLS[:TRUE].to_s)
     Aro::Teck.make(TESTING_TECK.to_s)
   end
 
@@ -23,7 +25,6 @@ describe Aro::Teck do
     it "should :SHOW" do
       teck = Aro::Teck.current_teck
       tlog_count = Aro::Mancy::S
-
       # new teck should only have 1 record
       expect(teck.show.count).to eq(tlog_count)
       # should only return 1 record since this is newly created teck

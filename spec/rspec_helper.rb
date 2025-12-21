@@ -1,7 +1,4 @@
-ENV[:ARO_ENV.to_s] = :test.to_s
-
 require :aro.to_s
-
 # name for aro instance used in tests
 TESTING_NAME = :success
 
@@ -19,7 +16,7 @@ RSpec.configure do |config|
   config.tty = true
 
   # use the specified formatter
-  config.formatter = :documentation # :progress
+  config.formatter = :progress #:documentation
 
   # suppress stdout
   # config.before { allow($stdout).to receive(:puts) }

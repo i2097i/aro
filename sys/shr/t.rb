@@ -15,10 +15,8 @@ module Aro
     RUBY_FACOT = :"Ruby::Facot".to_s
 
     def self.is_dev_tarot?
-      Aro::T.is_dev_tarot_avail? && (
-        Aro::Config.ivar(:DIMENSION)&.to_sym ==
-        Aro::Config::DMS[:DEV_TAROT]
-      )
+      user_setting_true = Aos::Cor.ivar(:DIMENSION)&.to_sym == Aos::Cor::DMS[:DEV_TAROT]
+      Aro::T.is_dev_tarot_avail? && (user_setting_true || Aos::Cor.ivar(:DIMENSION).nil?)
     end
 
     def self.is_dev_tarot_avail?

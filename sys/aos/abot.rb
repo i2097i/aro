@@ -48,7 +48,9 @@ module Aos
     end
 
     def self.cron
-      return if File.exist?(Aos::Abot.cron_pid_file)
+      Aro::D.say("abot cron is disabled currently. you can still manage them but they do not run.")
+      not_currently_enabled = true
+      return if not_currently_enabled || File.exist?(Aos::Abot.cron_pid_file)
 
       abot_pid = fork {
         log = File.open(File.join(Aro::Dom.dom_root, Aro::Dom.room_path(:abot), "abot.log"), "w+")
@@ -65,6 +67,13 @@ module Aos
       Process.detach(abot_pid)
       File.open(Aos::Abot.cron_pid_file, "w+") do |f|
         f.write(abot_pid)
+      end
+    end
+
+    def self.terminate
+      if File.exist?(Aos::Abot.cron_pid_file)
+        system("kill -9 #{File.read(Aos::Abot.cron_pid_file)}")
+        FileUtils.rm(Aos::Abot.cron_pid_file)
       end
     end
 
@@ -146,7 +155,7 @@ module Aos
       )
 
       if !agodo_you.nil? &&
-        Aro::Config::int_valid?(args[Aro::Mancy::E]&.to_i)
+        Aos::Cor.int_valid?(args[Aro::Mancy::E]&.to_i)
         agodo_record = agodo_you.agodo
         agodo_record.update(rate: args[Aro::Mancy::E].to_i)
         self.instance.display_lines << "#{agodo_record.you.name} rate updated."

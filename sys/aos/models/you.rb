@@ -8,13 +8,15 @@
 
 =end
 
+require_relative :"./base_model".to_s
+
 module Aos
   class You < ActiveRecord::Base
     has_many :ilogs
     has_one :agodo
     has_many :fpxies
     before_validation :set_pwd
-    after_create :create_home_directory
+    before_create :create_home_directory
     after_update :clear_aos_display
 
     enum :access, [
@@ -23,6 +25,8 @@ module Aos
       :root,
     ]
 
+    ARO_SRT_FILE = :".aro_srt"
+
     def generate_ilog(cmd)
       ilogs.create(
         pwd: Aos::Os.osify(pwd),
@@ -30,8 +34,18 @@ module Aos
       )
     end
 
+    def fpx
+      {
+        name: self.name,
+        home: self.home,
+        pwd: self.pwd,
+      }
+    end
+
     def home!
-      update(pwd: home)
+      h = home
+      Aro::D.say("#{__method__}#{Aos::Os::A}#{h}")
+      update(pwd: h)
     end
 
     def home?
@@ -41,7 +55,7 @@ module Aos
     def home
       File.join(
         Aro::Dom::dom_root,
-        Aro::Dom.room_path(root? ? Aro::Dom::CONFIG : Aro::Dom::HOME),
+        Aro::Dom.room_path(root? ? Aro::Dom::COR : Aro::Dom::HOME),
         root? ? "" : self.name
       )
     end
@@ -57,6 +71,13 @@ module Aos
       ]
     end
 
+    def stream(lines)
+      File.open(File.join(self.home, Aos::You::ARO_SRT_FILE.to_s), "a+") do |aro_srt|
+        aro_srt.write(lines.join("\n"))
+        aro_srt.write("\n")
+      end
+    end
+
     private
 
     def set_pwd
@@ -70,9 +91,8 @@ module Aos
 
     def clear_aos_display
       return unless Aos::Os.instance.you == self || Aos::Os.instance.you_flag == self
-      Aro::Config.instance.config_path = nil
-      # Aro::Config.instance.load
-      Aos::Os.instance.display_lines = [Aos::Os.osify(pwd, true)]
+      Aos::Os.instance.display_lines ||= []
+      Aos::Os.instance.display_lines << ">" + Aos::Os.osify(pwd, true)
     end
   end
 end

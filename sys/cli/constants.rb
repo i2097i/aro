@@ -26,12 +26,12 @@ module CLI
   CMDS = {
     ARO: {
       CREATE: :create,
-      CONFIG: :config,
+      COR: :cor,
       TECK: :teck,
       DOM: :dom,
       INIT: :init,
     },
-    CONFIG: {}, # see Aro::Config
+    COR: {}, # see Aos::Cor
     TECK: {
       DRAW: :draw,
       EXPLORE: :explore,

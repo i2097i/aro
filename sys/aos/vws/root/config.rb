@@ -1,8 +1,8 @@
 =begin
   
-  vws/root/config.rb
+  vws/root/cor.rb
 
-  the config view.
+  the cor view.
 
   by i2097i
 
@@ -12,9 +12,9 @@ require_relative :"../base".to_s
 
 module Aos
   module Vw
-    class Config < Aos::Vw::Base
+    class Cor < Aos::Vw::Base
       def self.show
-        draw(Aro::Config.instance.display_lines)
+        draw(Aos::Cor.instance.display_lines)
       end
     end
   end
