@@ -27,14 +27,6 @@ module Aos
       self.display_lines = Aos::Flie.base_lines
     end
 
-    # configure proxy for user.
-    # $ flie pxy <email_address>
-    # create a proxy for user.
-    # $ flie pxy new <email_address>
-    # update a proxy for user.
-    # $ flie pxy update <email_address>
-    # derez a proxy for user.
-    # $ flie pxy derez <email_address>
     PXY_CMDS = {
       CREATE: :create,
       LIST: :list,
@@ -59,19 +51,28 @@ module Aos
           when Aos::Flie::PXY_CMDS[:CREATE]
             cmd = Aos::S.p.ask("#{Aos::Os::PS1}#{I18n.t("flie.messages.enter_cmd")}")
             you.fpxies.create(cmd: cmd)
-            self.instance.display_lines = you.fpxies.map{|f| f.display_lines}
+            self.instance.display_lines = you.fpxies.map{|f| f.get_lines.join("\n")}
           when Aos::Flie::PXY_CMDS[:LIST]
             if you.fpxies.any?
-              self.instance.display_lines = you.fpxies.map{|f| f.display_lines}
+              self.instance.display_lines = you.fpxies.map{|f| f.get_lines.join("\n")}
             else
               self.instance.display_lines = [I18n.t("flie.messages.no_fpxies")]
             end
           when Aos::Flie::PXY_CMDS[:DEREZ]
-            derez_answer = Aro::P.p.select(
-              Aos::Os::PS1.to_s + I18n.t("flie.messages.derez_menu"),
-              you.fpxies.map{|f| [f.cmd, f.id]}.to_h,
-              default: Aro::Mancy::O
-            )
+            unless you.fpxies.any?
+              self.instance.display_lines = [I18n.t("flie.messages.no_fpxies")]
+            else
+              derez_answer = Aro::P.p.select(
+                Aos::Os::PS1.to_s + I18n.t("flie.messages.derez_menu"),
+                ([[:cancel, Aro::Mancy::O]] + you.fpxies.map{|f| [f.cmd, f.id]}).to_h,
+                default: Aro::Mancy::S
+              )
+              unless derez_answer == Aro::Mancy::O
+                you.fpxies.find_by(id: derez_answer)&.destroy
+                you.reload
+                self.instance.display_lines = [I18n.t("flie.messages.fpxy_derez_success")]
+              end
+            end
           when Aos::Flie::PXY_CMDS[:HELP]
             Aos::Flie.flie
           when Aos::Flie::PXY_CMDS[:EXIT]
@@ -88,6 +89,16 @@ module Aos
         self.instance.display_lines += [I18n.t("flie.messages.invalid_email")]
       end
 
+    end
+
+    def self.pxies(email_address)
+      self.instance.get_pxies_for_email_address(email_address)
+    end
+
+    def get_pxies_for_email_address(email_address)
+      you = Aos::You.find_by(name: email_address)
+      return you.fpxies.to_a unless you.nil?
+      return []
     end
 
     def self.flie

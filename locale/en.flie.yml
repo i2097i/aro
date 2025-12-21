@@ -9,6 +9,7 @@ en:
       display: "%{you} cmd: %{cmd}"
     messages:
       derez_menu: "select fpxy for derez:"
+      fpxy_derez_success: "fpxy deleted successfully..."
       main_menu: "editing %{name}'s fpxies. make a selection:"
       pxy_starting: "flie pxy is starting..."
       pxy_exited: "flie pxy exited."

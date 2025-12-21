@@ -64,12 +64,14 @@ module Aos
     end
 
     def create_home_directory
-      return if root? || Dir.exist?(File.join(Aro::Dom.room_path(Aro::Dom::HOME), self.name))
+      return if root? || agodo? || Dir.exist?(File.join(Aro::Dom.room_path(Aro::Dom::HOME), self.name))
       Aro::Dom.instance.generate_room(Aro::Dom::D::LAYOUT[:HOME], {name: self.name.to_sym})
     end
 
     def clear_aos_display
-      return unless Aos::Os.instance.you = self
+      return unless Aos::Os.instance.you == self || Aos::Os.instance.you_flag == self
+      Aro::Config.instance.config_path = nil
+      # Aro::Config.instance.load
       Aos::Os.instance.display_lines = [Aos::Os.osify(pwd, true)]
     end
   end

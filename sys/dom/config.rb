@@ -375,6 +375,7 @@ module Aro
     }
 
     def load
+      self.config_path = nil
       unless File.exist?(Aro::Config.config_filepath)
         generate_config
       end
@@ -382,6 +383,7 @@ module Aro
       source_config
       setup_env
 
+      self.base_lines_def = nil
       self.display_lines = Aro::Config.base_lines
     end
 
@@ -411,7 +413,9 @@ module Aro
         if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
           self.instance.config_path = Aro::Config.aro_config_path
         elsif Aro::Dom.in_arodom?
-          if Aos::Os.instance.you.nil? || Aos::Os.instance.you.root?
+          if Aos::Os.instance.you.nil? ||
+            Aos::Os.instance.you.root? ||
+            Aos::Os.instance.you.agodo?
             self.instance.config_path = Aro::Config.dom_config_path
           else
             self.instance.config_path = Aos::Os.instance.you.home

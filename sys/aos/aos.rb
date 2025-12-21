@@ -23,6 +23,7 @@ module Aos
   def self.process
     cmd = ARGV.join(" ")
     Aro::D.say("processing cmd #{cmd}...")
+    Aos::Os.instance.load_you!
     Aos::Os::instance.process_cmd(cmd)
   end
 
@@ -119,10 +120,6 @@ module Aos
       Aos::Os::CMDS.values.map{|v| v[:key]}.include?(arg.to_sym)
     end
 
-    def self.you_flagd?
-      self.instance.you_flag
-    end
-
     def self.sanitize_you(cmd)
       if cmd.present? && cmd.include?(Aos::Os::YOU_FLAG)
         cmd_split = cmd.split(" ")
@@ -141,10 +138,9 @@ module Aos
     end
 
     def initialize
-      self.you_flag = false
       Aos::Db.load
       load_ilibs
-      load_you
+      load_you!
       Aos::Abot.abot
     end
 
@@ -158,29 +154,37 @@ module Aos
       Aos::Amg.load(:crs)
     end
 
-    def load_you
-      return if @you.present?
-
+    def load_you!
+      self.you_flag = nil
       if ARGV.include?(Aos::Os::YOU_FLAG)
-        self.you_flag = true
-        you_name = ARGV[ARGV.index(Aos::Os::YOU_FLAG) + Aro::Mancy::S]
-        @you = Aos::You.find_by(name: you_name)
-        if @you.nil?
-          @you = Aos::You.create(name: you_name)
+        you_name = ARGV[ARGV.index(Aos::Os::YOU_FLAG) + Aro::Mancy::S]&.strip
+        unless you_name == Aos::You.find_by(access: :root)&.name
+          self.you = Aos::You.find_by(name: you_name)
+          if self.you.nil?
+            self.you = Aos::You.create(name: you_name)
+          end
+          self.you_flag = self.you
+        else
+          # todo: make more secure
+          self.you = Aos::You.find_by(access: :root)
         end
       else
-        # todo: make more secure
-        @you = Aos::You.find_by(access: :root)
+        self.you = Aos::You.find_by(access: :root)
       end
 
-      self.display_lines = [Aos::Os.osify(@you.pwd, true)]
+      self.display_lines = [Aos::Os.osify(self.you.pwd, true)]
+    end
+
+    def load_you
+      return if self.you.present?
+      load_you!
     end
 
     def load_view
-      view_name = Aos::Os.osify(@you.pwd).split("/").last || :dom.to_s
+      view_name = Aos::Os.osify(self.you.pwd).split("/").last || :dom.to_s
       view_cls = nil
 
-      if @you.home?
+      if self.you.home?
         view_cls = Aos::Vw::Home
       else
         cls_name = (Aos::Vw.name + "::#{view_name.capitalize}")
@@ -191,7 +195,7 @@ module Aos
           view_cls = Aos::Vw::Base
         end
 
-        Dir.chdir(@you.pwd) do
+        Dir.chdir(self.you.pwd) do
           if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
             view_cls = Aos::Vw::Teck
           end
@@ -205,7 +209,7 @@ module Aos
     def render
       load_view
       return if @view.nil?
-      Dir.chdir(@you.reload.pwd) do
+      Dir.chdir(self.you.reload.pwd) do
         if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
           system(:aro.to_s)
         else
@@ -217,7 +221,7 @@ module Aos
     def process_cmd(cmd)
       # load config
       Aro::Config.instance.load
-      Dir.chdir(@you.reload.pwd) do
+      Dir.chdir(self.you.reload.pwd) do
         configure_readline
         send_to_system_call = main(cmd)
         if Aro::Config.is_format_text?
@@ -233,7 +237,8 @@ module Aos
           render
         end
 
-        unless cmd.nil?
+        unless cmd.nil? || cmd.empty?
+          self.you.generate_ilog(cmd)
         end
       end
 
@@ -245,7 +250,7 @@ module Aos
       Readline.completion_append_character = "/"
       Readline.completion_proc = Proc.new{|str|
         # Aro::V.say(str)
-        dir_matcher = @you.pwd + "/" + str + Aos::Os::STAR.to_s
+        dir_matcher = self.you.pwd + "/" + str + Aos::Os::STAR.to_s
         dir_listing = Dir.glob(dir_matcher, File::FNM_DOTMATCH).map{|d| Aos::Os.osify(d)}
         r_str = Regexp.escape(str)
 
@@ -263,7 +268,7 @@ module Aos
 
     def run
       # run condition
-      @running = true
+      self.running = true
 
       # start cron
       Aos::Os.cron
@@ -276,7 +281,7 @@ module Aos
           process_cmd(cmd)
           height, width = IO.console.winsize
           IO.console.goto(height, Aro::Mancy::O)
-          break unless @running && cmd = Readline.readline(calc_ps1, true)
+          break unless self.running && cmd = Readline.readline(calc_ps1, true)
           IO.console.erase_screen(Aro::Mancy::S)
         end
 
@@ -293,21 +298,21 @@ module Aos
       return false if cmd.nil?
 
       # get args
-      args = Aos::Os.sanitize_you(cmd).split(" ")
+      args = cmd.split(" ") # Aos::Os.sanitize_you(cmd).split(" ")
       return false if args[0].nil?
       return false if args[0] == :aos.to_s
 
       args = handle_aro_override(args)
+      return false if args.include?(:aos.to_s)
 
       # send to "system" call in process_cmd method
       # if args[Aro::Mancy::O] is not in Aos::Os::CMDS
-      send_to_system_call = !Aos::Os.is_aos_command?(args[Aro::Mancy::O]) ||
-        args.include?(:aos.to_s)
+      send_to_system_call = !Aos::Os.is_aos_command?(args[Aro::Mancy::O])
 
       # the command is valid
       unless send_to_system_call
 
-        Dir.chdir(@you.pwd) do
+        Dir.chdir(self.you.pwd) do
           # process commands
           case args[Aro::Mancy::O].to_sym
           when Aos::Os::CMDS[:ABOT][:key]
@@ -371,13 +376,17 @@ module Aos
     end
 
     def calc_ps1
-      you_pwd = Aos::Os::osify(@you.pwd)
-      "#{Aos::Os::PS1}"
+      self.you_flag.nil? ? Aos::Os::PS1.to_s : ">[#{self.you_flag.name}]>: "
     end
 
     def handle_aro_override(args)
       if args[0].include?(:aro.to_s)
-        args = "#{args.join(" ")} #{:aos.to_s}".split(" ")
+        yfi = args.index(Aos::Os::YOU_FLAG)
+        if yfi.nil?
+          args = "#{args.join(" ")} #{:aos.to_s}".split(" ")
+        else
+          args.insert(args.index(Aos::Os::YOU_FLAG), :aos.to_s)
+        end
       end
       args
     end
@@ -387,18 +396,18 @@ module Aos
       handled = false
       if arg.to_sym == Aro::Dom::CONFIG
         handled = true
-        @you.home!
+        self.you.home!
       else
         room_path = Aro::Dom.room_path(arg)
-        if !@you.root? &&
+        if !self.you.root? &&
           room_path.include?(Aro::Dom::ROOT.to_s)
           self.display_lines += ["invalid access to #{room_path}. doing nothing."]
         elsif !room_path.empty?
           handled = true
           if room_path == Aro::Dom::HOME.to_s
-            @you.home!
+            self.you.home!
           else
-            @you.update(pwd: File.join(
+            self.you.update(pwd: File.join(
               Aro::Dom.dom_root,
               room_path
             ))
@@ -420,7 +429,7 @@ module Aos
     def get_ls(args, split = false)
       Dir.glob(
         File.join(
-          @you.pwd,
+          self.you.pwd,
           (args[1] || "") + Aos::Os::STAR.to_s
         ),
         File::FNM_EXTGLOB
@@ -431,18 +440,18 @@ module Aos
 
     def handle_ll(args)
       self.display_lines = [
-        Dir.glob(File.join(@you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_DOTMATCH).map{|p| Aos::Os::osify(p.strip, true)}.join("\n")
+        Dir.glob(File.join(self.you.pwd, (args[1] || "") + Aos::Os::STAR.to_s), File::FNM_DOTMATCH).map{|p| Aos::Os::osify(p.strip, true)}.join("\n")
       ]
     end
 
     def handle_pwd(args)
-      osified = "/" + Aos::Os::osify(@you.pwd)
+      osified = "/" + Aos::Os::osify(self.you.pwd)
       self.display_lines = [osified]
     end
 
     def handle_exit(args)
       Aos::S.say("#{Aos::Os} is exiting...")
-      @running = false
+      self.running = false
       if File.exist?(Aos::Abot.cron_pid_file)
         system("kill -9 #{File.read(Aos::Abot.cron_pid_file)}")
         FileUtils.rm(Aos::Abot.cron_pid_file)
@@ -454,27 +463,27 @@ module Aos
         new_pwd.include?(Aro::Dom::ROOT.to_s)
         self.display_lines = ["invalid access to #{Aos::Os.osify(new_pwd)}. doing nothing."]
       elsif Aos::Os.osify(new_pwd) == Aro::Dom::HOME.to_s
-        @you.home!
+        self.you.home!
       else
         Aro::V.say("new_pwd: #{new_pwd}")
-        @you.update(pwd: new_pwd)
+        self.you.update(pwd: new_pwd)
       end
     end
 
     def handle_cd(args)
       if args[1].nil? || args[1] == "~/"
         # no arg takes you to arodom root
-        @you.update(pwd: File.dirname(Aro::Dom.ethergeist_path))
+        self.you.update(pwd: File.dirname(Aro::Dom.ethergeist_path))
       else
         if args[1].include?(Aro::Dom::DOTT.to_s)
           # going up
-          if File.dirname(Aro::Dom.ethergeist_path) == @you.pwd
+          if File.dirname(Aro::Dom.ethergeist_path) == self.you.pwd
             self.display_lines = ["within #{Aos::Os}, one cannot leave the #{Aro::Dom}."]
           else
             # todo: support dots in paths
             # this only supports moving one level up
 
-            pwd_arr = @you.pwd.split("/")
+            pwd_arr = self.you.pwd.split("/")
             new_pwd = (pwd_arr.first(pwd_arr.length - 1)).join("/")
 
             handle_new_pwd(new_pwd)
@@ -488,7 +497,7 @@ module Aos
               handle_new_pwd(new_pwd)
             end
           elsif Dir.exist?(args[1]) && args[1] != Aro::Dom::DOT.to_s
-            new_pwd = File.join(@you.pwd, args[1])
+            new_pwd = File.join(self.you.pwd, args[1])
             handle_new_pwd(new_pwd)
           else
             self.display_lines = ["that directory is invalid."]

@@ -1,4 +1,4 @@
-class CreateFpxys < ActiveRecord::Migration[8.1]
+class CreateFpxies < ActiveRecord::Migration[8.1]
 
   def self.up
     create_table :fpxies do |t|
@@ -7,6 +7,8 @@ class CreateFpxys < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    add_index :fpxies, [:you_id, :cmd], unique: true
   end
 
   def self.down

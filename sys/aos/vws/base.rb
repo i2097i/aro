@@ -79,7 +79,7 @@ module Aos
             lines << "[ yous in the room ]".center(width)
             lines << ("[  " + present_users.join("    ") + "  ]").center(width)
           end
-          lines << ":you_are_root".center(width) if Aos::Os.instance.you.root?
+          lines << ":you_are_root".center(width) if Aos::Os.instance.you.root? && Aos::Os.instance.you_flag.nil?
           lines << "v#{Aro::VERSION.to_s}".ljust(width - display_dim.length) + display_dim
         end
 

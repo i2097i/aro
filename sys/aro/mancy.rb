@@ -62,7 +62,7 @@ module Aro
 
     def initialize
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        Aro::Config.instance.load
+        Aro::Db.load
         Aro::Mancy.init
         self.game = Aro::Teck.current_teck
       end

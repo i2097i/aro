@@ -68,11 +68,6 @@ module CLI
         Aro::Mancy.game.reset
       end
 
-      if ARGV.include?(:aos.to_s)
-        # run silent
-        exit(CLI::EXIT_CODES[:SUCCESS])
-      end
-
       Aro::Mancy.game.show(**CLI::shoptions)
     else
       Aro::Db.load
