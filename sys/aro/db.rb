@@ -23,10 +23,8 @@ module Aro
 
     def self.load
       Aro::Db.configure_logger
-      Mutex.new.synchronize do
-        if Aro::Mancy.in_aro?
-          self.instance.setup_local_aro
-        end
+      if Aro::Mancy.in_aro?
+        self.instance.setup_local_aro
       end
     end
 
@@ -51,7 +49,7 @@ module Aro
 
     def setup_local_aro
       name = Aro::Mancy.in_aro? ? Aro::Mancy.aro_mancy_name : nil
-      return if name.nil?
+      return if name.nil? || name.to_sym == Aos::Os::CMDS[:ABOT][:key]
 
       # create local .aro/ directory
       unless File.exist?(Aro::Db.base_aro_dir)

@@ -7,17 +7,17 @@ en:
 
       SYNOPSIS
 
-        aro [-v | --version] [-h | --help] <command1> <command2>
+        aro [-v | --version] [-h | --help] var_command
 
         quickstart or tldr;
 
-          $ aro create <name> && cd <name> && aro teck new <teck> && aro
+          $ aro create var_name && cd var_name && aro teck new <teck> && aro
 
       COMMANDS
         create
-          create and init an aro space named <name>:
+          create and init an aro space named var_name:
 
-            $ aro create <name>
+            $ aro create var_name
 
         init
           sets up the .aro directory that contains database and cor
@@ -28,7 +28,7 @@ en:
         cor
           aro cor management.
 
-            $ aro cor <var_name> <var_value>
+            $ aro cor var_name var_value
 
           basic usage:
 
@@ -37,15 +37,15 @@ en:
 
                 $ aro cor
 
-            pass <var_name>
-              print the var named <var_name>.
+            pass var_name
+              print the var named var_name.
 
-                $ aro cor <var_name>
+                $ aro cor var_name
 
-            pass <var_name> <var_value>
-              update a var named <var_name> with <var_value>.
+            pass var_name var_value
+              update a var named var_name with var_value.
 
-                $ aro cor <var_name> <var_value>
+                $ aro cor var_name var_value
 
         teck
           manage tecks in the aro space.
@@ -76,7 +76,7 @@ en:
 
                 example:
 
-                  $ aro teck new <name>
+                  $ aro teck new var_name
 
             replace
               replaces all drawn cards FIFO and puts them on the bottom of
@@ -126,7 +126,7 @@ en:
 
                 example:
 
-                  $ aro dom new <name>
+                  $ aro dom new var_name
 
 
 

@@ -42,5 +42,5 @@ en:
       generating_wing: "generating the %{wing} wing..."
       generating_room: "generating the %{room} room."
       initialization_complete: "%{name} initialization complete! use aos to begin."
-      missing_root_username: "missing <root_username> argument."
-      missing_root_password: "missing <root_password> argument."
+      missing_root_username: "missing var_root_username argument."
+      missing_root_password: "missing var_root_password argument."

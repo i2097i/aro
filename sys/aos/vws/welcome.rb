@@ -16,7 +16,7 @@ module Aos
       def self.show
         lines = []
 
-        dc = Aos::Cor.display_configuration
+        dc = Aos::Cor.discon
         width = dc[:WIDTH]
 
         lines << "welcome to #{Aro::Dom.ethergeist_name}".center(width)

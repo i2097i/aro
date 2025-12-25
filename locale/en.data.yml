@@ -18,7 +18,7 @@ en:
       no_yous: "no yous."
     usage: |
 
-      data [-h | --help] <command>
+      data [-h | --help] var_command
         aos data management.
 
       COMMANDS

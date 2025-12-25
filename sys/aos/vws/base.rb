@@ -12,7 +12,6 @@ module Aos
   module Vw
     class Base
       BAR = :"".to_s
-      COL_POW = Proc.new{|n| n.pow(Aro::Mancy::S.to_f / Aro::Mancy::OS.to_f).to_i}
       MARGIN_V = Aro::Mancy::S
       MARGIN_H = Aro::Mancy::S
 
@@ -30,7 +29,7 @@ module Aos
         return false unless body_lines.kind_of?(Array)
         lines = []
 
-        dc = Aos::Cor.display_configuration
+        dc = Aos::Cor.discon
         width = dc[:WIDTH]
 
         if Aro::Dom.in_arodom?
@@ -77,17 +76,8 @@ module Aos
       def self.get_aos_display_lines
         # current Aos::Os output
 
-        width = Aos::Cor.display_configuration[:WIDTH]
+        width = Aos::Cor.discon[:WIDTH]
         lines = []
-        Aos::Os.instance.display_lines ||= []
-        unless Aos::Os.instance.display_lines.empty?
-          Aos::Os.instance.display_lines.each{|line|
-            lines << line
-          }
-          Aos::Os.instance.display_lines = []
-          lines << "".center(width)
-        end
-
         Aos::Db.load
 
         the_you = Aos::Os.instance.you_flag || Aos::Os.instance.you
@@ -108,6 +98,15 @@ module Aos
           lines << ("[  " + present_users.join("    ") + "  ]").center(width)
         end
         lines << ":you_are_root".center(width) if the_you.root?
+        Aos::Os.instance.display_lines ||= []
+        unless Aos::Os.instance.display_lines.empty?
+          lines << ""
+          Aos::Os.instance.display_lines.each{|line|
+            lines << line
+          }
+          Aos::Os.instance.display_lines = []
+          lines << ""
+        end
         lines += get_main_divider(width)
         lines
       end
@@ -129,7 +128,7 @@ module Aos
       end
 
       def self.viewport_width
-        dc = Aos::Cor.display_configuration
+        dc = Aos::Cor.discon
         width = dc[:WIDTH]
         bar_width = (Aos::Vw::Base::BAR.length * Aro::Mancy::OS)
         h_margin_width = (Aos::Vw::Base::MARGIN_H * Aro::Mancy::OS)
@@ -141,7 +140,7 @@ module Aos
         hm = Aos::Vw::Base::MARGIN_H
         bar = Aos::Vw::Base::BAR
         hm_space = " " * Aos::Vw::Base::MARGIN_H
-        just = Aos::Cor.display_configuration[:WIDTH] - (hm_space.length + bar.length)
+        just = Aos::Cor.discon[:WIDTH] - (hm_space.length + bar.length)
         (bar + hm_space + (line || "")).ljust(just) + hm_space + bar
       end
 

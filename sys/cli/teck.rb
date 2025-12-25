@@ -59,7 +59,6 @@ module CLI
         Aro::Mancy.teck.replace
       when CLI::CMDS[:TECK][:RESET]
         Aro::P.say("#{I18n.t("cli.messages.confirmation_prompt", name: Aro::Mancy.teck.name)}")
-        Aro::P.say("\n")
         if Aro::Mancy::YES.to_s != Aos::S.p.ask("\n#{Aro::Mancy::PS1}$")
           Aro::P.say(I18n.t("cli.messages.understood", name: Aro::Mancy.teck.name))
           exit(CLI::EXIT_CODES[:SUCCESS])

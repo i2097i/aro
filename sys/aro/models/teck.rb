@@ -48,6 +48,7 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def self.display_selection_menu
+    Aro::Db.load
     unless Aro::Teck.any?
       Aro::P.say(I18n.t("cli.messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
@@ -97,6 +98,7 @@ class Aro::Teck < ActiveRecord::Base
     end
 
     # perform query
+    Aro::Db.load
     tlog_records = tlogs.order(created_at: order_o).first(count_n)
 
     # todo: this is doing more work than it needs to. needs debugging.
@@ -121,7 +123,7 @@ class Aro::Teck < ActiveRecord::Base
       Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aos::Cor.display_configuration[:HEIGHT] - Aro::Mancy::S,
+      per_page: Aos::Cor.discon[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )

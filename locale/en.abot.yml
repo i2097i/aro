@@ -8,11 +8,11 @@ en:
         stop: "power off an agodo."
         start: "power on an agodo."
       usage:
-        agodo: "$ abot agodo <go> <do> <rate>"
-        derez: "$ abot derez <name>"
-        rate: "$ abot rate <name> <rate>"
-        stop: "abot stop <name>"
-        start: "abot start <name>"
+        agodo: "$ abot agodo var_go var_do var_rate"
+        derez: "$ abot derez var_name"
+        rate: "$ abot rate var_name var_rate"
+        stop: "abot stop var_name"
+        start: "abot start var_name"
     agodo:
       display: "power: %{power}, go: %{go}, do: %{do}, rate: %{rate}, home: %{home}"
     messages:
@@ -25,14 +25,14 @@ en:
 
     usage: |
 
-      abot [-h | --help] <command>
+      abot [-h | --help] var_command
         fun with cron and agodos.
 
         go to the directory where you want to spawn an agodo
         and use the 'abot agodo' command to create one there.
         note: passing no arguments to abot agodo will bring
         you back to the abot room unless you pass args for
-        <go> <do> and <rate>.
+        var_go var_do and var_rate.
 
       COMMANDS
 
@@ -52,30 +52,30 @@ en:
 
           to create an agodo:
 
-            $ abot agodo <go> <do> <rate>
+            $ abot agodo var_go var_do var_rate
 
           parameters:
-            <go>:   valid arodome room name.
-            <do>:   valid aos cmd.
-            <rate>: agodo cycles-per-minute.
+            var_go:   valid arodome room name.
+            var_do:   valid aos cmd.
+            var_rate: agodo cycles-per-minute.
 
         derez
           destroy an agodo:
 
-            $ abot derez <name>
+            $ abot derez var_name
 
         rate
           update an agodo's rate:
 
-            $ abot rate <name> <rate>
+            $ abot rate var_name var_rate
 
         stop
           power off an agodo:
 
-            $ abot stop <name>
+            $ abot stop var_name
 
         start
           power on an agodo:
 
-            $ abot start <name>
+            $ abot start var_name
 

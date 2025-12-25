@@ -10,8 +10,6 @@
 
 # installed lib modules section
 
-require_relative :"./base_model".to_s
-
 module CRS
   SO_FILE = :"libcrs.so".to_s
   SO_PATH = File.join(

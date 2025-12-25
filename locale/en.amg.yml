@@ -5,8 +5,8 @@ en:
         inst: "show installed ilibs or install a lib."
         instun: "show uninstalled ilibs or uninstall a lib."
       usage:
-        inst: "$ amg inst <lib>"
-        instun: "$ amg instun <lib>"
+        inst: "$ amg inst var_lib"
+        instun: "$ amg instun var_lib"
     messages:
       already_installed: "%{name} lib is already installed."
       cannot_locate: "could not find %{name} lib."
@@ -24,7 +24,7 @@ en:
       uninstall_failure: "failed to uninstall %{name}."
     usage: |
 
-      amg [-h | --help] <command>
+      amg [-h | --help] var_command
         aos system management.
 
       COMMANDS
@@ -32,13 +32,13 @@ en:
         inst
           show installed ilibs.
 
-          install a lib named <lib>.
+          install a lib named var_lib.
 
-            $ amg inst <lib>
+            $ amg inst var_lib
 
         instun
           show uninstalled ilibs.
 
-          uninstall a lib named <lib>.
+          uninstall a lib named var_lib.
 
-            $ amg instun <lib>
+            $ amg instun var_lib
