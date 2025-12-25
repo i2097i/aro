@@ -9,18 +9,16 @@
 =end
 
 module CLI
-  # todo: set an Aro::Mancy.instance.you variable here:
-  argv_sanitized = Aos::Os.sanitize_you(ARGV.join(" ")).split(" ")
-
-  if CLI::CMDS[:DECK].values.include?(argv_sanitized[0]&.to_sym)
+  # todo: make this filtering better. dom uses :new as well
+  if CLI::CMDS[:TECK].values.filter{|k| ![:new].include?(k)}.include?(ARGV[0]&.to_sym)
     # enable teck shortcut (skip typing teck while in-game)
     ARGV0 = :teck
-    ARGV1 = argv_sanitized[0]&.to_sym
-    ARGV2 = argv_sanitized[1]&.to_sym
+    ARGV1 = ARGV[0]&.to_sym
+    ARGV2 = ARGV[1]&.to_sym
   else
     # default
-    ARGV0 = argv_sanitized[0]&.to_sym
-    ARGV1 = argv_sanitized[1]&.to_sym
-    ARGV2 = argv_sanitized[2]&.to_sym
+    ARGV0 = ARGV[0]&.to_sym
+    ARGV1 = ARGV[1]&.to_sym
+    ARGV2 = ARGV[2]&.to_sym
   end
 end

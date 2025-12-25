@@ -16,6 +16,7 @@ require :ffi.to_s
 require :fileutils.to_s
 require :"io/console".to_s
 require :i18n.to_s
+require :"net/http".to_s
 require :readline.to_s
 require :"tty-prompt".to_s
 require :yaml.to_s
@@ -28,10 +29,10 @@ module Reiquire
 
     I18n.load_path += Dir["#{Reiquire::GEM_PATH}/locale/*.yml"]
     I18n.available_locales = [:en]
-    I18n.default_locale = :en    
+    I18n.default_locale = :en
 
     # require sys folders
-    Reiquire::requires([:shr, :aro, :dom, :cli, :aos])
+    Reiquire::requires([:shr, :aro, :aos, :dom, :cli])
 
     # require cli module
     require_relative :"./cli".to_s

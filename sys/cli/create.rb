@@ -1,15 +1,14 @@
 =begin
   
-  aro.rb
+  create.rb
 
-  process aro commands.
+  create aro space.
 
   by i2097i
 
 =end
 
 module CLI
-  # cli entrypoint
   def self.create
     CLI::Nterface.exit_error_missing_args! if CLI::ARGV1.nil?
     

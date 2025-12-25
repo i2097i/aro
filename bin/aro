@@ -15,6 +15,14 @@ require :aro.to_s
 # todo: add tab completion using abbrev gem
 # https://stackoverflow.com/a/11627931
 
+Aro::V.say(ARGV)
+if ARGV.include?(Aos::Os::YOU_FLAG)
+  Aos::Db.load
+  yfi = ARGV.index(Aos::Os::YOU_FLAG)
+  Aos::Os.instance.you = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
+  Aos::Os.instance.you_flag = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
+end
+
 if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
   Aro::P.say(Aro::VERSION)
   exit(CLI::EXIT_CODES[:SUCCESS])
@@ -22,22 +30,21 @@ end
 
 # cli parser
 case CLI::ARGV0
-when CLI::CMDS[:ARO][:CONFIG]
-  Aro::config
+when CLI::CMDS[:ARO][:COR]
+  Aos.cor
 when CLI::CMDS[:ARO][:CREATE]
-  CLI::create
-when CLI::CMDS[:ARO][:DECK]
-  CLI::teck
+  CLI.create
+when CLI::CMDS[:ARO][:TECK]
+  CLI.teck
 when CLI::CMDS[:ARO][:DOM]
-  CLI::dom
+  CLI.dom
 when CLI::CMDS[:ARO][:INIT]
   Aro::Mancy.init
 else
-  unless Aro::Mancy.game.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
-    unless ARGV.include?(:aos.to_s)
-      Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Mancy.name}.game"))
-      Aro::Mancy.game.show
-    end
+  unless Aro::Mancy.teck.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
+    Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Teck.name}"))
+    Aro::Mancy.init
+    Aro::Mancy.teck.show
 
     exit(CLI::EXIT_CODES[:SUCCESS])
   end

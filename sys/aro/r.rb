@@ -12,8 +12,9 @@ require_relative :"../shr/prompt".to_s
 
 module Aro
   class R < Aro::Prompt
+    PS1 = :">[#{Aro::T::RUBY_FACOT}]>:"
     def self.say(message)
-      Aro::P::p.say(">[#{Aro::T::RUBY_FACOT}]>: #{message}\n")
+      super(["#{Aro::R::PS1} #{message}"])
     end
   end
 end

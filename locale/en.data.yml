@@ -8,9 +8,9 @@ en:
         ilogs: "$ data ilogs"
         yous: "$ data yous"
     ilogs:
-      display: "%{you} entered '%{cmd}' at %{timestamp} in %{pwd}."
+      display: "%{you} entered %{cmd} in %{pwd} at %{timestamp}"
     yous:
-      display: "name: %{name}, access: %{access}, pwd: %{pwd}."
+      display: "name: %{name} access: %{access} pwd: %{pwd}"
     messages:
       listing_ilogs: "listing aos input ilogs..."
       listing_yous: "listing yous..."

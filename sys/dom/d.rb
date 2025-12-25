@@ -13,14 +13,27 @@ require_relative :"../shr/prompt".to_s
 
 module Aro
   class Dom::D
-    def self.reserved_words
-      reserved = []
-      Aro::Dom::D::LAYOUT.values.each{|wing|
-        reserved << wing[:name].to_s
-        wing[:rooms].each{|room| reserved << room[:name].to_s}
-      }
+    include Singleton
 
-      reserved.sort
+    attr_accessor :reserved_words_def
+
+    def self.reserved_words(include_root = false)
+      if Aro::Dom::D.instance.reserved_words_def.nil?
+
+        reserved = []
+        Aro::Dom::D::LAYOUT.values.each{|wing|
+          if wing == Aro::Dom::D::LAYOUT[:ROOT]&& !include_root
+            next
+          end
+
+          reserved << wing[:name].to_s
+          wing[:rooms].each{|room| reserved << room[:name].to_s}
+        }
+
+        Aro::Dom::D.instance.reserved_words_def = reserved.sort
+      end
+
+      return Aro::Dom::D.instance.reserved_words_def
     end
 
     # definition of rooms in each layout wing
@@ -38,23 +51,12 @@ module Aro
         },
       },
       GAMES: {
-        ABPPS: {
-          name: Aro::Dom::ABPPS,
-          description: I18n.t("dom.rooms.abpps.description"),
-        },
-        HBPPS: {
-          name: Aro::Dom::HBPPS,
-          description: I18n.t("dom.rooms.hbpps.description"),
-        },
-        SHPPS: {
-          name: Aro::Dom::SHPPS,
-          description: I18n.t("dom.rooms.shpps.description"),
-        },
-        VIPPS: {
-          name: Aro::Dom::VIPPS,
-          description: I18n.t("dom.rooms.vipps.description"),
+        ABOT: {
+          name: Aro::Dom::ABOT,
+          description: I18n.t("dom.rooms.abot.description"),
         },
       },
+      HOME: {},
       KNOW: {
         BODY: {
           name: Aro::Dom::BODY,
@@ -74,14 +76,18 @@ module Aro
           name: Aro::Dom::AMG,
           description: I18n.t("dom.rooms.amg.description"),
         },
-        CONFIG: {
-          name: Aro::Dom::CONFIG,
+        COR: {
+          name: Aro::Dom::COR,
           description: I18n.t("dom.rooms.config.description"),
         },
         DATA: {
           name: Aro::Dom::DATA,
           description: I18n.t("dom.rooms.data.description"),
         },
+        FLIE: {
+          name: Aro::Dom::FLIE,
+          description: I18n.t("dom.rooms.flie.description"),
+        }
       },
     }
 
@@ -99,11 +105,13 @@ module Aro
         name: Aro::Dom::GAMES,
         description: I18n.t("dom.wings.games.description"),
         rooms: [
-          Aro::Dom::D::WINGS[:GAMES][:ABPPS],
-          Aro::Dom::D::WINGS[:GAMES][:HBPPS],
-          Aro::Dom::D::WINGS[:GAMES][:SHPPS],
-          Aro::Dom::D::WINGS[:GAMES][:VIPPS],
+          Aro::Dom::D::WINGS[:GAMES][:ABOT],
         ],
+      },
+      HOME: {
+        name: Aro::Dom::HOME,
+        description: I18n.t("dom.wings.home.description"),
+        rooms: [],
       },
       KNOW: {
         name: Aro::Dom::KNOW,
@@ -119,8 +127,9 @@ module Aro
         description: I18n.t("dom.wings.root.description"),
         rooms: [
           Aro::Dom::D::WINGS[:ROOT][:AMG],
-          Aro::Dom::D::WINGS[:ROOT][:CONFIG],
+          Aro::Dom::D::WINGS[:ROOT][:COR],
           Aro::Dom::D::WINGS[:ROOT][:DATA],
+          Aro::Dom::D::WINGS[:ROOT][:FLIE],
         ],
       }
     }

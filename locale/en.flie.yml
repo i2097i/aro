@@ -1,0 +1,29 @@
+en:
+  flie:
+    commands:
+      description:
+        pxy: "manage flie proxies."
+      usage:
+        pxy: "$ flie pxy"
+    fpxies:
+      display: "%{you} cmd: %{cmd}"
+    messages:
+      derez_menu: "select fpxy for derez:"
+      fpxy_derez_success: "fpxy deleted successfully..."
+      main_menu: "editing %{name}'s fpxies. make a selection:"
+      pxy_starting: "flie pxy is starting..."
+      pxy_exited: "flie pxy exited."
+      enter_cmd: "enter fpxy exception command:"
+      enter_email: "enter email address for the you you want to manage:"
+      invalid_email: "that email address is invalid."
+      listing_fpxies: "listing fpxies..."
+      no_fpxies: "no fpxies."
+    usage: |
+
+      flie [-h | --help] <command>
+        flie management.
+
+      COMMANDS
+
+        pxy
+          manage flie fpxies.

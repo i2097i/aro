@@ -9,6 +9,6 @@
 =end
 
 module Aro
-  VERSION = :"0.2.2"
+  VERSION = :"0.2.3"
   RELEASE_NOTES = :"this version".to_s + [].join(",")
 end

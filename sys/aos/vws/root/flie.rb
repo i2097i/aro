@@ -1,8 +1,8 @@
 =begin
-  
-  vws/root/cor.rb
 
-  the cor view.
+  vws/root/flie.rb
+
+  the flie view.
 
   by i2097i
 
@@ -12,9 +12,9 @@ require_relative :"../base".to_s
 
 module Aos
   module Vw
-    class Cor < Aos::Vw::Base
+    class Flie < Aos::Vw::Base
       def self.show
-        draw(Aos::Cor.instance.display_lines)
+        draw(Aos::Flie.instance.display_lines)
       end
     end
   end

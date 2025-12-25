@@ -2,21 +2,25 @@ en:
   aos:
     commands:
       description:
+        abot: "fun with cron."
         amg: "manage aos. a tool for package installation/management."
         cd: "change directory. no args navigates to arodome root."
-        config: "read/write aos vars. (enter vars lowercase excluding bash prefix)."
+        cor: "read/write aos vars. (enter vars lowercase excluding bash prefix)."
         data: "manage aos data."
         exit: "exit."
+        flie: "flie management."
         help: "help."
         ll: "list files and folders in the pwd including hidden files."
         ls: "list files and folders in the pwd."
         pwd: "show pwd."
       usage:
+        abot: "$ abot [-h | --help] <command>"
         amg: "$ amg [-h | --help] <command>"
         cd: "$ cd <name>"
-        config: "$ config <var_name> <var_value>"
+        cor: "$ cor <var_name> <var_value>"
         data: "$ data [-h | --help] <command>"
         exit: "$ exit"
+        flie: "$ flie"
         help: "$ help"
         ll: "$ ll"
         ls: "$ ls"

@@ -23,7 +23,7 @@ module Aos
         lines << ""
         lines << I18n.t("aos.views.dom.quick_navigation")
         lines << ""
-        lines << "  =>  #{Aro::Dom::D.reserved_words.join("  ")}"
+        lines << "  =>  #{Aro::Dom::D.reserved_words(Aos::Os.instance.you.root?).join("  ")}"
         lines << ""
         draw(lines)
       end

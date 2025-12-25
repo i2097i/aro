@@ -4,37 +4,37 @@ en:
       welcome:
         description: "sign up process."
       games:
-        description: "aro game rooms."
+        description: "game rooms."
+      home:
+        description: "user space."
       know:
         description: "information space."
       root:
-        description: "aos system space."
+        description: "aos root space."
     rooms:
+      amg:
+        description: "aos package management."
       waite:
         description: "sign up."
       winner:
         description: "win."
-      abpps:
-        description: "artificial beings."
-      hbpps:
-        description: "human beings."
-      shpps:
-        description: "human and artificial beings."
-      vipps:
-        description: "only dev_tarot users. no ruby_facots allowed."
+      abot:
+        description: "abot."
       body:
         description: "body."
       mind:
         description: "mind."
       spirit:
         description: "spirit."
-      config:
-        description: "user config and configuration."
+      cor:
+        description: "cor configuration."
+      flie:
+        description: "flie management."
     errors:
       directory_exists: "unable to create arodome at %{name}. file or directory already exists."
       failed_already_in_arodom: "unable to create an arodome because you are already in arodom."
-      failed_in_aro_space: "unable to create an arodome inside of aro space."
       failed_already_initialized: "arodome is already initialized. doing nothing."
+      failed_in_aro_space: "unable to create an arodome inside of aro space."
     messages:
       arodome_created: "%{name} arodome created. enter the following commands to begin: $ cd %{name}"
       creating_arodome: "creating arodome named %{name}"
@@ -42,3 +42,5 @@ en:
       generating_wing: "generating the %{wing} wing..."
       generating_room: "generating the %{room} room."
       initialization_complete: "%{name} initialization complete! use aos to begin."
+      missing_root_username: "missing <root_username> argument."
+      missing_root_password: "missing <root_password> argument."

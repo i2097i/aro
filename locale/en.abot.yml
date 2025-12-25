@@ -1,0 +1,81 @@
+en:
+  abot:
+    commands:
+      description:
+        agodo: "create or list agodos."
+        derez: "destroy an agodo."
+        rate: "update an agodo's rate."
+        stop: "power off an agodo."
+        start: "power on an agodo."
+      usage:
+        agodo: "$ abot agodo <go> <do> <rate>"
+        derez: "$ abot derez <name>"
+        rate: "$ abot rate <name> <rate>"
+        stop: "abot stop <name>"
+        start: "abot start <name>"
+    agodo:
+      display: "power: %{power}, go: %{go}, do: %{do}, rate: %{rate}, home: %{home}"
+    messages:
+      invalid_agodo_cmd: "the command you entered is not valid. see abot agodo usage."
+      invalid_do: "invalid do command."
+      invalid_go: "invalid go location."
+      invalid_rate: "invalid rate value."
+      listing_agodos: "listing agodos..."
+      no_agodos: "no agodos."
+
+    usage: |
+
+      abot [-h | --help] <command>
+        fun with cron and agodos.
+
+        go to the directory where you want to spawn an agodo
+        and use the 'abot agodo' command to create one there.
+        note: passing no arguments to abot agodo will bring
+        you back to the abot room unless you pass args for
+        <go> <do> and <rate>.
+
+      COMMANDS
+
+        agodo
+          creates an agodo in pwd.
+          agodos always return to where they spawned after doing.
+          if started, an agodo will "go and do" on a cron based on the
+          agodo's rate setting.
+
+            rate units are:
+
+              agodos/minute
+
+          to list agodos:
+
+            $ abot agodo
+
+          to create an agodo:
+
+            $ abot agodo <go> <do> <rate>
+
+          parameters:
+            <go>:   valid arodome room name.
+            <do>:   valid aos cmd.
+            <rate>: agodo cycles-per-minute.
+
+        derez
+          destroy an agodo:
+
+            $ abot derez <name>
+
+        rate
+          update an agodo's rate:
+
+            $ abot rate <name> <rate>
+
+        stop
+          power off an agodo:
+
+            $ abot stop <name>
+
+        start
+          power on an agodo:
+
+            $ abot start <name>
+

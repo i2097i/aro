@@ -23,11 +23,11 @@ module Aro
     end
 
     def self.should_print?
-      Aro::Config::BOOLS[:TRUE]
+      Aos::Cor::BOOLS[:TRUE]
     end
 
     def self.say(message)
-      raise :override_me.to_s
+      Aos::Os.say(message)
     end
 
     def self.less(message)

@@ -17,15 +17,25 @@ module Aos
       MARGIN_H = Aro::Mancy::S
 
       def self.show
-        draw([self.name])
+        draw([
+          "the #{self.name} room.",
+          "",
+          "getting directory listing...",
+          "",
+          Aos::Os.instance.get_ls([])
+        ])
       end
 
       def self.draw(body_lines)
         return false unless body_lines.kind_of?(Array)
         lines = []
-        dc = Aro::Config.display_configuration
-        height = dc[:HEIGHT]
+
+        dc = Aos::Cor.display_configuration
         width = dc[:WIDTH]
+
+        if Aro::Dom.in_arodom?
+          lines += get_main_divider(width, true)
+        end
 
         # top vertical margin
         Aos::Vw::Base::MARGIN_V.times do
@@ -37,39 +47,73 @@ module Aos
           lines << get_body_line(line)
         }
 
-        lines += get_aos_display_lines if Aro::Dom.in_arodom?
+        if Aro::Dom.in_arodom?
+          lines += get_aos_display_lines
+        end
 
         # print everything
-        Aos::S.say(lines.join("\n"))
+
+        Aro::Prompt.say(lines)
 
         # explicitly return true
         true
       end
 
+      def self.get_main_divider(width, clock = false)
+        left = "#{Aos::Os::PS1}"
+        if clock
+          left = "#{left}#{get_domain} >"
+        else
+          left = "#{left}v#{Aro::VERSION} >"
+        end
+        right = "< " + (clock ? get_clock : get_display_dimension.strip)
+        lines = []
+        lines << ""
+        lines << left.ljust(width - right.length, "-".to_s) + right
+        lines << ""
+        lines
+      end
+
       def self.get_aos_display_lines
         # current Aos::Os output
+
+        width = Aos::Cor.display_configuration[:WIDTH]
         lines = []
+        Aos::Os.instance.display_lines ||= []
         unless Aos::Os.instance.display_lines.empty?
-          dc = Aro::Config.display_configuration
-          width = dc[:WIDTH]
-          lines << "".center(width)
-          display_dim = get_display_dimension
           Aos::Os.instance.display_lines.each{|line|
             lines << line
           }
+          Aos::Os.instance.display_lines = []
           lines << "".center(width)
-          lines << "v#{Aro::VERSION.to_s}".ljust(width - display_dim.length) + display_dim
         end
 
+        Aos::Db.load
+
+        the_you = Aos::Os.instance.you_flag || Aos::Os.instance.you
+        Aro::V.say(Aos::Os.you_name_from_flag_arg)
+        Aro::V.say(the_you.inspect)
+        present_users = Aos::You.order(
+          name: :asc
+        ).where(
+          pwd: the_you.pwd,
+          access: [:agodo, :user]
+        ).map{|y|
+          (the_you == y ? Aos::Os::STAR.to_s : "") +
+          y.name
+        }
+
+        if present_users.any?
+          lines << "[ yous in the room ]".center(width)
+          lines << ("[  " + present_users.join("    ") + "  ]").center(width)
+        end
+        lines << ":you_are_root".center(width) if the_you.root?
+        lines += get_main_divider(width)
         lines
       end
 
       def self.get_display_dimension
-        "#{self.get_dt.rjust(Aro::Mancy::V)} :<[#{self.get_dimension}]<"
-      end
-
-      def self.get_dt
-        Aro::T.read_dev_tarot.strip[Aro::Mancy::S..]
+        "#{Aro::T.read_dev_tarot(true).rjust(Aro::Mancy::V)} :<[#{self.get_dimension}]<"
       end
 
       def self.get_dimension
@@ -77,7 +121,7 @@ module Aos
       end
 
       def self.get_domain
-        Aro::Dom.in_arodom? ? Aro::Dom::domain : Aro::Mancy.domain
+        Aro::Mancy.in_aro? ? Aro::Mancy.domain : Aro::Dom.domain
       end
 
       def self.get_clock
@@ -85,7 +129,7 @@ module Aos
       end
 
       def self.viewport_width
-        dc = Aro::Config.display_configuration
+        dc = Aos::Cor.display_configuration
         width = dc[:WIDTH]
         bar_width = (Aos::Vw::Base::BAR.length * Aro::Mancy::OS)
         h_margin_width = (Aos::Vw::Base::MARGIN_H * Aro::Mancy::OS)
@@ -97,7 +141,7 @@ module Aos
         hm = Aos::Vw::Base::MARGIN_H
         bar = Aos::Vw::Base::BAR
         hm_space = " " * Aos::Vw::Base::MARGIN_H
-        just = Aro::Config.display_configuration[:WIDTH] - (hm_space.length + bar.length)
+        just = Aos::Cor.display_configuration[:WIDTH] - (hm_space.length + bar.length)
         (bar + hm_space + (line || "")).ljust(just) + hm_space + bar
       end
 
@@ -110,10 +154,6 @@ module Aos
         lines << "#{"  ".rjust(just_cmds)} #{cmd[:usage]}"
         lines << ""
         lines
-      end
-
-      def self.debug_log(lines)
-        Aro::V.say(lines)
       end
     end
   end

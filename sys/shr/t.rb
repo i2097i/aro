@@ -15,10 +15,8 @@ module Aro
     RUBY_FACOT = :"Ruby::Facot".to_s
 
     def self.is_dev_tarot?
-      Aro::T.is_dev_tarot_avail? && (
-        Aro::Config.ivar(:DIMENSION)&.to_sym ==
-        Aro::Config::DMS[:DEV_TAROT]
-      )
+      user_setting_true = Aos::Cor.ivar(:DIMENSION)&.to_sym == Aos::Cor::DMS[:DEV_TAROT]
+      Aro::T.is_dev_tarot_avail? && (user_setting_true || Aos::Cor.ivar(:DIMENSION).nil?)
     end
 
     def self.is_dev_tarot_avail?
@@ -26,11 +24,11 @@ module Aro
     end
 
     # read dev_tarot
-    def self.read_dev_tarot
+    def self.read_dev_tarot(include_o = true)
       dt = nil
       if Aro::T.is_dev_tarot?
         # VERY IMPORTANT!
-        File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N)}
+        File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N).strip}
         # VERY IMPORTANT!
         Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
       else
@@ -43,19 +41,19 @@ module Aro
         dt = Aro::T.summon_ruby_facot
       end
 
-      return dt
+      return dt[(include_o ? Aro::Mancy::O : Aro::Mancy::S)..]
     end
 
     # summon ruby_facot
-    def self.summon_ruby_facot
+    def self.summon_ruby_facot(include_o = true)
       Aro::D.say(I18n.t("cli.messages.ruby_facot_random"))
       ruby_facot = I18n.t("cards.index").map{|c| "+#{c}"}.sample.split("")
 
       # get orientation
-      ruby_facot_str = ["+","-"].sample
+      rf = ["+","-"].sample
 
       # get suite
-      ruby_facot_str += ruby_facot[1]
+      rf += ruby_facot[1]
 
       # calculate the sym
       symm = ruby_facot.select{|c|
@@ -67,10 +65,10 @@ module Aro
         # the first two characters in the dev_tarot format designate the
         !ruby_facot.first(Aro::Mancy::OS).include?(c)
       }.join("").to_sym
-      ruby_facot_str += Aro::Mancy::NUMERALS[symm].to_s
+      rf += Aro::Mancy::NUMERALS[symm].to_s
 
-      # return ruby_facot_str
-      ruby_facot_str
+      # return rf
+      return rf[(include_o ? Aro::Mancy::O : Aro::Mancy::S)..]
     end
   end
 end

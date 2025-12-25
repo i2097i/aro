@@ -82,12 +82,12 @@ module Aos
       # list input ilogs
       lines = []
       lines << ""
-      iilogs = Aos::Ilog.all
-      unless iilogs.any?
+      ilogs = Aos::Ilog.all
+      unless ilogs.any?
         lines << I18n.t("data.messages.no_ilogs")
       else
         lines << I18n.t("data.messages.listing_ilogs")
-        iilogs.each{|il|
+        ilogs.each{|il|
           lines += il.get_lines
         }
       end
