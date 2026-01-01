@@ -8,8 +8,6 @@
 
 =end
 
-require_relative :"./base_model".to_s
-
 module Aos
   class Fpxy < ActiveRecord::Base
     # table_name :fpxies

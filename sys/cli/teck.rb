@@ -12,10 +12,8 @@ module CLI
   def self.teck
     Aro::Mancy.init
     action = CLI::ARGV1&.to_sym
-
-    if CLI::FLAGS[:HELP].include?(action.to_s)
-      # todo: breakout usage into subcommand-specific verbiage
-      CLI.usage::usage
+    if CLI::FLAGS[:HELP].include?(action)
+      CLI.usage_teck
       exit(CLI::EXIT_CODES[:SUCCESS])
     elsif action.nil? || action == :aos
       # no args, open teck menu
@@ -25,7 +23,7 @@ module CLI
         Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Mancy::I2097I))
       end
     elsif action == CLI::CMDS[:TECK][:NEW]
-      CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
+      CLI::Nterface.exit_error_missing_args!(:var_teck_name) if CLI::ARGV2.nil?
       if Aro::Mancy.in_aro?
         teck = Aro::Teck.make(CLI::ARGV2.to_s)
         Aro::P.say(I18n.t("cli.messages.teck_created_sucessfully", name: teck.name))
@@ -47,6 +45,7 @@ module CLI
         Aro::P.say(I18n.t("cli.messages.shuffling", name: Aro::Mancy.teck.name))
         Aro::Mancy.teck.shuffle
       when CLI::CMDS[:TECK][:DRAW]
+        Aos::Cor.instance.load
         Aro::P.say(I18n.t("cli.messages.drawing", name: Aro::Mancy.teck.name))
         Aro::P.say(I18n.t("cli.messages.drawing_from_dimension", dimension: "#{Aos::Cor.ivar(:DIMENSION)}"))
         Aro::Mancy.teck.draw(
@@ -59,7 +58,6 @@ module CLI
         Aro::Mancy.teck.replace
       when CLI::CMDS[:TECK][:RESET]
         Aro::P.say("#{I18n.t("cli.messages.confirmation_prompt", name: Aro::Mancy.teck.name)}")
-        Aro::P.say("\n")
         if Aro::Mancy::YES.to_s != Aos::S.p.ask("\n#{Aro::Mancy::PS1}$")
           Aro::P.say(I18n.t("cli.messages.understood", name: Aro::Mancy.teck.name))
           exit(CLI::EXIT_CODES[:SUCCESS])

@@ -48,6 +48,7 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def self.display_selection_menu
+    Aro::Db.load
     unless Aro::Teck.any?
       Aro::P.say(I18n.t("cli.messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
@@ -97,6 +98,7 @@ class Aro::Teck < ActiveRecord::Base
     end
 
     # perform query
+    Aro::Db.load
     tlog_records = tlogs.order(created_at: order_o).first(count_n)
 
     # todo: this is doing more work than it needs to. needs debugging.
@@ -121,20 +123,29 @@ class Aro::Teck < ActiveRecord::Base
       Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aos::Cor.display_configuration[:HEIGHT] - Aro::Mancy::S,
+      per_page: Aos::Cor.discon[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )
-    # {name: "four of swords", tag_list: ["lord of rest from strife", "libra", "jupiter", "introspection", "recuperation", "regain strength", "rest", "solitude", "stability"], reversed_tag_list: ["lord of rest from strife", "libra", "jupiter", "burnt out", "inundated", "need a break", "overwhelmed"], summary: "", reversed_summary: ""}
-    definition = I18n.t("cards.#{Aro::Teck.card_strip(answer)}")
-    indent = Aro::Mancy::N
-    Aro::P.say(definition[:name])
-    Aro::P.say(definition[:summary])
-    Aro::P.say("tags:")
-    definition[:tag_list].sort.each{|tl| Aro::P.say("".rjust(indent) + tl)}
-    Aro::P.say(definition[:reversed_summary])
-    Aro::P.say("reverse tags:")
-    definition[:reversed_tag_list].sort.each{|tl| Aro::P.say("".rjust(indent) + tl)}
+
+    Aro::Teck.print_card(answer)
+  end
+
+  def self.print_card(card_code)
+    card_code = card_code.to_s.upcase
+    orientation = "+"
+    if card_code.include?("-")
+      orientation = "-"
+    end
+
+    definition = I18n.t("cards.#{Aro::Teck.card_strip(card_code)}")
+    output = []
+    output << orientation + definition[:name]
+    output += definition["#{orientation}tags".to_sym].sort
+    # todo: add an actual summary
+    # Aro::P.say(definition["#{orientation}summary".to_sym])
+    width = Aos::Cor.discon[:WIDTH]
+    Aro::P.say("#{card_code}\n#{output.map{|l| l.center(width, Aos::Cor.discon[:DIVIDER])}.join("\n")}")
   end
 
   def shuffle
@@ -185,7 +196,7 @@ class Aro::Teck < ActiveRecord::Base
     # find a card that is not already drawn
     while sleeps <= sleeps_max && dev_tarot.nil? do
       # use fallback randomness if /dev/tarot unavailable
-      if !is_dt_dimension || !File.exist?(Aro::T::DEV_TAROT_FILE.to_s)
+      unless Aro::T.is_dev_tarot? && Aro::T.is_dev_tarot_avail?
         dev_tarot = Aro::T.summon_ruby_facot.split("")
       else
         # preferred randomness
@@ -219,6 +230,8 @@ class Aro::Teck < ActiveRecord::Base
 
     # insert dev_tarot to drawn
     drawn_arr << dev_tarot
+    Aro::Teck.print_card(dev_tarot)
+    Aro::Db.load
 
     # update database 
     update(

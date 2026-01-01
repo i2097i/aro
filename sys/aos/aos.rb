@@ -240,9 +240,9 @@ module Aos
         return if @view.nil?
 
         Dir.chdir(self.you.reload.pwd) do
-          if Aro::Mancy.in_aro?
-            Aro::Mancy.init
+          if Aro::Mancy.in_aro? && !Aos::Os.osify(self.you.pwd).include?(Aro::Dom.room_path(:abot))
             if Aro::Mancy.is_initialized? && !Aro::Mancy.teck.nil?
+              Aro::Mancy.init
               Aro::Mancy.teck.show
             end
           else
@@ -371,29 +371,30 @@ module Aos
       `#{args.join(" ")}`
     end
 
-    def process_cmd(cmd)
-      # load config
-      Aos::Cor.instance.load
-      load_you!
-      Dir.chdir(self.you.reload.pwd) do
-        send_to_system_call = main(cmd)
-        nothing = nil
-        unless cmd.nil? || cmd.empty?
-          nothing = handle_aro_override(cmd.split(" "))
-          self.you.generate_ilog(cmd)
-        end
-        if send_to_system_call && nothing.nil?
-          nothing = `#{cmd}`
+    Mutex.new.synchronize do
+      def process_cmd(cmd)
+        Aos::Cor.instance.cor_path = nil
+        Aos::Cor.instance.load
+        Dir.chdir(self.you.reload.pwd) do
+          send_to_system_call = main(cmd)
+          nothing = nil
+          unless cmd.nil? || cmd.empty?
+            nothing = handle_aro_override(cmd.split(" "))
+            self.you.generate_ilog(cmd)
+          end
+          if send_to_system_call && nothing.nil?
+            nothing = `#{cmd}`
+          end
+
+          unless nothing.nil?
+            Aos::Os.say(nothing)
+          else
+            render
+          end
         end
 
-        unless nothing.nil?
-          Aos::Os.say(nothing)
-        else
-          render
-        end
+        CLI::EXIT_CODES[:SUCCESS]
       end
-
-      CLI::EXIT_CODES[:SUCCESS]
     end
 
     def configure_readline(env)
@@ -429,13 +430,14 @@ module Aos
           cmd = nil
 
           loop do
-            configure_readline :aos
-            break unless self.running && cmd = Readline.readline(calc_ps1)
-            IO.console.erase_screen(Aro::Mancy::S)
             height, width = IO.console.winsize
             IO.console.goto(height, Aro::Mancy::O)
             process_cmd(cmd)
+            break unless self.running && cmd = Readline.readline(calc_ps1)
+            IO.console.erase_screen(Aro::Mancy::S)
+            configure_readline :aos
           end
+
 
           out
         end
@@ -546,12 +548,15 @@ module Aos
         self.you.home!
       else
         room_path = Aro::Dom.room_path(arg)
+        Aro::D.say("#{__method__}#{Aos::Os::A}room_path: #{room_path}")
         if !self.you.root? &&
           room_path.include?(Aro::Dom::ROOT.to_s)
+          Aro::D.say("#{__method__}#{Aos::Os::A}invalid")
           self.display_lines = ["invalid access to #{room_path}. doing nothing."]
         elsif !room_path.empty?
           handled = true
           if room_path == Aro::Dom::HOME.to_s
+            Aro::D.say("#{__method__}#{Aos::Os::A}home!")
             self.you.home!
           else
             Aro::D.say("#{__method__}#{Aos::Os::A}#{room_path}")
@@ -601,7 +606,7 @@ module Aos
       Aos::Os.say(["#{Aos::Os} is exiting..."])
       begin
         Aos::Abot.terminate
-        Aos::Os.terminateq
+        # Aos::Os.terminateq
       rescue StandardError => e
         Aro::D.say(e)
       end

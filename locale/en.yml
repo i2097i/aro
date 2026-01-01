@@ -8,10 +8,11 @@ en:
       header: "%{cmd} says there was a problem."
       invalid_usage: "%{cmd} says you're not supposed to be here."
       missing_args: "%{cmd} says missing required argument(s)."
-      missing_teck: "%{cmd} says no teck selected. use 'aro teck' to select one or 'aro teck new <name>' to create one."
+      missing_teck: "%{cmd} says no teck selected. use 'aro teck' to select one or 'aro teck new var_name' to create one."
+      not_found: "%{cmd} not found."
       not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
       not_in_aos: "%{cmd} says you are not in aos space. that command will not work here."
-      not_initialized_dom: "%{cmd} says you need to initialize dom. $ aro dom init <root_username> <root_password>"
+      not_initialized_dom: "%{cmd} says you need to initialize dom. $ aro dom init var_root_username var_root_password"
       not_initialized: "%{cmd} says you need to initialize aro. run 'aro init' to do so"
     warnings:
       invalid_order: "the order specified for displaying tlogs in invalid. using default (desc)."
@@ -44,7 +45,7 @@ en:
 
         use the following command to create one:
 
-          $ aro teck new <teck_name>
+          $ aro teck new var_name
 
         see aro --help for usage.
       showing: "showing %{name} [count:%{count}, order:%{order}]..."

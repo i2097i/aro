@@ -14,11 +14,11 @@ en:
         ls: "list files and folders in the pwd."
         pwd: "show pwd."
       usage:
-        abot: "$ abot [-h | --help] <command>"
-        amg: "$ amg [-h | --help] <command>"
-        cd: "$ cd <name>"
-        cor: "$ cor <var_name> <var_value>"
-        data: "$ data [-h | --help] <command>"
+        abot: "$ abot [-h | --help] var_command"
+        amg: "$ amg [-h | --help] var_command"
+        cd: "$ cd var_name"
+        cor: "$ cor var_name var_value"
+        data: "$ data [-h | --help] var_command"
         exit: "$ exit"
         flie: "$ flie"
         help: "$ help"
@@ -30,9 +30,9 @@ en:
       subcommands: "SUBCOMMANDS"
     views:
       dom:
-        title: "ready to go..."
+        title: "you are in the dom root. navigate here quickly by entering 'cd'"
         description: "awaiting input..."
-        quick_navigation: "the following room names are reserved for quick navigation. enter any of them to navigate to that room."
+        quick_navigation: "the following words are reserved for quick navigation. enter any of them to navigate to that room."
       game:
         title: "you are playing aro..."
         description: "enter commands to play."

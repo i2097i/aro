@@ -20,7 +20,7 @@ en:
       no_fpxies: "no fpxies."
     usage: |
 
-      flie [-h | --help] <command>
+      flie [-h | --help] var_command
         flie management.
 
       COMMANDS

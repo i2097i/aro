@@ -115,7 +115,6 @@ module Aro
         end
       }
       found_space = nil if found_room.nil?
-
       [found_space, found_room].compact.join("/")
     end
 

@@ -78,6 +78,7 @@ module Aos
     end
 
     def self.process_cmd(args)
+      args = Aos::Os.sanitize_you(args)
       if args[Aro::Mancy::S].nil?
         Aos::Abot.abot
         return true
@@ -118,6 +119,7 @@ module Aos
 
     # create and list agodos
     def self.agodo(args)
+      args = Aos::Os.sanitize_you(args)
       if args[Aro::Mancy::OS].nil?
         # list agodos
         self.instance.display_lines = Aos::Abot.agodo_lines
@@ -128,7 +130,7 @@ module Aos
         !args[Aro::Mancy::E].nil? &&
         !args[Aro::Mancy::N].nil?
         # create mode
-        # abot agodo <go> <do> <rate>
+        # abot agodo var_go var_do var_rate
         arg_go = args[Aro::Mancy::OS]
         arg_do = args[Aro::Mancy::E]
         arg_rate = args[Aro::Mancy::N]
@@ -138,10 +140,9 @@ module Aos
         agodo_record.do = arg_do
         agodo_record.rate = arg_rate
         if agodo_record.save
-          self.instance.display_lines << "successfully created an agodo named #{agodo_record.you.name}."
-          self.instance.display_lines += Aos::Abot.agodo_lines
+          self.instance.display_lines = ["successfully created an agodo named #{agodo_record.you.name}."] + Aos::Abot.agodo_lines
         else
-          self.instance.display_lines += agodo_record.errors.to_a.map(&:downcase)
+          self.instance.display_lines = agodo_record.errors.to_a.map(&:downcase)
         end
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
@@ -158,8 +159,7 @@ module Aos
         Aos::Cor.int_valid?(args[Aro::Mancy::E]&.to_i)
         agodo_record = agodo_you.agodo
         agodo_record.update(rate: args[Aro::Mancy::E].to_i)
-        self.instance.display_lines << "#{agodo_record.you.name} rate updated."
-        self.instance.display_lines += Aos::Abot.agodo_lines
+        self.instance.display_lines = ["#{agodo_record.you.name} rate updated."] + Aos::Abot.agodo_lines
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
       end
@@ -170,17 +170,18 @@ module Aos
       n = agodo_name&.strip&.upcase
       agodo_you = Aos::You.find_by(name: n)
       unless agodo_you.nil?
-        self.instance.display_lines << "derezing #{agodo_you.name} agodo."
+        lines = ["derezing #{agodo_you.name} agodo."]
         agodo_record = agodo_you.agodo
         agodo_record&.destroy
         agodo_you.ilogs.destroy_all
         agodo_you.destroy
         requery = Aos::You.find_by(name: n)
         if requery.nil? && requery&.agodo.nil?
-          self.instance.display_lines << "successfully destroyed #{n} agodo."
+          lines << "successfully destroyed #{n} agodo."
         else
-          self.instance.display_lines << "unable to destroyed the #{n} agodo."
+          lines << "unable to destroyed the #{n} agodo."
         end
+        self.instance.display_lines = lines
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
       end
@@ -194,8 +195,7 @@ module Aos
       unless agodo_you.nil?
         agodo_record = agodo_you.agodo
         agodo_record.update(power: :off)
-        self.instance.display_lines << "#{agodo_record.you.name} stopped."
-        self.instance.display_lines += Aos::Abot.agodo_lines
+        self.instance.display_lines = ["#{agodo_record.you.name} stopped."] + Aos::Abot.agodo_lines
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
       end
@@ -210,8 +210,7 @@ module Aos
         agodo_record = agodo_you.agodo
         agodo_record.update(power: :on)
 
-        self.instance.display_lines << "#{agodo_record.you.name} started."
-        self.instance.display_lines += Aos::Abot.agodo_lines
+        self.instance.display_lines = ["#{agodo_record.you.name} started."] + Aos::Abot.agodo_lines
       else
         self.instance.display_lines = [I18n.t("abot.messages.invalid_agodo_cmd")]
       end

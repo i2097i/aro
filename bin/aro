@@ -28,7 +28,13 @@ if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
   exit(CLI::EXIT_CODES[:SUCCESS])
 end
 
-# cli parser
+if !CLI::ARGV0&.to_s&.upcase.nil? &&
+  I18n.t("cards.index").include?(Aro::Teck.card_strip(CLI::ARGV0.to_s.upcase))
+  Aro::Teck.print_card(CLI::ARGV0.to_s.upcase)
+  exit(CLI::EXIT_CODES[:SUCCESS])
+end
+
+
 case CLI::ARGV0
 when CLI::CMDS[:ARO][:COR]
   Aos.cor
@@ -49,6 +55,6 @@ else
     exit(CLI::EXIT_CODES[:SUCCESS])
   end
 
-  CLI.usage
+  CLI.usage_main
   exit(CLI::EXIT_CODES[:SUCCESS])
 end

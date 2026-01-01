@@ -8,13 +8,12 @@
 
 =end
 
-require_relative :"./base_model".to_s
-
 module Aos
   class You < ActiveRecord::Base
     has_many :ilogs
     has_one :agodo
     has_many :fpxies
+
     before_validation :set_pwd
     before_create :create_home_directory
     after_update :clear_aos_display
@@ -39,6 +38,7 @@ module Aos
         name: self.name,
         home: self.home,
         pwd: self.pwd,
+        stream_bytes: File.stat(stream_file).size
       }
     end
 
@@ -72,7 +72,7 @@ module Aos
     end
 
     def stream(lines)
-      File.open(File.join(self.home, Aos::You::ARO_SRT_FILE.to_s), "a+") do |aro_srt|
+      File.open(stream_file, "a+") do |aro_srt|
         aro_srt.write(lines.join("\n"))
         aro_srt.write("\n")
       end
@@ -82,6 +82,10 @@ module Aos
 
     def set_pwd
       self.pwd = Dir.pwd if self.pwd.nil?
+    end
+
+    def stream_file
+      File.join(self.home, Aos::You::ARO_SRT_FILE.to_s)
     end
 
     def create_home_directory

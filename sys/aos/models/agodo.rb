@@ -9,7 +9,6 @@
 =end
 
 require :base64.to_s
-require_relative :"./base_model".to_s
 
 class Aos::Agodo < ActiveRecord::Base
   belongs_to :you
@@ -22,7 +21,7 @@ class Aos::Agodo < ActiveRecord::Base
 
   def godo
     godos_per_minute = Aro::Mancy::NUMERALS[:LX].to_f / rate.to_f
-
+    # todo: this is awful
     if Time.now - updated_at >= godos_per_minute
       system("#{:aos} #{self.go} #{Aos::Os::YOU_FLAG} #{self.you.name}")
       system("#{:aos} #{self.do.gsub("_", " ")} #{Aos::Os::YOU_FLAG} #{self.you.name}")

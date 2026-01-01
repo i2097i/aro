@@ -46,6 +46,7 @@ module Aos
       end
 
       def self.show_game(model)
+        Aro::Db.load
         mk = model.keys
         dp = Aos::Vw::Teck::TECK_PARAMS
         return nil unless (mk & dp).count == dp.count
@@ -57,9 +58,13 @@ module Aos
         count_n = model[:count_n]
         order_o = model[:order_o]
 
-        divider = Aos::Vw::Teck::DIV_CHAR.to_s * Aos::Vw::Base.viewport_width
+        divider = "".ljust(
+          Aos::Vw::Base.viewport_width,
+          Aos::Vw::Teck::DIV_CHAR.to_s
+        )
         lines = []
         lines << divider
+        lines << ""
         lines << "#{teck.name.upcase.center(Aos::Vw::Base.viewport_width)}"
         tlog_records.each_with_index{|l, i|
           lines << divider
@@ -72,7 +77,7 @@ module Aos
           lines << divider
           cards = Base64::decode64(l.card_data).split(Aro::Teck::CARD_DELIM.to_s)
           if !cards.nil? && cards.any?
-            # lines << ""
+            lines << ""
             lines += self.get_display_for_cards(cards)
             # lines << divider
           end
@@ -98,20 +103,19 @@ module Aos
       end
 
       def self.get_display_for_cards(input = [])
-        columns = Aos::Vw::Base::COL_POW.call(
-          Aos::Cor.display_configuration[:WIDTH].to_i
-        )
+        return input unless input.any?
+        width = Aos::Cor.discon[:WIDTH]
+        c_width = Aro::Mancy::NUMERALS[:XI]
+        columns = (width / c_width).to_i
         lines = []
-        return lines unless input.any?
-        card_line = ""
-        input.each_with_index{|c, i|
-          s = (i + Aro::Mancy::S) % [Aro::Mancy::S, columns].max
-          card_line += c.ljust(columns)
-          if Aro::Mancy::O == s || i == input.count - Aro::Mancy::S
-            lines << card_line
-            card_line = ""
+        while input.any?
+          line = []
+          columns.times do
+            next if input[Aro::Mancy::O].nil?
+            line << input.delete_at(Aro::Mancy::O).center(c_width)
           end
-        }
+          lines << line.join("")
+        end
         lines << ""
         lines
       end

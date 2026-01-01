@@ -52,7 +52,7 @@ module Aro
       # get orientation
       rf = ["+","-"].sample
 
-      # get suite
+      # get suit
       rf += ruby_facot[1]
 
       # calculate the sym
@@ -60,7 +60,7 @@ module Aro
         # loops through the characters in ruby_facot
         # return all characters not matching:
         # => character[0]: orientation
-        # => character[1]: suite 
+        # => character[1]: suit
 
         # the first two characters in the dev_tarot format designate the
         !ruby_facot.first(Aro::Mancy::OS).include?(c)
