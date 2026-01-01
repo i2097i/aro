@@ -19,12 +19,10 @@ module Aos
     SQL_FILE = :"aos.sql"
 
     def self.load(password = nil)
-      Aos::Db.configure_logger
       Mutex.new.synchronize do
         if Aro::Dom.in_arodom?
+          Aos::Db.configure_logger
           self.instance.set_up_aos(password)
-        else
-          Aro::P.say(I18n.t("cli.errors.not_in_aro" , cmd: Aro::Dom.name))
         end
       end
     end

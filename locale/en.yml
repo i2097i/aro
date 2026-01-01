@@ -9,6 +9,7 @@ en:
       invalid_usage: "%{cmd} says you're not supposed to be here."
       missing_args: "%{cmd} says missing required argument(s)."
       missing_teck: "%{cmd} says no teck selected. use 'aro teck' to select one or 'aro teck new var_name' to create one."
+      not_found: "%{cmd} not found."
       not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
       not_in_aos: "%{cmd} says you are not in aos space. that command will not work here."
       not_initialized_dom: "%{cmd} says you need to initialize dom. $ aro dom init var_root_username var_root_password"

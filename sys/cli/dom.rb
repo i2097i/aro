@@ -11,7 +11,7 @@
 module CLI
   def self.dom
     if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
-      CLI.usage::usage
+      CLI.usage_dom
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
@@ -30,7 +30,7 @@ module CLI
         CLI::Nterface.exit_error_invalid_usage!
       end
     when CLI::CMDS[:DOM][:NEW]
-      CLI::Nterface.exit_error_missing_args! if CLI::ARGV2.nil?
+      CLI::Nterface.exit_error_missing_args!(:var_dom_name) if CLI::ARGV2.nil?
       if Aro::Dom.in_arodom?
         Aro::P.say(I18n.t("dom.errors.failed_already_in_arodom"))
       elsif Aro::Mancy.in_aro?

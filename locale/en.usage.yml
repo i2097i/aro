@@ -1,5 +1,37 @@
 en: 
   usage:
+    dom: |
+      aro dom
+        aos arodome management.
+
+        $ aro dom var_command
+
+        quickstart or tldr;
+
+        $ aro dom new var_name && cd var_name && aro dom init var_root_username var_root_password
+
+        COMMANDS
+          init
+            initialize and generate the arodome.
+            run once from the dom base directory.
+
+            params:
+              var_root_username:      root aos username.
+              var var_root_password:  root aos password.
+
+            usage:
+
+              $ aro dom init var_root_username var_root_password
+
+          new
+            create a new arodome with the specified name.
+
+              example:
+
+                $ aro dom new var_name
+
+
+      aro by i2097i is copyright (2025)
     main: |
       NAME
 
@@ -7,11 +39,15 @@ en:
 
       SYNOPSIS
 
-        aro [-v | --version] [-h | --help] var_command
+        aro [-v | --version] [-h | --help] [(+|-)(T|C|S|P|W)(var_numeral)] var_command
 
-        quickstart or tldr;
+          quickstart or tldr; example:
 
-          $ aro create var_name && cd var_name && aro teck new <teck> && aro
+            $ aro create var_name && cd var_name && aro teck new var_teck_name && aro
+
+          card lookup example:
+
+            $ aro +TXXI
 
       COMMANDS
         create
@@ -32,105 +68,96 @@ en:
 
           basic usage:
 
-            pass no args
-              print the cor.
+            no params prints the cor.
 
                 $ aro cor
 
-            pass var_name
-              print the var named var_name.
+            param var_name prints the var named var_name.
 
                 $ aro cor var_name
 
-            pass var_name var_value
-              update a var named var_name with var_value.
+            param var_name & param var_value updates a var named var_name with var_value.
 
                 $ aro cor var_name var_value
 
         teck
-          manage tecks in the aro space.
+          aro teck commands.
 
-            $ aro teck <commands>
-
-          passing no args opens the selection menu.
-
-          note:
-
-            teck subcommands do not require typing 'teck'. for example,
-
-            $ aro teck show
-
-            is the same thing as:
-
-            $ aro show
-
-          SUBCOMMANDS
-            draw
-              draw a random card from the current teck.
-
-            explore
-              allows user to browse each card in the current teck.
-
-            new
-              create a new teck with the specified name.
-
-                example:
-
-                  $ aro teck new var_name
-
-            replace
-              replaces all drawn cards FIFO and puts them on the bottom of
-              the teck. this will preserve all card orientations.
-
-            reset
-              completely reset the teck. replace all drawn and reset order.
-              all orientations will be set to upright. you must enter 'aroyes'
-              to continue.
-
-            show
-              displays the current teck's log record(s).
-
-              the default behavior is to display only the most recent log record.
-
-              note: 
-              
-                'less' is automatically used to view text output log count > 1
-
-              OPTIONS
-
-                [-n | --count]  specify number of teck tlogs to show.
-
-                                  default is 1 (latest/current state)
-
-                                  passing 'all' display all tlogs
-
-                [-o | --order]  specify the output order of the log records.
-
-                                  default is 'desc'
-
-                                  possible values: ['asc', 'desc']
-
-            shuffle
-              shuffles the current teck and generates a log record.
+            $ aro teck [-h | --help]
 
         dom
           aos arodome management.
 
-          $ aro dom <commands>
-
-          SUBCOMMANDS
-            init <username> <password>
-              generate the arodome
-            new
-              create a new arodome with the specified name.
-
-                example:
-
-                  $ aro dom new var_name
+            $ aro dom [-h | --help]
 
 
+      aro by i2097i is copyright (2025)
+    teck: |
+      aro teck
+        manage tecks in the aro space.
 
+          $ aro teck var_command
 
+        passing no params opens the selection menu.
+
+        note:
+
+          teck subcommands do not require typing 'teck'. for example,
+
+          $ aro teck show
+
+          is the same thing as:
+
+          $ aro show
+
+        COMMANDS
+          draw
+            draw a random card from the current teck.
+
+          explore
+            allows user to browse each card in the current teck.
+
+          new
+            create a new teck with the specified name.
+
+              example:
+
+                $ aro teck new var_name
+
+          replace
+            replaces all drawn cards FIFO and puts them on the bottom of
+            the teck. this will preserve all card orientations.
+
+          reset
+            completely reset the teck. replace all drawn and reset order.
+            all orientations will be set to upright. you must enter 'aroyes'
+            to continue.
+
+          show
+            displays the current teck's log record(s).
+
+            the default behavior is to display only the most recent log record.
+
+            note:
+
+              'less' is automatically used to view text output log count > 1
+
+            OPTIONS
+
+              [-n | --count]  specify number of teck tlogs to show.
+
+                                default is 1 (latest/current state)
+
+                                passing 'all' display all tlogs
+
+              [-o | --order]  specify the output order of the log records.
+
+                                default is 'desc'
+
+                                possible values: ['asc', 'desc']
+
+          shuffle
+            shuffles the current teck and generates a log record.
 
 
       aro by i2097i is copyright (2025)

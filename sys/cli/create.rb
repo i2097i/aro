@@ -10,7 +10,7 @@
 
 module CLI
   def self.create
-    CLI::Nterface.exit_error_missing_args! if CLI::ARGV1.nil?
+    CLI::Nterface.exit_error_missing_args!(:var_aro_name) if CLI::ARGV1.nil?
     
     name = CLI::ARGV1&.to_s
     Aro::P.say(I18n.t("cli.messages.creation_attempt", name: name))
