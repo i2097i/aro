@@ -206,5 +206,10 @@ module Aro
         end
       end
     end
+
+    def generate_agodo_home(agodo)
+      Aro::Dom::P.say(I18n.t("dom.messages.generating_agodo_home", name: agodo.you.name))
+      FileUtils.mkdir_r(agodo.home)
+    end
   end
-end # aroadhome
+end

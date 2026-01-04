@@ -67,4 +67,4 @@ exec rspec -f d -o ./spec/spec.log
 [license](http://opensource.org/licenses/MIT)
 [issues](https://github.com/i2097i/aro/issues)
 
->aro by i2097i is copyright (2025)
+>aro by i2097i is copyright (2026)

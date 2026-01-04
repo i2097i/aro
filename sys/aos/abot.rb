@@ -14,6 +14,8 @@ module Aos
 
     attr_accessor :display_lines
 
+    AGODOS_DIR = :".agodos"
+
     CMDS = {
       AGODO: {
         key: :agodo,
@@ -48,9 +50,8 @@ module Aos
     end
 
     def self.cron
-      Aro::D.say("abot cron is disabled currently. you can still manage them but they do not run.")
-      not_currently_enabled = true
-      return if not_currently_enabled || File.exist?(Aos::Abot.cron_pid_file)
+      Aos::Os.say("here")
+      return if File.exist?(Aos::Abot.cron_pid_file)
 
       abot_pid = fork {
         log = File.open(File.join(Aro::Dom.dom_root, Aro::Dom.room_path(:abot), "abot.log"), "w+")
@@ -79,11 +80,9 @@ module Aos
 
     def self.process_cmd(args)
       args = Aos::Os.sanitize_you(args)
-      if args[Aro::Mancy::S].nil?
+      if args[Aro::Mancy::S].nil? ||
+        CLI::FLAGS[:HELP].include?(args[Aro::Mancy::S].to_sym)
         Aos::Abot.abot
-        return true
-      elsif CLI::FLAGS[:HELP].include?(args[Aro::Mancy::S].to_sym)
-        self.instance.display_lines = [I18n.t("abot.usage")]
         return true
       end
 

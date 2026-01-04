@@ -38,6 +38,7 @@ en:
     messages:
       arodome_created: "%{name} arodome created. enter the following commands to begin: $ cd %{name}"
       creating_arodome: "creating arodome named %{name}"
+      generating_agodo_home: "generating agodo home for %{name}..."
       generating_wings: "generating wings..."
       generating_wing: "generating the %{wing} wing..."
       generating_room: "generating the %{room} room."

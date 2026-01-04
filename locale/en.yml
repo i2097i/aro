@@ -48,6 +48,7 @@ en:
           $ aro teck new var_name
 
         see aro --help for usage.
+      printing_card: "printing %{card}..."
       showing: "showing %{name} [count:%{count}, order:%{order}]..."
       shuffling: "shuffling %{name}'s cards..."
       replacing_drawn: "replacing all drawn cards to %{name}..."
