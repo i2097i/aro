@@ -1,0 +1,28 @@
+ino is played with traditional 78-card tarot deck. a game can be defined
+as a single story (1 game to 11 points) or a legend (many stories up to an
+agreed-upon point value).
+
+note
+  the numbers of cards change depending on the number of total players.
+  when agreeing upon what numbers to use, symmetry should be enforced so
+  each player has the same chances throughout the game.
+
+1 story constitutes 7 chapters of 11 cards. the total possible
+points per story is 11. many stories may be combined into a legend within
+which the players play up to an agreed upon number of total points.
+whoever gets there first wins. if there is a tie another story may be played
+to determine the win.
+
+at the start of a game, the dealer shuffles the deck. a non-dealer cuts
+the deck. 11 cards are then dealt to each player. this begins the first
+chapter. all gameplay goes from left to right (ccw). the first non-dealer to
+the right then begins their turn by placing a card on the scroll. this ends
+the player's turn. the next player must then place a card. as this goes on,
+players add card number values or pair a particular card that they have in
+their hand with a card of the same value on the scroll. when such a match or
+combination can be made, the player can take the card they have in their hand
+and any matching combinations or cards of the same value as their winnings.
+this continues until each chapter is played. in the last chapter of a story,
+whichever player last picks up any winnings also recieves all residual cards
+left on the scroll. the dealer alternates each story (left to right).
+the dealer must announce the last chapter of a story before it begins.

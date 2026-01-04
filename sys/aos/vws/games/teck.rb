@@ -88,9 +88,7 @@ module Aos
             lines << I18n.t("cli.messages.history_drawn").center(Aos::Vw::Base.viewport_width)
             lines << divider
             lines << ""
-            lines += self.get_display_for_cards(
-              drawn_cards
-            )
+            lines += self.get_display_for_cards(drawn_cards)
             # lines << ""
             # lines << divider
           end

@@ -9,7 +9,6 @@
 =end
 
 require :base64.to_s
-require_relative :"./base_model".to_s
 
 class Aro::Teck < ActiveRecord::Base
   has_many :tlogs
@@ -138,14 +137,33 @@ class Aro::Teck < ActiveRecord::Base
       orientation = "-"
     end
 
-    definition = I18n.t("cards.#{Aro::Teck.card_strip(card_code)}")
+    Aro::P.say(I18n.t("cli.messages.printing_card", card: card_code))
+    width = Aos::Cor.discon[:WIDTH]
+    divider = Aos::Cor.discon[:DIVIDER]
+    card_lookup = Aro::Teck.card_strip(card_code)
+    suit_lookup = card_lookup[Aro::Mancy::O]
+    definition = I18n.t("cards.#{card_lookup}")
+    suit_definition = I18n.t("suits.#{suit_lookup}")
     output = []
-    output << orientation + definition[:name]
-    output += definition["#{orientation}tags".to_sym].sort
+    output << "".ljust(width, divider)
+    output << ""
+    output << "(#{orientation}) #{definition[:name].upcase}"
+    output << ""
+    unless suit_definition.nil?
+      suit_definition[:summary].split(".").each{|sentence| output << sentence + ".\n"}
+      output << suit_definition[:tags].sort.join(" | ")
+    end
+    output << "".ljust(width, divider)
+    output << ""
+    card_tags = definition["#{orientation}tags".to_sym].sort
+    max_word = card_tags.max_by{|t| t.length}.length
+    card_tags.each{|t|
+      output << t.center(max_word)
+    }
     # todo: add an actual summary
     # Aro::P.say(definition["#{orientation}summary".to_sym])
-    width = Aos::Cor.discon[:WIDTH]
-    Aro::P.say("#{card_code}\n#{output.map{|l| l.center(width, Aos::Cor.discon[:DIVIDER])}.join("\n")}")
+    output << "".ljust(width, divider)
+    Aro::P.say("#{card_code}\n#{output.map{|l| l.center(width)}.join("\n")}")
   end
 
   def shuffle

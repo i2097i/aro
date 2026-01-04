@@ -14,6 +14,10 @@ module CLI
     Aro::P.less(I18n.t("usage.dom"))
   end
 
+  def self.usage_ino
+    Aro::P.less(I18n.t("usage.ino"))
+  end
+
   def self.usage_main
     Aro::P.less(I18n.t("usage.main"))
   end

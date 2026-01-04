@@ -14,7 +14,6 @@ module CLI
     HELP:         [:"-h", :"--help"],
     SHOW_COUNT:   [:"-n", :"--count"],
     SHOW_ORDER:   [:"-o", :"--order"],
-    TAROT:        [:"+t", :"-t"],
     VERSION:      [:"-v", :"--version"],
   }
 

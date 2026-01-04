@@ -16,8 +16,8 @@ en:
             run once from the dom base directory.
 
             params:
-              var_root_username:      root aos username.
-              var var_root_password:  root aos password.
+              var_root_username: root aos username.
+              var_root_password: root aos password.
 
             usage:
 
@@ -31,11 +31,71 @@ en:
                 $ aro dom new var_name
 
 
-      aro by i2097i is copyright (2025)
-    main: |
-      NAME
+      aro by i2097i is copyright (2026)
+    ino: |
+      SUMMARY
 
-        aro - a cli for tarot.
+        ino is a card game for tarot.
+
+        quickstart or tldr;
+
+        $ ino create var_name && ino
+
+      COMMANDS
+        create
+          create a new game of ino.
+
+          example:
+
+            $ ino create var_name
+
+      RULES
+
+        scoring
+          points   description
+
+          1        total cards
+          1        total trumps
+          1        total swords
+          1        total wands
+          1        total face cards
+          1        10 of cups
+          1        10 of pentacles
+          4        aces
+        +___________________________
+          11       total points
+
+        terms
+          chapter
+            a component round of a story (2 player is 11 cards each).
+          statement
+            1 or more thought cards and a final word card.
+          thought
+            1 or more cards combined by addition that add up to the value of a
+            word card. these can be stacked so long as each combination equals
+            the value of the word card.
+          word
+            a card that must be produced by a player to close a statement.
+          legend
+            a series of stories played in succession to an agreed upon score.
+          scroll
+            the open play arena where cards can be used to construct inos.
+          story
+            one full ino playthrough of the entire deck.
+
+
+        gameplay
+          todo:
+
+      aro by i2097i is copyright (2026)
+    main: |
+      SUMMARY
+
+        aro is a cli for tarot. it includes three command-line executables.
+
+        1) aro
+        2) aos
+        3) ino
 
       SYNOPSIS
 
@@ -91,7 +151,7 @@ en:
             $ aro dom [-h | --help]
 
 
-      aro by i2097i is copyright (2025)
+      aro by i2097i is copyright (2026)
     teck: |
       aro teck
         manage tecks in the aro space.
@@ -160,4 +220,4 @@ en:
             shuffles the current teck and generates a log record.
 
 
-      aro by i2097i is copyright (2025)
+      aro by i2097i is copyright (2026)

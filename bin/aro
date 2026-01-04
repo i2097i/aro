@@ -12,16 +12,7 @@
 
 require :aro.to_s
 
-# todo: add tab completion using abbrev gem
-# https://stackoverflow.com/a/11627931
-
-Aro::V.say(ARGV)
-if ARGV.include?(Aos::Os::YOU_FLAG)
-  Aos::Db.load
-  yfi = ARGV.index(Aos::Os::YOU_FLAG)
-  Aos::Os.instance.you = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
-  Aos::Os.instance.you_flag = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
-end
+Aos::Os.configure_aro_cli
 
 if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
   Aro::P.say(Aro::VERSION)
@@ -33,7 +24,6 @@ if !CLI::ARGV0&.to_s&.upcase.nil? &&
   Aro::Teck.print_card(CLI::ARGV0.to_s.upcase)
   exit(CLI::EXIT_CODES[:SUCCESS])
 end
-
 
 case CLI::ARGV0
 when CLI::CMDS[:ARO][:COR]
