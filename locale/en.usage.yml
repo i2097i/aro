@@ -70,10 +70,6 @@ en:
             a component round of a story (2 player is 11 cards each).
           statement
             1 or more thought cards and a final word card.
-          thought
-            1 or more cards combined by addition that add up to the value of a
-            word card. these can be stacked so long as each combination equals
-            the value of the word card.
           word
             a card that must be produced by a player to close a statement.
           legend
