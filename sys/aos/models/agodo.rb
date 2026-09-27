@@ -43,6 +43,14 @@ class Aos::Agodo < ActiveRecord::Base
     ]
   end
 
+  def create_home_directory
+    Aro::Dom.instance.generate_agodo_home(self)
+  end
+
+  def home
+    File.join(Aro::Dom.room_path(Aro::Dom::ABOT), Aos::Abot::AGODOS_DIR.to_s, self.you.name)
+  end
+
   private
 
   def create_you

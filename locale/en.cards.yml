@@ -1,52 +1,51 @@
 en:
   elements:
+    index: ["earth", "water", "air", "fire", "ether"]
+    keys: ["name", "tags", "summary"]
     earth:
       color: "brown"
       symbol: ""
+      summary: ""
     water:
       color: "blue"
       symbol: ""
+      summary: ""
     air:
       color: "lightblue"
       symbol: ""
+      summary: ""
     fire:
       color: "red"
       symbol: ""
+      summary: ""
     ether:
       color: "white"
       symbol: ""
+      summary: ""
   suits:
+    name: "suit"
     index: ["T", "C", "S", "P", "W"]
+    keys: ["name", "tags", "summary"]
     T:
       name: "trumps"
-      +tags: ["journey", "experience", "collective", "evolution", "human"]
-      -tags: []
+      tags: ["journey", "ether", "experience", "collective", "evolution", "human"]
       summary: "the suit of trumps is associated with the element of ether. it has 22 cards indexed from 0 to 21. Their ordering is associated with the fool's journey."
-      reversed_summary: ""
     C:
       name: "cups"
-      +tags: ["hearts", "water", "cancer", "scorpio", "pisces", "depth", "flow", "nurture", "emotion", "feminine"]
-      -tags: []
+      tags: ["hearts", "water", "cancer", "scorpio", "pisces", "depth", "flow", "nurture", "emotion", "feminine"]
       summary: "the suit of cups is associated with the element of water. it has 14 cards 1-10 + page-knight-queen-king."
-      reversed_summary: ""
     S:
       name: "swords"
-      +tags: ["diamonds", "air", "gemini", "libra", "aquarius", "information", "logic", "rational", "mind", "masculine"]
-      -tags: []
+      tags: ["diamonds", "air", "gemini", "libra", "aquarius", "information", "logic", "rational", "mind", "masculine"]
       summary: "the suit of swords is associated with the element of air. it has 14 cards 1-10 + page-knight-queen-king."
-      reversed_summary: ""
     P:
       name: "pentacles"
-      +tags: ["spades", "dirt", "earth", "taurus", "virgo", "root", "grounding", "harvest", "sustenance", "capricorn", "connection", "feminine"]
-      -tags: []
+      tags: ["spades", "dirt", "earth", "taurus", "virgo", "root", "grounding", "harvest", "sustenance", "capricorn", "connection", "feminine"]
       summary: "the suit of pentacles is associated with the element of earth. it has 14 cards 1-10 + page-knight-queen-king."
-      reversed_summary: ""
     W:
       name: "wands"
-      +tags: ["clubs", "fire", "leo", "aries", "sagittarius", "will", "power", "solar plexus", "creativity", "masculine"]
-      -tags: []
+      tags: ["clubs", "fire", "leo", "aries", "sagittarius", "will", "power", "solar plexus", "creativity", "masculine"]
       summary: "the suit of wands is associated with the element of fire. it has 14 cards 1-10 + page-knight-queen-king."
-      reversed_summary: ""
   cards:
     index: ["TO", "TI", "TII", "TIII", "TIV", "TV", "TVI", "TVII", "TVIII", "TIX", "TX", "TXI", "TXII", "TXIII", "TXIV", "TXV", "TXVI", "TXVII", "TXVIII", "TXIX", "TXX", "TXXI", "CI", "CII", "CIII", "CIV", "CV", "CVI", "CVII", "CVIII", "CIX", "CX", "CXI", "CXII", "CXIII", "CXIV", "SI", "SII", "SIII", "SIV", "SV", "SVI", "SVII", "SVIII", "SIX", "SX", "SXI", "SXII", "SXIII", "SXIV", "PI", "PII", "PIII", "PIV", "PV", "PVI", "PVII", "PVIII", "PIX", "PX", "PXI", "PXII", "PXIII", "PXIV", "WI", "WII", "WIII", "WIV", "WV", "WVI", "WVII", "WVIII", "WIX", "WX", "WXI", "WXII", "WXIII", "WXIV"]
     keys: ["name", "+tags", "-tags", "+summary", "-summary"]
@@ -56,7 +55,6 @@ en:
       -tags: ["the spirit of the ether", "uranus", "boredom", "ill-founded", "impulsive", "joker", "restless", "stagnation", "trickster"]
       +summary: "+"
       -summary: "-"
-
     TI:
       name: "the magician"
       +tags: ["the magnus of power", "mercury", "creative harmony", "creativity", "divine connection", "gifts", "inner guidance", "intuition", "manifestation"]
@@ -245,8 +243,8 @@ en:
       -summary: "-"
     CXI:
       name: "page of cups"
-      +tags: ["princess of the palace of the floods", "cancer", "earth", "pisces", "potential", "scorpio", "socially naive", "trumpsting", "undeveloped gifts", "youthful"]
-      -tags: ["princess of the palace of the floods", "cancer", "closed off", "insecurity", "misplaced trumpst", "pisces", "earth", "scorpio", "unaccepted", "victimization"]
+      +tags: ["princess of the palace of the floods", "cancer", "earth", "pisces", "potential", "scorpio", "socially naive", "trusting", "undeveloped gifts", "youthful"]
+      -tags: ["princess of the palace of the floods", "cancer", "closed off", "insecurity", "misplaced trust", "pisces", "earth", "scorpio", "unaccepted", "victimization"]
       +summary: "+"
       -summary: "-"
     CXII:
@@ -318,7 +316,7 @@ en:
     SIX:
       name: "nine of swords"
       +tags: ["lord of despair and cruelty", "gemini", "mars", "dark night of the soul", "despair", "grief", "isolation", "sadness", "shame"]
-      -tags: ["lord of despair and cruelty", "gemini", "mars", "distrumpst", "end of despair", "isolation", "owning up", "self knowledge", "solitude"]
+      -tags: ["lord of despair and cruelty", "gemini", "mars", "distrust", "end of despair", "isolation", "owning up", "self knowledge", "solitude"]
       +summary: "+"
       -summary: "-"
     SX:
@@ -504,7 +502,7 @@ en:
     WXII:
       name: "knight of wands"
       +tags: ["lord of the flame and lightening", "activity", "adventure", "air", "enthusiasm", "generosity", "leo", "movement", "sagittarius"]
-      -tags: ["lord of the flame and lightening", "air", "delay", "lack of trumpst", "leo", "postponed", "restless", "unreliable", "sagittarius"]
+      -tags: ["lord of the flame and lightening", "air", "delay", "lack of trust", "leo", "postponed", "restless", "unreliable", "sagittarius"]
       +summary: "+"
       -summary: "-"
     WXIII:
@@ -515,7 +513,7 @@ en:
       -summary: "-"
     WXIV:
       name: "king of wands"
-      +tags: ["prince of the chariot of fire", "aries", "fire", "leo", "sagittarius", "trumpst", "loyalty", "positive authority", "honesty", "intelligence"]
+      +tags: ["prince of the chariot of fire", "aries", "fire", "leo", "sagittarius", "trust", "loyalty", "positive authority", "honesty", "intelligence"]
       -tags: ["prince of the chariot of fire", "aries", "self-serving", "not helpful", "distracted", "decreased interest", "bully", "fire", "leo", "sagittarius"]
       +summary: "+"
       -summary: "-"

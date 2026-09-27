@@ -1,0 +1,9 @@
+en:
+  ino:
+    commands:
+      description:
+        create: "create a new game of ino."
+      usage:
+        create: "$ ino create var_name"
+    error:
+      scroll_exists: "there is already a scroll with that name."

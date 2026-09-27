@@ -196,6 +196,17 @@ module Aos
         Aro::V.say("you loaded:\n#{caller[Aro::Mancy::O..Aro::Mancy::N].join("\n")}")
         Aro::V.say(self.you.name)
         Aro::V.say(Aos::Os.osify(self.you.pwd))
+        self.you.history.each{|h| Readline::HISTORY.push(h)}
+      end
+    end
+
+    def self.configure_aro_cli
+      Aro::V.say(ARGV)
+      if ARGV.include?(Aos::Os::YOU_FLAG)
+        Aos::Db.load
+        yfi = ARGV.index(Aos::Os::YOU_FLAG)
+        Aos::Os.instance.you = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
+        Aos::Os.instance.you_flag = Aos::You.find_by(name: ARGV[yfi + Aro::Mancy::S]&.strip)
       end
     end
 
@@ -268,7 +279,7 @@ module Aos
         if current_you.nil?
           Aos::S.say(lines.join("\n"))
         else
-          # Mutex.new.synchronize do
+          Mutex.new.synchronize do
             Aos::Os.instance.q ||= {}
             Aos::Os.q[current_you.name] ||= []
             Aos::Os.q[current_you.name] += lines
@@ -284,7 +295,7 @@ module Aos
                 Aos::Os.q.delete(you_name)
               )
             }
-          # end
+          end
         end
       end
     end
@@ -359,7 +370,8 @@ module Aos
     # end
 
     def handle_aro_override(args)
-      return nil unless args[0].include?(:aro.to_s)
+      return nil unless !args[Aro::Mancy::O].nil? &&
+        [:aro, :ino].include?(args[Aro::Mancy::O].to_sym)
       # !self.you_flag.nil?
       yfi = args.index(Aos::Os::YOU_FLAG)
       if yfi.nil?
@@ -376,6 +388,7 @@ module Aos
         Aos::Cor.instance.cor_path = nil
         Aos::Cor.instance.load
         Dir.chdir(self.you.reload.pwd) do
+          self.you.add_history(cmd) unless cmd.nil?
           send_to_system_call = main(cmd)
           nothing = nil
           unless cmd.nil? || cmd.empty?
@@ -383,38 +396,32 @@ module Aos
             self.you.generate_ilog(cmd)
           end
           if send_to_system_call && nothing.nil?
-            nothing = `#{cmd}`
+            begin
+              Aos::Os.say(`#{cmd}`)
+            rescue => e
+              Aos::Os.say(e)
+            end
+          elsif !nothing.nil?
+            Aos::Os.say(nothing)
           end
 
-          unless nothing.nil?
-            Aos::Os.say(nothing)
-          else
-            render
-          end
+          render unless send_to_system_call
         end
 
         CLI::EXIT_CODES[:SUCCESS]
       end
     end
 
-    def configure_readline(env)
-      # case env
-      # when :home
-        Readline.completion_append_character = "/"
-        Readline.completion_proc = Proc.new{|str|
-          pwd = self.you_flag&.reload&.pwd || self.you&.reload&.pwd || ""
-          dir_matcher = File.join(pwd, str + Aos::Os::STAR.to_s)
-          # Aro::V.say(dir_matcher)
-          dir_listing = Dir.glob(dir_matcher, File::FNM_DOTMATCH).map{|d| Aos::Os.osify(d).split("/").reject{|p| pwd.include?(p)}.join("/")}
-          # Aro::V.say(dir_listing)
-          dir_listing.grep(/^#{Regexp.escape(str)}/)
-        }
-      # when :aos
-      #   Readline.completion_append_character = "/"
-      #   Readline.completion_proc = Proc.new{|str|
-      #     Aro::Dom::D.reserved_words.grep(/^#{Regexp.escape(str)}/)
-      #   }
-      # end
+    def configure_readline
+      Readline.completion_append_character = "/"
+      Readline.completion_proc = Proc.new{|str|
+        pwd = self.you_flag&.reload&.pwd || self.you&.reload&.pwd || ""
+        dir_matcher = File.join(pwd, str + Aos::Os::STAR.to_s)
+        # Aro::V.say(dir_matcher)
+        dir_listing = Dir.glob(dir_matcher, File::FNM_DOTMATCH).map{|d| Aos::Os.osify(d).split("/").reject{|p| pwd.include?(p)}.join("/")}
+        # Aro::V.say(dir_listing)
+        dir_listing.grep(/^#{Regexp.escape(str)}/)
+      }
     end
 
     Mutex.new.synchronize do
@@ -433,9 +440,9 @@ module Aos
             height, width = IO.console.winsize
             IO.console.goto(height, Aro::Mancy::O)
             process_cmd(cmd)
-            break unless self.running && cmd = Readline.readline(calc_ps1)
+            break unless self.running && cmd = Readline.readline(calc_ps1, true)
             IO.console.erase_screen(Aro::Mancy::S)
-            configure_readline :aos
+            configure_readline
           end
 
 

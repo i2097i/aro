@@ -15,7 +15,7 @@ module Aos
     has_many :fpxies
 
     before_validation :set_pwd
-    before_create :create_home_directory
+    before_create :create_home_directory, :create_history_file
     after_update :clear_aos_display
 
     enum :access, [
@@ -24,7 +24,9 @@ module Aos
       :root,
     ]
 
+    AOS_HISTORY_FILE = :".aos_history"
     ARO_SRT_FILE = :".aro_srt"
+
 
     def generate_ilog(cmd)
       ilogs.create(
@@ -53,6 +55,10 @@ module Aos
     end
 
     def home
+      if agodo?
+        return agodo.home
+      end
+
       File.join(
         Aro::Dom::dom_root,
         Aro::Dom.room_path(root? ? Aro::Dom::COR : Aro::Dom::HOME),
@@ -78,6 +84,20 @@ module Aos
       end
     end
 
+    def history
+      return "" unless root? || user?
+      File.read(history_file).split("\n").compact
+    end
+
+    def add_history(entry)
+      return unless root? || user?
+      return if entry.nil? || entry.to_s.empty?
+      File.open(history_file, "a+") do |aos_history|
+        aos_history.write(entry)
+        aos_history.write("\n")
+      end
+    end
+
     private
 
     def set_pwd
@@ -88,9 +108,25 @@ module Aos
       File.join(self.home, Aos::You::ARO_SRT_FILE.to_s)
     end
 
+    def history_file
+      File.join(self.home, Aos::You::AOS_HISTORY_FILE.to_s)
+    end
+
     def create_home_directory
-      return if root? || agodo? || Dir.exist?(File.join(Aro::Dom.room_path(Aro::Dom::HOME), self.name))
-      Aro::Dom.instance.generate_room(Aro::Dom::D::LAYOUT[:HOME], {name: self.name.to_sym})
+      return if root?
+
+      if agodo?
+        agodo&.create_home_directory
+        return
+      else
+        return if Dir.exist?(File.join(Aro::Dom.room_path(Aro::Dom::HOME), self.name))
+        Aro::Dom.instance.generate_room(Aro::Dom::D::LAYOUT[:HOME], {name: self.name.to_sym})
+      end
+    end
+
+    def create_history_file
+      return unless root? || user?
+      File.open(history_file, "w+")
     end
 
     def clear_aos_display
