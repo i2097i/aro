@@ -15,8 +15,8 @@ module Aro
     RUBY_FACOT = :"Ruby::Facot".to_s
 
     def self.is_dev_tarot?
-      user_setting_true = Aos::Cor.ivar(:DIMENSION)&.to_sym == Aos::Cor::DMS[:DEV_TAROT]
-      Aro::T.is_dev_tarot_avail? && (user_setting_true || Aos::Cor.ivar(:DIMENSION).nil?)
+      user_setting_true = Aro::Cor.ivar(:DIMENSION)&.to_sym == Aro::Cor::DMS[:DEV_TAROT]
+      Aro::T.is_dev_tarot_avail? && (user_setting_true || Aro::Cor.ivar(:DIMENSION).nil?)
     end
 
     def self.is_dev_tarot_avail?
@@ -30,7 +30,7 @@ module Aro
         # VERY IMPORTANT!
         File.open(Aro::T::DEV_TAROT_FILE.to_s, "r"){|dtf| dt = dtf.read(Aro::Mancy::N).strip}
         # VERY IMPORTANT!
-        Aro::V.say(I18n.t("cli.very_important", dev_tarot: dt))
+        Aro::V.say(I18n.t("very_important", dev_tarot: dt))
       else
         Aro::D.say("error: #{Aro::T::DEV_TAROT_FILE.to_s} not installed.")
       end
@@ -46,7 +46,7 @@ module Aro
 
     # summon ruby_facot
     def self.summon_ruby_facot(include_o = true)
-      Aro::D.say(I18n.t("cli.messages.ruby_facot_random"))
+      Aro::D.say(I18n.t("messages.ruby_facot_random"))
       ruby_facot = I18n.t("cards.index").map{|c| "+#{c}"}.sample.split("")
 
       # get orientation
@@ -62,7 +62,7 @@ module Aro
         # => character[0]: orientation
         # => character[1]: suit
 
-        # the first two characters in the dev_tarot format designate the
+        # the first two characters in the dev_tarot format designate the rf os
         !ruby_facot.first(Aro::Mancy::OS).include?(c)
       }.join("").to_sym
       rf += Aro::Mancy::NUMERALS[symm].to_s

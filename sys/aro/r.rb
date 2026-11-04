@@ -14,7 +14,7 @@ module Aro
   class R < Aro::Prompt
     PS1 = :">[#{Aro::T::RUBY_FACOT}]>:"
     def self.say(message)
-      super(["#{Aro::R::PS1} #{message}"])
+      super("#{Aro::R::PS1} #{normalize_message(message)}")
     end
   end
 end

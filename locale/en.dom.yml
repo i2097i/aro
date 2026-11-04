@@ -10,16 +10,14 @@ en:
       know:
         description: "information space."
       root:
-        description: "aos root space."
+        description: "aro root space."
     rooms:
-      amg:
-        description: "aos package management."
       waite:
         description: "sign up."
       winner:
         description: "win."
-      abot:
-        description: "abot."
+      aromancer:
+        description: "aromancer."
       body:
         description: "body."
       mind:
@@ -31,17 +29,16 @@ en:
       flie:
         description: "flie management."
     errors:
-      directory_exists: "unable to create arodome at %{name}. file or directory already exists."
-      failed_already_in_arodom: "unable to create an arodome because you are already in arodom."
-      failed_already_initialized: "arodome is already initialized. doing nothing."
-      failed_in_aro_space: "unable to create an arodome inside of aro space."
+      directory_exists: "unable to create aro dom at %{name}. file or directory already exists."
+      failed_already_in_aro_dom: "unable to create an aro dom because you are already in aro dom."
+      failed_already_initialized: "aro dom is already initialized. doing nothing."
+      failed_in_aro_space: "unable to create an aro dom inside of aro space."
     messages:
-      arodome_created: "%{name} arodome created. enter the following commands to begin: $ cd %{name}"
-      creating_arodome: "creating arodome named %{name}"
-      generating_agodo_home: "generating agodo home for %{name}..."
+      aro_dom_created: "%{name} aro dom created. enter the following commands to begin: $ cd %{name}"
+      creating_aro_dom: "creating aro dom named %{name}"
       generating_wings: "generating wings..."
       generating_wing: "generating the %{wing} wing..."
       generating_room: "generating the %{room} room."
-      initialization_complete: "%{name} initialization complete! use aos to begin."
+      initialization_complete: "%{name} initialization complete! use aro to begin."
       missing_root_username: "missing var_root_username argument."
       missing_root_password: "missing var_root_password argument."

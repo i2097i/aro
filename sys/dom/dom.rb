@@ -21,7 +21,7 @@ module Aro
     ETHER_FILE = :".#{Aro::Dom::ETHERGEIST}"
 
     # < aro space
-    ARODOME = :arodome
+    ARO_DOM = :aro_dom
 
     # < user spaces
     WELCOME = :welcome
@@ -35,7 +35,7 @@ module Aro
     WINNER = :winner
     
     # > game spaces
-    ABOT = :abot
+    AROMANCER = :aromancer
 
     # > know spaces
     BODY = :body
@@ -60,7 +60,7 @@ module Aro
         return
       end
 
-      Aro::Dom::P.say(I18n.t("dom.messages.creating_arodome", name: name))
+      Aro::Dom::P.say(I18n.t("dom.messages.creating_aro_dom", name: name))
       FileUtils.mkdir(name)
       ether_file_path = "#{name}/#{Aro::Dom::ETHER_FILE}"
       FileUtils.mkdir(ether_file_path)
@@ -68,31 +68,31 @@ module Aro
         file.write(name)
       end
 
-      Aro::Dom::P.say(I18n.t("dom.messages.arodome_created", name: name))
+      Aro::Dom::P.say(I18n.t("dom.messages.aro_dom_created", name: name))
     end
 
-    def self.in_arodom?
+    def self.in_aro_dom?
       !Aro::Dom.ethergeist_path.nil?
     end
 
     def self.is_initialized?
-      return false if !Aro::Dom.in_arodom? || self.instance.is_initializing
+      return false if !Aro::Dom.in_aro_dom? || self.instance.is_initializing
 
       File.exist?(
         File.join(
           Aro::Dom.dom_root,
           Aro::Dom.room_path(:data),
-          Aos::Db::SQL_FILE.to_s
+          Aro::Db::SQL_FILE.to_s
         )
       )
     end
 
     def self.domain
-      "#{Aos::Os.instance.you.nil? ? Aro::Dom : Aos::Os.instance.you.name}#{Aos::Os::A}#{Aro::Dom.ethergeist_name}"
+      "#{Aro::Mancy.instance.you.nil? ? Aro::Dom : Aro::Mancy.instance.you.name}#{Aro::Mancy::A}#{Aro::Dom.ethergeist_name}"
     end
 
     def self.dom_root
-      Aro::Dom.in_arodom? ? File.dirname(Aro::Dom::ethergeist_path) : nil
+      Aro::Dom.in_aro_dom? ? File.dirname(Aro::Dom::ethergeist_path) : nil
     end
 
     def self.room_path(needle)
@@ -138,7 +138,7 @@ module Aro
     end
 
     def self.ethergeist_name
-      return nil unless Aro::Dom.in_arodom?
+      return nil unless Aro::Dom.in_aro_dom?
 
       File.read(
         File.join(
@@ -147,18 +147,8 @@ module Aro
       )
     end
 
-    def generate(r_you, r_password)
-      if r_you.nil? || r_you.empty?
-        Aro::Dom::P.say(I18n.t("dom.messages.missing_root_username"))
-        return
-      end
-
-      if r_password.nil? || r_password.empty?
-        Aro::Dom::P.say(I18n.t("dom.messages.missing_root_password"))
-        return
-      end
-
-      unless Aro::Dom.in_arodom?
+    def generate
+      unless Aro::Dom.in_aro_dom?
         Aro::Dom::P.say(I18n.t("dom.errors.failed_already_initialized"))
         return
       end
@@ -174,8 +164,7 @@ module Aro
           Aro::Teck.make(Aro::Dom.ethergeist_name)
         )
       end
-      Aos::Db.load(r_password)
-      Aos::You.create(name: r_you, access: :root)
+      Aro::Db.load
       Aro::Dom::P.say(I18n.t("dom.messages.initialization_complete", name: Aro::Dom.name))
       # todo: make this better and make an initial commit
       system(:"git init".to_s) if `which git`&.strip&.split("/")&.include?(:git.to_s)
@@ -205,11 +194,6 @@ module Aro
           f.write(room[:name])
         end
       end
-    end
-
-    def generate_agodo_home(agodo)
-      Aro::Dom::P.say(I18n.t("dom.messages.generating_agodo_home", name: agodo.you.name))
-      FileUtils.mkdir_r(agodo.home)
     end
   end
 end

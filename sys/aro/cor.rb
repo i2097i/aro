@@ -2,23 +2,55 @@
   
   cor.rb
 
-  aos cor interface.
+  cor interface.
 
   by i2097i
 
 =end
 
-module Aos
+require_relative :"./mancy".to_s
+
+module Aro
   # cli entrypoint
   def self.cor
-    Aos::Cor.instance.load
-    Aos::Cor.process_command(ARGV)
+    if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
+      CLI.usage_cor
+      exit(CLI::EXIT_CODES[:SUCCESS])
+    end
+
+    Aro::Cor.instance.load
+    Aro::Cor.process_command(ARGV)
   end
 
   class Cor
     include Singleton
 
-    attr_accessor :base_lines_def, :cor_path, :display_lines
+    attr_accessor :base_lines_def, :cor_path, :display_lines, :use_less
+
+    def self.process_command(args)
+      k = Aro::Cor::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
+      unless k.nil?
+        unless args[Aro::Mancy::OS].nil?
+          # config var_name var_value
+          Aro::Cor.set_ivar(args[Aro::Mancy::S], args[Aro::Mancy::OS])
+        end
+
+        # basic show var description and value
+        self.instance.display_lines = self.instance.lines_var(k, Aro::Cor::DEF[k], ENV[Aro::Cor.ivar_k(k)])
+      else
+        self.instance.display_lines = Aro::Cor.base_lines(args)
+      end
+
+      if Aro::Mancy.in_aro? && !Aro::Dom.in_aro_dom?
+        if self.instance.use_less
+          Aro::P.less(self.instance.display_lines.join("\n"))
+        else
+          Aro::P.say(self.instance.display_lines)
+        end
+      end
+
+      self.instance.use_less = false
+    end
 
     ARO_IVA_PREFIX = :ARO_IVA_
     ARO_OVA_PREFIX = :ARO_OVA_
@@ -32,7 +64,7 @@ module Aos
     # possible envs
     #
     # example usage:
-    # Aos::Cor::ENVS[:PRODUCTION]
+    # Aro::Cor::ENVS[:PRODUCTION]
     ENVS = {
       DEVELOPMENT: :development,
       PRODUCTION: :production,
@@ -42,7 +74,7 @@ module Aos
     # possible formats
     #
     # example usage:
-    # Aos::Cor::FORMATS[:TEXT]
+    # Aro::Cor::FORMATS[:TEXT]
     FORMATS = {
       TEXT: :text,
       JSON: :json,
@@ -51,7 +83,7 @@ module Aos
     # possible interfaces
     #
     # example usage:
-    # Aos::Cor::INTERFACES[:TERMINAL]
+    # Aro::Cor::INTERFACES[:TERMINAL]
     INTERFACES = {
       TERMINAL: :terminal,
       LANIMRET: :lanimret,
@@ -60,7 +92,7 @@ module Aos
     # possible dimensions
     #
     # example usage:
-    # Aos::Cor::DMS[:DEV_TAROT]
+    # Aro::Cor::DMS[:DEV_TAROT]
     DMS = {
       DEV_TAROT: :dev_tarot,
       RUBY_FACOT: :ruby_facot
@@ -69,7 +101,7 @@ module Aos
     # ovar and ivar access
     #
     # example usage:
-    # Aos::Cor::DEF_ACCESS[:READ]
+    # Aro::Cor::DEF_ACCESS[:READ]
     DEF_ACCESS = {
       READ: :read,
       WRITE: :write
@@ -90,61 +122,55 @@ module Aos
     # types used in definition
     #
     # example usage:
-    # Aos::Cor::DEF_TYPES[:INT][:validator].call(unvalid, Aos::Cor::DEF[:DIMENSION])
+    # Aro::Cor::DEF_TYPES[:INT][:validator].call(unvalid, Aro::Cor::DEF[:DIMENSION])
     DEF_TYPES = {
       BOOL: {
-        name: Aos::Cor::TYPES[:BOOL],
+        name: Aro::Cor::TYPES[:BOOL],
         description: I18n.t("cor.type.bool_description"),
-        converter: Proc.new{|v|
-          if [Aos::Cor::BOOLS[:TRUE].to_s, Aro::Mancy::S].include?(v)
-            Aos::Cor::BOOLS[:TRUE]
-          else
-            Aos::Cor::BOOLS[:FALSE]
-          end
-        },
+        converter: Proc.new{|v| v.kind_of?(TrueClass) ? true : false},
         validator: Proc.new{|unvalid, k, v|
-          Aos::Cor.def_valid?(k, v) &&
-          Aos::Cor.bool_valid?(unvalid)
+          Aro::Cor.def_valid?(k, v) &&
+          Aro::Cor.bool_valid?(unvalid)
         }
       },
       INT: {
-        name: Aos::Cor::TYPES[:INT],
+        name: Aro::Cor::TYPES[:INT],
         description: I18n.t("cor.type.int_description"),
         converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
-          Aro::V.say("validating #{k} (#{Aos::Cor::DEF_TYPES[:INT][:name]})")
+          Aro::V.say("validating #{k} (#{Aro::Cor::DEF_TYPES[:INT][:name]})")
           Aro::V.say("unvalid = #{unvalid}")
-          Aro::V.say("[min, max] = [#{v[:min]}, #{v[:max]}]")
-          int_valid = Aos::Cor.def_valid?(k, v) &&
-            Aos::Cor.int_valid?(unvalid)        &&
-            unvalid.to_i >= v[:min]                &&
+          Aro::V.say("[min, max] => [#{v[:min]}, #{v[:max]}]")
+          int_valid = Aro::Cor.def_valid?(k, v) &&
+            Aro::Cor.int_valid?(unvalid)        &&
+            unvalid.to_i >= v[:min]             &&
             unvalid.to_i <= v[:max]
           Aro::V.say("unvalid(#{unvalid}) is#{int_valid ? " " : :" not ".to_s}valid.")
           int_valid
         }
       },
       STRING: {
-        name: Aos::Cor::TYPES[:STRING],
+        name: Aro::Cor::TYPES[:STRING],
         description: I18n.t("cor.type.string_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
-          Aos::Cor.def_valid?(k, v) &&
-          Aos::Cor.string_valid?(unvalid)
+          Aro::Cor.def_valid?(k, v) &&
+          Aro::Cor.string_valid?(unvalid)
         }
       },
       VALUES: {
-        name: Aos::Cor::TYPES[:VALUES],
+        name: Aro::Cor::TYPES[:VALUES],
         description: I18n.t("cor.type.values_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
-          Aos::Cor.def_valid?(k, v) &&
+          Aro::Cor.def_valid?(k, v) &&
           v[:possible_values].keys.include?(unvalid&.to_sym)
         }
       },
     }
 
     def self.bool_valid?(unvalid)
-      Aos::Cor::BOOLS.values.map{|b| b.to_s.to_sym}.include?(unvalid&.to_s&.to_sym)
+      Aro::Cor::BOOLS.values.map{|b| b.to_s.to_sym}.include?(unvalid&.to_s&.to_sym)
     end
 
     def self.int_valid?(unvalid)
@@ -156,9 +182,9 @@ module Aos
     end
 
     def self.def_valid?(key, deff)
-      def_valid = deff == Aos::Cor::DEF[key]
+      def_valid = deff == Aro::Cor::DEF[key]
       unless def_valid
-        Aro::V.say("invalid def! #{key} => #{deff}")
+        Aro::P.say("invalid def! #{key} => #{deff}")
       end
 
       def_valid
@@ -166,10 +192,10 @@ module Aos
 
     def validate_config
       invalid_vars = []
-      Aos::Cor::DEF.each{|k, v|
-        is_valid = v[:access] == Aos::Cor::DEF_ACCESS[:READ]
+      Aro::Cor::DEF.each{|k, v|
+        is_valid = v[:access] == Aro::Cor::DEF_ACCESS[:READ]
         unless is_valid
-          is_valid = valid_var?(Aos::Cor.ivar(k), k, v)
+          is_valid = valid_var?(Aro::Cor.ivar(k), k, v)
         end
         invalid_vars << k unless is_valid
       }
@@ -178,32 +204,31 @@ module Aos
 
     def valid_var?(var_value, k, v)
       Aro::V.say(v)
-      return true if v[:access] == Aos::Cor::DEF_ACCESS[:READ]
+      return true if v[:access] == Aro::Cor::DEF_ACCESS[:READ]
 
-      Aos::Cor::DEF_TYPES[
+      Aro::Cor::DEF_TYPES[
         v[:type].to_s.upcase.to_sym
       ][:validator].call(var_value, k, v)
     end
 
     def convert_var_for_def(k)
-      Aos::Cor::DEF_TYPES[
-        Aos::Cor::DEF[k][:type].upcase
-      ][:converter].call(ENV[Aos::Cor.ivar_k(k)])
+      Aro::Cor::DEF_TYPES[
+        Aro::Cor::DEF[k][:type].upcase
+      ][:converter].call(ENV[Aro::Cor.ivar_k(k)])
     end
 
     # adapts I18n translations to generate bash environment vars.
     #
     # example usage:
-    # Aos::Cor::DEF[:Z_MAX]
+    # Aro::Cor::DEF[:Z_MAX]
     DEF = {
-
       #
       # => ivars
       #
       ENV: {
-        type: Aos::Cor::TYPES[:VALUES],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::ENVS[:PRODUCTION],
+        type: Aro::Cor::TYPES[:VALUES],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::ENVS[:PRODUCTION],
         description: I18n.t("cor.env.description"),
         possible_values: {
           development: I18n.t("cor.env.development_description"),
@@ -212,28 +237,22 @@ module Aos
         }
       },
       VERBOSE: {
-        type: Aos::Cor::TYPES[:BOOL],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::BOOLS[:FALSE],
+        type: Aro::Cor::TYPES[:BOOL],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::BOOLS[:FALSE],
         description: I18n.t("cor.verbose_description"),
       },
-      LOG_AOS_DB: {
-        type: Aos::Cor::TYPES[:BOOL],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::BOOLS[:FALSE],
-        description: I18n.t("cor.log_aos_db_description"),
-      },
-      LOG_ARO_DB: {
-        type: Aos::Cor::TYPES[:BOOL],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::BOOLS[:FALSE],
+      LOG_DATABASE: {
+        type: Aro::Cor::TYPES[:BOOL],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::BOOLS[:FALSE],
         description: I18n.t("cor.log_aro_db_description"),
       },
       FORMAT: {
-        type: Aos::Cor::TYPES[:VALUES],
+        type: Aro::Cor::TYPES[:VALUES],
         implemented: false,
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::FORMATS[:TEXT],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::FORMATS[:TEXT],
         description: I18n.t("cor.format.description"),
         possible_values: {
           text: I18n.t("cor.format.text_description"),
@@ -241,10 +260,10 @@ module Aos
         }
       },
       INTERFACE: {
-        type: Aos::Cor::TYPES[:VALUES],
+        type: Aro::Cor::TYPES[:VALUES],
         implemented: false,
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::INTERFACES[:TERMINAL],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::INTERFACES[:TERMINAL],
         description: I18n.t("cor.interface.description"),
         possible_values: {
           terminal: I18n.t("cor.interface.terminal_description"),
@@ -252,9 +271,9 @@ module Aos
         }
       },
       DIMENSION: {
-        type: Aos::Cor::TYPES[:VALUES],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
-        value: Aos::Cor::DMS[:DEV_TAROT],
+        type: Aro::Cor::TYPES[:VALUES],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::DMS[:DEV_TAROT],
         description: I18n.t("cor.dimension.description"),
         possible_values: {
           dev_tarot: I18n.t("cor.dimension.dev_tarot_description"),
@@ -262,8 +281,8 @@ module Aos
         }
       },
       HEIGHT: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:XLII],
         min: Aro::Mancy::NUMERALS[:I],
         max: Aro::Mancy::NUMERALS[:MMXCVII],
@@ -274,8 +293,8 @@ module Aos
         ),
       },
       WIDTH: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:C] + Aro::Mancy::NUMERALS[:XXXVII] - Aro::Mancy::S,
         min: Aro::Mancy::NUMERALS[:I],
         max: Aro::Mancy::NUMERALS[:MMXCVII],
@@ -286,8 +305,8 @@ module Aos
         ),
       },
       Z: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:I],
         min: Aro::Mancy::NUMERALS[:I],
         max: Aro::Mancy::NUMERALS[:MMXCVII],
@@ -298,8 +317,8 @@ module Aos
         ),
       },
       Z_MAX: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:WRITE],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Mancy::NUMERALS[:VII],
         min: Aro::Mancy::NUMERALS[:I],
         max: Aro::Mancy::NUMERALS[:XXII],
@@ -314,62 +333,62 @@ module Aos
       # => ovars
       #
       O: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::O,
         description: I18n.t("cor.aro_env.O_description"),
       },
       S: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::S,
         description: I18n.t("cor.aro_env.S_description"),
       },
       OS: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::OS,
         description: I18n.t("cor.aro_env.OS_description"),
       },
       E: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::E,
         description: I18n.t("cor.aro_env.E_description"),
       },
       N: {
-        type: Aos::Cor::TYPES[:INT],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:INT],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::N,
         description: I18n.t("cor.aro_env.N_description"),
       },
       PS1: {
-        type: Aos::Cor::TYPES[:STRING],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::PS1,
         description: I18n.t("cor.aro_env.PS1_description"),
       },
       NAME_FILE: {
-        type: Aos::Cor::TYPES[:STRING],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::NAME_FILE,
         description: I18n.t("cor.aro_env.NAME_FILE_description"),
       },
       I2097I: {
-        type: Aos::Cor::TYPES[:STRING],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::I2097I,
         description: I18n.t("cor.aro_env.I2097I_description"),
       },
       YES: {
-        type: Aos::Cor::TYPES[:STRING],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::YES,
         description: I18n.t("cor.aro_env.YES_description"),
       },
       ALL: {
-        type: Aos::Cor::TYPES[:STRING],
-        access: Aos::Cor::DEF_ACCESS[:READ],
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::ALL,
         description: I18n.t("cor.aro_env.ALL_description"),
       },
@@ -379,38 +398,38 @@ module Aos
       self.cor_path = nil
       self.base_lines_def = nil
       Aro::Dom.instance.eg_path = nil
-      return if Aos::Cor.get_cor_path.nil?
-      unless File.exist?(Aos::Cor.cor_filepath)
+      return if Aro::Cor.get_cor_path.nil?
+      unless File.exist?(Aro::Cor.cor_filepath)
         generate_config
       end
 
       source_config
-      Aro::D.say("running in #{Aos::Cor.ivar(:ENV)} env.")
+      Aro::D.say("running in #{Aro::Cor.ivar(:ENV)} env.")
 
-      self.display_lines = Aos::Cor.base_lines
+      self.display_lines = Aro::Cor.base_lines
     end
 
     def self.base_lines(args = nil)
       if self.instance.base_lines_def.nil? || args.present?
         args = [] if args.nil?
-        # print Aos::Cor::DEF
+        # print Aro::Cor::DEF
         lines = []
-        lines << "loaded config at: #{Aos::Os.osify(Aos::Cor.cor_filepath)}"
-        lines << "<Aos::Cor::DEF>"
+        lines << "loaded config at: #{Aro::Cor.cor_filepath}"
+        lines << "<Aro::Cor::DEF>"
+        self.instance.use_less = false
         case args[Aro::Mancy::S]&.to_sym
         when :ivars
-          lines += Aos::Cor.ivars_dump
+          lines += Aro::Cor.ivars_dump
         when :ovars
-          lines += Aos::Cor.ovars_dump
+          lines += Aro::Cor.ovars_dump
         else
-          lines += Aos::Cor.ivars_dump
+          # print cor commands
+          self.instance.use_less = true
+          lines << ""
+          lines << I18n.t("constants.commands")
+          lines << ""
+          lines += Aro::Cmd.display_lines
         end
-        # print config commands
-        lines << ""
-        lines << I18n.t("aos.constants.commands")
-        lines << ""
-        lines += Aos::Vw::Base.lines_for_cmd(Aos::Os::CMDS[:COR])
-        lines
 
         self.instance.base_lines_def = lines
       end
@@ -418,25 +437,24 @@ module Aos
       return self.instance.base_lines_def
     end
 
-    Mutex.new.synchronize do
-      def self.get_cor_path
-        if self.instance.cor_path.nil?
-          Aos::Db.load
-          if Aro::Dom.in_arodom?
-            Aos::Os.instance.load_you!
-            if Aos::Os.instance.you.root? ||
-              Aos::Os.instance.you.agodo?
-              self.instance.cor_path = Aos::Cor.dom_cor_path
-            else
-              self.instance.cor_path = Aos::Os.instance.you_flag.home
-            end
-          elsif Aro::Mancy.in_aro?
-            self.instance.cor_path = Aos::Cor.aro_cor_path
-          end
-        end
 
-        return self.instance.cor_path
+    def self.get_cor_path
+      if self.instance.cor_path.nil?
+        Aro::Db.load
+        if Aro::Dom.in_aro_dom?
+          puts "#{self.name} => #{__method__} => not updated for aro dom yet"
+          # Aro::Mancy.instance.load_you!
+          # if Aro::Mancy.instance.you.root?
+          #   self.instance.cor_path = Aro::Cor.dom_cor_path
+          # else
+          #   self.instance.cor_path = Aro::Mancy.instance.you_flag.home
+          # end
+        elsif Aro::Mancy.in_aro?
+          self.instance.cor_path = Aro::Cor.aro_cor_path
+        end
       end
+
+      return self.instance.cor_path
     end
 
     def self.aro_cor_path
@@ -449,20 +467,20 @@ module Aos
 
     def self.cor_filepath
       File.join(
-        Aos::Cor.get_cor_path,
-        Aos::Cor::COR_FILE.to_s
+        Aro::Cor.get_cor_path,
+        Aro::Cor::COR_FILE.to_s
       )
     end
 
     def self.is_test?
-      Aos::Cor.ivar(:ENV) == Aos::Cor::ENVS[:TEST].to_s
+      Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:TEST].to_s
     end
 
     def self.discon
-      height = Aos::Cor.ivar(:HEIGHT).to_i
-      width = Aos::Cor.ivar(:WIDTH).to_i
-      if !Aro::Dom.in_arodom? ||
-        Aos::Cor.ivar(:INTERFACE) == Aos::Cor::INTERFACES[:TERMINAL].to_s
+      height = Aro::Cor.ivar(:HEIGHT).to_i
+      width = Aro::Cor.ivar(:WIDTH).to_i
+      if !Aro::Dom.in_aro_dom? ||
+        Aro::Cor.ivar(:INTERFACE) == Aro::Cor::INTERFACES[:TERMINAL].to_s
         # use console for terminal always
         h_con, w_con = IO.console.winsize
         height = h_con if h_con > 0
@@ -480,53 +498,47 @@ module Aos
     end
 
     def self.is_format_text?
-      Aos::Cor.ivar(:FORMAT)&.to_sym == Aos::Cor::FORMATS[:TEXT]
-    end
-
-    def self.process_command(args)
-      args = Aos::Os.sanitize_you(args)
-      k = Aos::Cor::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
-      unless k.nil?
-        unless args[Aro::Mancy::OS].nil?
-          # config var_name var_value
-          Aos::Cor.set_ivar(args[Aro::Mancy::S], args[Aro::Mancy::OS])
-        end
-
-        # basic show var description and value
-        self.instance.display_lines = self.instance.lines_var(k, Aos::Cor::DEF[k], ENV[Aos::Cor.ivar_k(k)])
-      else
-        self.instance.display_lines = Aos::Cor.base_lines(args)
-      end
-
-      if Aro::Mancy.in_aro? && !Aro::Dom.in_arodom?
-        Aro::P.say(self.instance.display_lines.join("\n"))
-      end
+      Aro::Cor.ivar(:FORMAT)&.to_sym == Aro::Cor::FORMATS[:TEXT]
     end
 
     # out vars
     def self.ovar(suffix)
-      Aos::Cor::DEF[suffix][:value]
+      Aro::Cor::DEF[suffix][:value]
     end
     # out vars
     def self.ovar_k(suffix)
-      "#{Aos::Cor::ARO_OVA_PREFIX}#{suffix}"
+      "#{Aro::Cor::ARO_OVA_PREFIX}#{suffix}"
     end
 
     # in vars
     def self.ivar(suffix)
-      ENV[Aos::Cor.ivar_k(suffix)]
+      ENV[Aro::Cor.ivar_k(suffix)]
     end
     # in vars
     def self.ivar_k(suffix)
-      "#{Aos::Cor::ARO_IVA_PREFIX}#{suffix}"
+      "#{Aro::Cor::ARO_IVA_PREFIX}#{suffix}"
+    end
+
+    def cor_set_ruby_env!(k, v)
+      k = k.strip.to_sym unless k.kind_of?(Symbol)
+      raise "attempt to set invalid def: #{k}=#{v}" if Aro::Cor::DEF[k].nil?
+      converted = v
+      converted = v.to_s if v.kind_of?(Symbol) ||
+        Aro::Cor::DEF[k][:type] == Aro::Cor::TYPES[:BOOL] ||
+        Aro::Cor::DEF[k][:type] == Aro::Cor::TYPES[:INT]
+      # set ruby ENV key value
+      # only write to ruby ENV from here
+      ENV[Aro::Cor.ivar_k(k.to_s)] = converted
+      Aro::Dom::P.say("#{k} set to #{converted}")
+      return true
     end
 
     def self.set_ivar(k, new_value)
       k = k.upcase.to_sym
 
-      current_value = Aos::Cor.ivar(k)
+      current_value = Aro::Cor.ivar(k)
       if k == :DIMENSION &&
-        new_value == Aos::Cor::DMS[:DEV_TAROT].to_s &&
+        new_value == Aro::Cor::DMS[:DEV_TAROT].to_s &&
         !Aro::T.is_dev_tarot_avail?
         Aro::Dom::P.say("unable to set dimension dev_tarot. device not present.")
         return
@@ -535,17 +547,12 @@ module Aos
       # ensure the var name is valid
       unless current_value.nil?
         Aro::Dom::P.say("validating #{k} with value #{new_value}")
-        if Aos::Cor.instance.valid_var?(new_value, k, Aos::Cor::DEF[k])
-          # set ENV value
-          ENV[Aos::Cor.ivar_k(k)] = new_value
-          Aro::Dom::P.say("#{k} set to #{new_value}")
-          Aro::V.say(ENV[Aos::Cor.ivar_k(k)])
-
+        if Aro::Cor.instance.valid_var?(new_value, k, Aro::Cor::DEF[k])
+          Aro::Cor.instance.cor_set_ruby_env!(k, new_value)
           # flush existing config and regen
-          Aos::Cor.instance.generate_config(true)
-          Aos::Cor.instance.source_config
+          Aro::Cor.instance.generate_config(true)
+          Aro::Cor.instance.source_config
           Aro::Db.configure_logger
-          Aos::Db.configure_logger
         else
           Aro::Dom::P.say("the ivar value you entered is invalid. ignoring.")
         end
@@ -554,49 +561,53 @@ module Aos
       end
     end
 
+    # todo: add_to_docs
     def self.ivars_dump
       dump = []
-      Aos::Cor::DEF.select{|k, v|
-        v[:access] == Aos::Cor::DEF_ACCESS[:WRITE]
+      Aro::Cor::DEF.select{|k, v|
+        v[:access] == Aro::Cor::DEF_ACCESS[:WRITE]
       }.each{|k, v|
-          dump << "#{Aos::Cor.ivar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aos::Cor.ivar(k)}"
+          dump << "#{Aro::Cor.ivar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Cor.ivar(k)}"
       }
 
       dump
     end
 
+    # todo: add_to_docs
     def self.ovars_dump
       dump = []
-      Aos::Cor::DEF.select{|k, v|
-        v[:access] == Aos::Cor::DEF_ACCESS[:READ]
+      Aro::Cor::DEF.select{|k, v|
+        v[:access] == Aro::Cor::DEF_ACCESS[:READ]
       }.each{|k, v|
-        dump << "#{Aos::Cor.ovar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aos::Cor.ovar(k)}"
+        dump << "#{Aro::Cor.ovar_k(k).ljust(Aro::Mancy::NUMERALS[:XIV] * Aro::Mancy::OS)}=#{Aro::Cor.ovar(k)}"
       }
 
       dump
     end
 
     def source_config
-      Aro::D.say(I18n.t("cor.source", name: Aos::Cor.cor_filepath))
-      File.read(Aos::Cor.cor_filepath).split("\n").select{|line|
-        line.match?(/export #{Aos::Cor::ARO_IVA_PREFIX}/)
+      Aro::D.say(I18n.t("cor.source", name: Aro::Cor.cor_filepath))
+      File.read(Aro::Cor.cor_filepath).split("\n").select{|line|
+        line.match?(/export #{Aro::Cor::ARO_IVA_PREFIX}/)
       }.map{|line|
         line.gsub("export ", "").split("=")
       }.each{|kv|
-        Aro::V.say("variable to set: #{kv}")
-        ENV[kv[0]] = kv[1] # source
-        Aro::V.say("value actually set: #{ENV[kv[0]]}")
+        Aro::D.say("variable_to_set: #{kv}")
+        result = Aro::Cor.instance.cor_set_ruby_env!(kv[0].gsub(Aro::Cor::ARO_IVA_PREFIX.to_s, ""), kv[1])
+        Aro::D.say("value_was_set: #{result}")
       }
 
       invalid_defs = validate_config
-      Aos::Cor.ivars_dump.each{|l| Aro::V.say(l)}
-      Aos::Cor.ovars_dump.each{|l| Aro::V.say(l)}
+      Aro::Cor.ivars_dump.each{|l| Aro::V.say(l)}
+      Aro::Cor.ovars_dump.each{|l| Aro::V.say(l)}
       invalid_defs.each{|k|
-        v = Aos::Cor::DEF[k.to_sym]
-        if v[:access] == Aos::Cor::DEF_ACCESS[:WRITE]
-          ENV[Aos::Cor.ivar_k(k)] = v[:value]
+        v = Aro::Cor::DEF[k.to_sym]
+        if v[:access] == Aro::Cor::DEF_ACCESS[:WRITE]
+          result = Aro::Cor.instance.cor_set_ruby_env!(k, v[:value])
+          Aro::D.say("invalid_def_defaulting_#{k}: #{result}")
         else
-          ENV[Aos::Cor.ovar_k(k)] = v[:value]
+          result = Aro::Cor.instance.cor_set_ruby_env!(k, v[:value])
+          Aro::D.say("invalid_def_defaulting_#{k}: #{result}")
         end
       }
     end
@@ -604,7 +615,7 @@ module Aos
     # from_memory true means write current config to file
     def generate_config(from_memory = false)
       # todo: localize generated config text
-      Aro::D.say(I18n.t("cor.generate", name: Aos::Cor.cor_filepath))
+      Aro::D.say(I18n.t("cor.generate", name: Aro::Cor.cor_filepath))
 
       lines = []
 
@@ -641,8 +652,8 @@ module Aos
       lines += lines_newline_comment_os
 
       # vars
-      Aos::Cor::DEF.each{|k, v|
-        lines += lines_var(k, v, (from_memory ? ENV[Aos::Cor.ivar_k(k)] : nil))
+      Aro::Cor::DEF.each{|k, v|
+        lines += lines_var(k, v, (from_memory ? ENV[Aro::Cor.ivar_k(k)] : nil))
       }
 
       lines += lines_newline_comment_os
@@ -663,14 +674,14 @@ module Aos
     end
 
     def write_config(lines)
-      to_write = Aos::Cor.cor_filepath
+      to_write = Aro::Cor.cor_filepath
       File.open(to_write, "w") do |file|
         file.write(lines.join("\n"))
         file.write("\n")
       end
 
-      # unless (to_write == Aos::Cor.aro_cor_path) && Aro::Mancy.in_aro?
-      #   File.open(Aos::Cor.aro_cor_path, "w") do |file|
+      # unless (to_write == Aro::Cor.aro_cor_path) && Aro::Mancy.in_aro?
+      #   File.open(Aro::Cor.aro_cor_path, "w") do |file|
       #     file.write(lines.join("\n"))
       #     file.write("\n")
       #   end
@@ -695,55 +706,55 @@ module Aos
 
     def lines_config_header
       [
-        "# #{Aos::Os} cor configuration file generated by #{Aos::Cor.name}."
+        "# #{Aro::Mancy} cor configuration file generated by #{Aro::Cor.name}."
       ]
     end
 
     def lines_var_section_div
-      ["# Aos::Cor::DEF"]
+      ["# Aro::Cor::DEF"]
     end
 
     def lines_def_type_description
       lines = []
-      lines << "# Aos::Cor::DEF_TYPES"
+      lines << "# Aro::Cor::DEF_TYPES"
       lines << "# describes the possible types of variables."
-      Aos::Cor::DEF_TYPES.each{|k, v|
+      Aro::Cor::DEF_TYPES.each{|k, v|
         lines << "# #{k}: #{v[:description]}"
       }
       lines += lines_newline_comment_os
-      lines << "# Aos::Cor::DEF"
-      lines << "# define and expose an aos cor bash api via ENV variables."
-      lines << "# there are two types of cor vars in aos."
+      lines << "# Aro::Cor::DEF"
+      lines << "# define and expose an aro cor bash api via ENV variables."
+      lines << "# there are two types of cor vars in aro."
       lines << "# 1) in vars (ivars). "
       lines << "#     => write variables from this file."
       lines << "#     => they are validated and used unless unvalid."
       lines << "# 2) out vars (ovars)."
-      lines << "#     => read-only variables that aos cor exposes to bash."
+      lines << "#     => read-only variables that aro cor exposes to bash."
     end
 
     def lines_var(k, v, mem_v = nil)
-      lines = []
-      is_ovar = Aos::Cor::DEF[k][:access] == Aos::Cor::DEF_ACCESS[:READ]
+      lines = ["\n"]
+      is_ovar = Aro::Cor::DEF[k][:access] == Aro::Cor::DEF_ACCESS[:READ]
       if is_ovar
-        var_name = Aos::Cor.ovar_k(k)
+        var_name = Aro::Cor.ovar_k(k)
       else
-        var_name = Aos::Cor.ivar_k(k)
+        var_name = Aro::Cor.ivar_k(k)
       end
-      Aro::V.say("access for #{k} is #{Aos::Cor::DEF[k][:access]}")
+      Aro::V.say("access for #{k} is #{Aro::Cor::DEF[k][:access]}")
       Aro::V.say("using var_name: #{var_name}")
       lines << "# [#{var_name}] (#{is_ovar ? :ovar : :ivar})"
-      lines << "#   => Aos::Cor::DEF_TYPES: #{v[:type]}"
+      lines << "#   => Aro::Cor::DEF_TYPES: #{v[:type]}"
       case v[:type]
-      when Aos::Cor::DEF_TYPES[:BOOL][:name]
+      when Aro::Cor::DEF_TYPES[:BOOL][:name]
         lines << "#   => #{I18n.t("cor.type.bool_description")}"
-      when Aos::Cor::DEF_TYPES[:INT][:name]
+      when Aro::Cor::DEF_TYPES[:INT][:name]
         lines << "#   => #{I18n.t("cor.type.int_description")}"
         lines << "#   => #{I18n.t("cor.minimum")}: #{v[:min]}"
         lines << "#   => #{I18n.t("cor.maximum")}: #{v[:max]}"
-      when Aos::Cor::DEF_TYPES[:STRING][:name]
+      when Aro::Cor::DEF_TYPES[:STRING][:name]
         lines << "#   => #{I18n.t("cor.type.string_description")}"
         lines << "#   => use \"double quotes\" if there are any spaces."
-      when Aos::Cor::DEF_TYPES[:VALUES][:name]
+      when Aro::Cor::DEF_TYPES[:VALUES][:name]
         lines << "#   => #{I18n.t("cor.type.values_description")}"
         lines << "#   => #{I18n.t("cor.possible_values")}:"
         lines += lines_newline_comment
@@ -757,7 +768,7 @@ module Aos
       lines += lines_newline_comment_os
       lines << "#   => description:"
       lines << "#   => #{v[:description]}"
-      if is_ovar && Aos::Cor::DEF_TYPES[:STRING][:name] == v[:type]
+      if is_ovar && Aro::Cor::DEF_TYPES[:STRING][:name] == v[:type]
         lines << "export #{var_name}=\"#{v[:value]}\""
       else
         lines << "export #{var_name}=#{mem_v || v[:value]}"

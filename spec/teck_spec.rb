@@ -2,11 +2,11 @@ require_relative :rspec_helper.to_s
 
 describe Aro::Teck do
   before :all do
-    Aro::Mancy.create(TESTING_NAME.to_s)
+    Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
     Dir.chdir(TESTING_NAME.to_s)
-    Aos::Cor.instance.load
-    Aos::Cor.set_ivar(:ENV, Aos::Cor::ENVS[:TEST].to_s)
-    # Aos::Cor.set_ivar(:VERBOSE, Aos::Cor::BOOLS[:TRUE].to_s)
+    Aro::Cor.instance.load
+    Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
+    # Aro::Cor.set_ivar(:VERBOSE, Aro::Cor::BOOLS[:TRUE].to_s)
     Aro::Teck.make(TESTING_TECK.to_s)
   end
 
@@ -66,7 +66,6 @@ describe Aro::Teck do
       teck = Aro::Teck.current_teck
       expect(teck.drawn).to eq("")
       teck.draw(
-        is_dt_dimension: true,
         z_max: Aro::Mancy::NUMERALS[:VII],
         z: Aro::Mancy::S
       )

@@ -1,4 +1,5 @@
 desc "rake install && rspec"
 task :make do
-  exec "rake install && rspec --backtrace"
+  exec "rake install && rspec"
+  #exec "rake install && rspec --backtrace"
 end

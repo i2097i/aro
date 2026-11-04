@@ -1,8 +1,29 @@
 en: 
   usage:
+    cor: |
+      aro cor management.
+
+        $ aro cor [-h | --help]
+
+        $ aro cor var_name var_value
+
+      basic usage:
+
+        no params prints the cor (writable) ivars.
+
+          $ aro cor [ivars|ovars]
+
+        param var_name prints the var named var_name.
+
+          $ aro cor var_name
+
+        param var_name & param var_value updates a var named var_name with var_value.
+
+          $ aro cor var_name var_value
+
     dom: |
       aro dom
-        aos arodome management.
+        aro dom management.
 
         $ aro dom var_command
 
@@ -12,76 +33,20 @@ en:
 
         COMMANDS
           init
-            initialize and generate the arodome.
+            initialize and generate the aro dom.
             run once from the dom base directory.
-
-            params:
-              var_root_username: root aos username.
-              var_root_password: root aos password.
 
             usage:
 
-              $ aro dom init var_root_username var_root_password
+              $ aro dom init
 
           new
-            create a new arodome with the specified name.
+            create a new aro dom with the specified name.
 
               example:
 
                 $ aro dom new var_name
 
-
-      aro by i2097i is copyright (2026)
-    ino: |
-      SUMMARY
-
-        ino is a card game for tarot.
-
-        quickstart or tldr;
-
-        $ ino create var_name && ino
-
-      COMMANDS
-        create
-          create a new game of ino.
-
-          example:
-
-            $ ino create var_name
-
-      RULES
-
-        scoring
-          points   description
-
-          1        total cards
-          1        total trumps
-          1        total swords
-          1        total wands
-          1        total face cards
-          1        10 of cups
-          1        10 of pentacles
-          4        aces
-        +___________________________
-          11       total points
-
-        terms
-          chapter
-            a component round of a story (2 player is 11 cards each).
-          statement
-            1 or more thought cards and a final word card.
-          word
-            a card that must be produced by a player to close a statement.
-          legend
-            a series of stories played in succession to an agreed upon score.
-          scroll
-            the open play arena where cards can be used to construct inos.
-          story
-            one full ino playthrough of the entire deck.
-
-
-        gameplay
-          todo:
 
       aro by i2097i is copyright (2026)
     main: |
@@ -90,8 +55,6 @@ en:
         aro is a cli for tarot. it includes three command-line executables.
 
         1) aro
-        2) aos
-        3) ino
 
       SYNOPSIS
 
@@ -104,6 +67,10 @@ en:
           card lookup example:
 
             $ aro +TXXI
+
+          or, equivalently:
+
+            $ aro +txxi
 
       COMMANDS
         create
@@ -118,31 +85,22 @@ en:
             this runs by default after create and has no effect if init is complete.
 
         cor
-          aro cor management.
+          aro cor unix env bindings.
 
-            $ aro cor var_name var_value
-
-          basic usage:
-
-            no params prints the cor.
-
-                $ aro cor
-
-            param var_name prints the var named var_name.
-
-                $ aro cor var_name
-
-            param var_name & param var_value updates a var named var_name with var_value.
-
-                $ aro cor var_name var_value
+            $ aro cor [-h | --help]
 
         teck
           aro teck commands.
 
             $ aro teck [-h | --help]
 
+        data
+          aro data commands.
+
+            $ aro data [-h | --help]
+
         dom
-          aos arodome management.
+          aro dom management.
 
             $ aro dom [-h | --help]
 

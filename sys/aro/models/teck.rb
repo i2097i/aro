@@ -38,7 +38,9 @@ class Aro::Teck < ActiveRecord::Base
 
   def generate_log
     prev_cards = Base64::decode64(tlogs.last.card_data) if tlogs.any?
-    if (prev_cards.present? && prev_cards != cards) || (prev_cards.nil? || prev_cards.empty?)
+    if (prev_cards.present? && prev_cards != cards) ||
+      (prev_cards.nil? || prev_cards.empty?)
+
       tlogs.create(
         card_data: Base64::encode64(cards || ""),
         drawn_data: Base64::encode64(drawn || "")
@@ -49,7 +51,7 @@ class Aro::Teck < ActiveRecord::Base
   def self.display_selection_menu
     Aro::Db.load
     unless Aro::Teck.any?
-      Aro::P.say(I18n.t("cli.messages.no_tecks"))
+      Aro::P.say(I18n.t("messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
     c_d = Aro::Teck.current_teck
@@ -60,7 +62,7 @@ class Aro::Teck < ActiveRecord::Base
 
   def self.select_teck(teck)
     return unless teck.present?
-    Aro::P.say(I18n.t("cli.messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
+    Aro::P.say(I18n.t("messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
     File.open(File.join(Aro::Db.base_aro_dir, Aro::Teck::TECK_FILE.to_s), "w") do |file|
       file.write(teck.id)
     end
@@ -92,7 +94,7 @@ class Aro::Teck < ActiveRecord::Base
     Aro::V.say("order_o: #{order_o}")
 
     unless Aro::Tlog::ORDERING.values.include?(order_o)
-      Aro::P.say(I18n.t("cli.warnings.invalid_order"))
+      Aro::P.say(I18n.t("warnings.invalid_order"))
       order_o = Aro::Tlog::ORDERING[:DESC]
     end
 
@@ -104,11 +106,11 @@ class Aro::Teck < ActiveRecord::Base
     # Aro::V.say("tlog_records.count: #{tlog_records.count}")
 
     # for now tests just expect count
-    return tlog_records if Aos::Cor.is_test?
+    return tlog_records if Aro::Cor.is_test?
 
-    Aro::D.say(I18n.t("cli.messages.showing", name: name, count: count_n, order: order_o))
+    Aro::D.say(I18n.t("messages.showing", name: name, count: count_n, order: order_o))
 
-    Aos::Vw::Teck.show_game({
+    Aro::Views::Teck.show_game({
       teck: self,
       tlog_records: tlog_records,
       count_n: count_n,
@@ -118,11 +120,11 @@ class Aro::Teck < ActiveRecord::Base
 
   def explore
     # allows user to browse each card in the current teck.
-    answer = Aos::S.p.select(
-      Aro::Mancy::PS1.to_s + I18n.t("cli.messages.choose_card"),
+    answer = Aro::P.p.select(
+      Aro::Mancy::PS1.to_s + I18n.t("messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aos::Cor.discon[:HEIGHT] - Aro::Mancy::S,
+      per_page: Aro::Cor.discon[:HEIGHT] - Aro::Mancy::S,
       cycle: true,
       default: Aro::Mancy::S
     )
@@ -137,9 +139,9 @@ class Aro::Teck < ActiveRecord::Base
       orientation = "-"
     end
 
-    Aro::P.say(I18n.t("cli.messages.printing_card", card: card_code))
-    width = Aos::Cor.discon[:WIDTH]
-    divider = Aos::Cor.discon[:DIVIDER]
+    Aro::P.say(I18n.t("messages.printing_card", card: card_code))
+    width = Aro::Cor.discon[:WIDTH]
+    divider = Aro::Cor.discon[:DIVIDER]
     card_lookup = Aro::Teck.card_strip(card_code)
     suit_lookup = card_lookup[Aro::Mancy::O]
     definition = I18n.t("cards.#{card_lookup}")
@@ -190,7 +192,7 @@ class Aro::Teck < ActiveRecord::Base
     update(drawn: "", cards: cards_arr.join(Aro::Teck::CARD_DELIM.to_s))
   end
 
-  def draw(is_dt_dimension: true, z_max: 7, z: 1)
+  def draw(z_max: 7, z: 1)
     # the true card
     abs_dev_tarot = nil
 

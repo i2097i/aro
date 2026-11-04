@@ -23,15 +23,21 @@ module Aro
     end
 
     def self.should_print?
-      Aos::Cor::BOOLS[:TRUE]
+      Aro::Cor::BOOLS[:TRUE]
     end
 
     def self.say(message)
-      Aos::Os.say(message)
+      p.say(normalize_message(message))
     end
 
     def self.less(message)
       IO.popen("less -X", "w") { |f| f.puts(message) }
+    end
+
+    def self.normalize_message(message)
+      return message.join("\n") if message.kind_of?(Array)
+
+      message
     end
   end
 end

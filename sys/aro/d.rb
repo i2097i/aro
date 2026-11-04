@@ -15,12 +15,13 @@ module Aro
   class D < Aro::Prompt
     def self.say(message)
       return unless Aro::D.should_print?
-      super([">[#{Aro::Mancy::I2097I}]>: #{message}"])
+
+      super([">[#{Aro::Mancy::I2097I}]>: #{normalize_message(message)}"])
     end
 
     def self.should_print?
-      return false unless Aos::Cor.ivar(:ENV).present?
-      Aos::Cor::DBG_MODES.include?(Aos::Cor.ivar(:ENV)&.to_sym)
+      return false unless Aro::Cor.ivar(:ENV).present?
+      Aro::Cor::DBG_MODES.include?(Aro::Cor.ivar(:ENV)&.to_sym)
     end
   end
 end

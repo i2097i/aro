@@ -13,11 +13,11 @@ module CLI
     CLI::Nterface.exit_error_missing_args!(:var_aro_name) if CLI::ARGV1.nil?
     
     name = CLI::ARGV1&.to_s
-    Aro::P.say(I18n.t("cli.messages.creation_attempt", name: name))
+    Aro::P.say(I18n.t("messages.creation_attempt", name: name))
     if Aro::Mancy.create(name)
-      Aro::P.say(I18n.t("cli.messages.creation_success", name: name))
+      Aro::P.say(I18n.t("messages.creation_success", name: name))
     else
-      Aro::P.say(I18n.t("cli.messages.creation_failure", name: name))
+      Aro::P.say(I18n.t("messages.creation_failure", name: name))
     end
   end
 end

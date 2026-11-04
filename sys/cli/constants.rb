@@ -31,7 +31,10 @@ module CLI
       DOM: :dom,
       INIT: :init,
     },
-    COR: {}, # see Aos::Cor
+    DOM: {
+      INIT: :init,
+      NEW: :new,
+    },
     TECK: {
       DRAW: :draw,
       EXPLORE: :explore,
@@ -40,10 +43,6 @@ module CLI
       RESET: :reset,
       SHOW: :show,
       SHUFFLE: :shuffle,
-    },
-    DOM: {
-      INIT: :init,
-      NEW: :new,
     },
   }
   

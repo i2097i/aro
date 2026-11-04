@@ -12,14 +12,9 @@
 require :active_record.to_s
 require :"active_record/schema_dumper".to_s
 require :base64.to_s
-require :ffi.to_s
 require :fileutils.to_s
-require :"io/console".to_s
 require :i18n.to_s
-require :"net/http".to_s
-require :readline.to_s
 require :"tty-prompt".to_s
-require :yaml.to_s
 
 module Reiquire
   GEM_PATH = Gem.loaded_specs[:aro.to_s]&.full_gem_path
@@ -32,7 +27,7 @@ module Reiquire
     I18n.default_locale = :en
 
     # require sys folders
-    Reiquire::requires([:shr, :aro, :aos, :dom, :cli])
+    Reiquire::requires([:shr, :aro, :dom, :cli])
 
     # require cli module
     require_relative :"./cli".to_s

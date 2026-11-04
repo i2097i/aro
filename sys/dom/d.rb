@@ -18,7 +18,7 @@ module Aro
     attr_accessor :reserved_words_def
 
     def self.reserved_words(include_root = false)
-      if Aro::Dom::D.instance.reserved_words_def.nil?
+      if self.instance.reserved_words_def.nil?
 
         reserved = []
         Aro::Dom::D::LAYOUT.values.each{|wing|
@@ -51,9 +51,9 @@ module Aro
         },
       },
       GAMES: {
-        ABOT: {
-          name: Aro::Dom::ABOT,
-          description: I18n.t("dom.rooms.abot.description"),
+        AROMANCER: {
+          name: Aro::Dom::AROMANCER,
+          description: I18n.t("dom.rooms.aromancer.description"),
         },
       },
       HOME: {},
@@ -105,7 +105,7 @@ module Aro
         name: Aro::Dom::GAMES,
         description: I18n.t("dom.wings.games.description"),
         rooms: [
-          Aro::Dom::D::WINGS[:GAMES][:ABOT],
+          Aro::Dom::D::WINGS[:GAMES][:AROMANCER],
         ],
       },
       HOME: {

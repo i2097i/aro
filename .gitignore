@@ -1,8 +1,8 @@
 *.aro
 *.aro_test
+*.aro_space
 *.log
 *.name
 *.sql
-ffi/build/*
 pkg/*
 success/*

@@ -1,6 +1,6 @@
 en:
   elements:
-    index: ["earth", "water", "air", "fire", "ether"]
+    index: ["earth", "water", "fire", "air", "ether"]
     keys: ["name", "tags", "summary"]
     earth:
       color: "brown"

@@ -8,9 +8,6 @@
 
 =end
 
-require_relative :"./mancy".to_s
-require_relative :"../aos/cor".to_s
-
 module Aro
   class Db
     include Singleton
@@ -29,7 +26,7 @@ module Aro
     end
 
     def self.configure_logger
-      if Aos::Cor.ivar(:LOG_ARO_DB).to_s == Aos::Cor::BOOLS[:TRUE].to_s
+      if Aro::Cor.ivar(:LOG_DATABASE).to_s == Aro::Cor::BOOLS[:TRUE].to_s
         ActiveRecord::Base.logger = Logger.new(STDOUT)
       else
         ActiveRecord::Base.logger = nil
@@ -38,7 +35,7 @@ module Aro
 
     def self.base_aro_dir
       base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      return "#{base_aro_file}_#{Aos::Cor::ENVS[:TEST]}" if Aos::Cor.is_test?
+      return "#{base_aro_file}_#{Aro::Cor::ENVS[:TEST]}" if Aro::Cor.is_test?
 
       base_aro_file
     end
@@ -48,8 +45,9 @@ module Aro
     end
 
     def setup_local_aro
-      name = Aro::Mancy.in_aro? ? Aro::Mancy.aro_mancy_name : nil
-      return if name.nil? || name.to_sym == Aos::Os::CMDS[:ABOT][:key]
+      aro_name = Aro::Mancy.in_aro? ? Aro::Mancy.aro_mancy_name : nil
+      # todo: exit here if error
+      return if aro_name.nil? || Aro::Dom::D.reserved_words.include?(aro_name.to_sym)
 
       # create local .aro/ directory
       unless File.exist?(Aro::Db.base_aro_dir)
@@ -62,9 +60,9 @@ module Aro
         c = {
           adapter: :sqlite3.to_s,
           database: File.join(Aro::Db.base_aro_dir, Aro::Db::SQL_FILE.to_s),
-          username: name,
-          password: name,
-          pool: Aos::Os::DB_POOL
+          username: aro_name,
+          password: aro_name,
+          pool: 11
         }.to_yaml
         File.open(db_config_filepath, "w") do |file|
           file.write(c)
@@ -72,7 +70,7 @@ module Aro
       end
 
       connect
-      migrate(name)
+      migrate(aro_name)
     end
 
     def connect
@@ -81,7 +79,7 @@ module Aro
       )
     end
 
-    def migrate(name)
+    def migrate(aro_name)
       local_migrate_dir = File.join(Aro::Db.base_aro_dir, Aro::Db::MIGRATIONS_DIR.to_s)
       unless Dir.exist?(local_migrate_dir)
         gem_dir = Dir[Reiquire::GEM_PATH || '.'].first

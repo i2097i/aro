@@ -11,7 +11,7 @@
 require_relative :"sys/shr/version".to_s
 
 Gem::Specification.new do |spec|
-  spec.name          = "aro"
+  spec.name          = Aro.name.downcase
   spec.version       = Aro::VERSION.to_s
   spec.authors       = ["i2097i"]
   spec.email         = ["i2097i@hotmail.com"]
@@ -21,20 +21,19 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.files         = `git ls-files`.split("\n").reject{|p| p.match?(/^(spec|.release|.*.gem$)/)}
   spec.bindir        = "bin"
-  spec.executables   = ["aro", "aos", "ino"]
+  spec.executables   = ["aro"]
   spec.require_paths = ["sys"]
   spec.required_ruby_version = ">= 3.4.7"
 
   # development gems
-  spec.add_development_dependency "bundler",              "~> 4.0", ">= 4.0.3"
-  spec.add_development_dependency "listen",               "~> 3.10", ">= 3.10.0"
-  spec.add_development_dependency "rake",                 "~> 13.3", ">= 13.3.1"
-  spec.add_development_dependency "rspec",                "~> 3.13", ">= 3.13.2"
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "listen"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
 
   # runtime gems
-  spec.add_runtime_dependency     "activerecord",         "~> 8.1", ">= 8.1.2"
-  spec.add_runtime_dependency     "ffi",                  "~> 1.17", ">= 1.17.3"
-  spec.add_runtime_dependency     "i18n",                 "~> 1.14", ">= 1.14.8"
-  spec.add_runtime_dependency     "sqlite3",              "~> 2.9", ">= 2.9.0"
-  spec.add_runtime_dependency     "tty-prompt",           "~> 0.23.1", ">= 0.23.1"
+  spec.add_runtime_dependency     "activerecord"
+  spec.add_runtime_dependency     "i18n"
+  spec.add_runtime_dependency     "sqlite3"
+  spec.add_runtime_dependency     "tty-prompt"
 end

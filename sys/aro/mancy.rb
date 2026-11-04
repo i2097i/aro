@@ -14,12 +14,14 @@ module Aro
 
     attr_accessor :current
 
+    A  = :"@"
     O  = 0
     S  = 1
     OS = 2
     E  = 3
     N  = 4
     V  = 5
+    DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
     PS1 = :">[#{Aro::Mancy.name}]>: "
     NAME_FILE = :".aro_space"
     ARO_FILE = :".aro"
@@ -65,29 +67,28 @@ module Aro
       self.instance.current
     end
 
-    def self.create(name)
-      return false if Aro::Mancy.in_aro? || name.nil?
+    def self.create(aro_name, is_test: false)
+      return false if (!is_test && Aro::Mancy.in_aro?) ||
+        aro_name.nil?
 
       # explicitly only allow String/Symbol types for name
-      return false unless name.kind_of?(String) || name.kind_of?(Symbol)
-      name = name.to_s.strip
+      return false unless aro_name.kind_of?(String) || aro_name.kind_of?(Symbol)
+      aro_name = aro_name.to_s.strip
       # create the new aro directory and database
-      if !Dir.exist?(name)
-        Aro::P.say(I18n.t("cli.messages.no_tecks"))
-        FileUtils.mkdir(name)
-      else
-        return false
+      if !Dir.exist?(aro_name)
+        Aro::P.say(I18n.t("messages.no_tecks"))
+        FileUtils.mkdir(aro_name)
       end
 
-      Dir.chdir(name) do
-        Aos::Cor.instance.load
+      Dir.chdir(aro_name) do
+        Aro::Cor.instance.load
         Aro::Mancy.init
       end
       return true
     end
 
     def self.init
-      unless Aro::Mancy.in_aro? || Aos::Cor.is_test?
+      unless Aro::Mancy.in_aro? || Aro::Cor.is_test?
         Aro::P.say("init aro running in present directory...")
         new_name = File.basename(Dir.pwd)
         Aro::P.say("echo #{new_name} > #{Aro::Mancy::NAME_FILE.to_s}")
@@ -108,7 +109,7 @@ module Aro
     end
 
     def self.domain
-      "#{Aro::Mancy}#{Aos::Os::A}#{Aro::Mancy.aro_mancy_name}"
+      "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Mancy}"
     end
 
     def self.aro_mancy_name

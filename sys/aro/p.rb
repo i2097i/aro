@@ -15,9 +15,9 @@ module Aro
   class P < Aro::Prompt
     def self.say(message)
       if Aro::Mancy.in_aro? && !Aro::T.is_dev_tarot?
-        Aro::R.say(message)
+        Aro::R.say(normalize_message(message))
       else
-        super(["#{Aro::Mancy::PS1}#{message}"])
+        super(normalize_message(message))
       end
     end
   end

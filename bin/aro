@@ -12,8 +12,6 @@
 
 require :aro.to_s
 
-Aos::Os.configure_aro_cli
-
 if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
   Aro::P.say(Aro::VERSION)
   exit(CLI::EXIT_CODES[:SUCCESS])
@@ -27,7 +25,7 @@ end
 
 case CLI::ARGV0
 when CLI::CMDS[:ARO][:COR]
-  Aos.cor
+  Aro.cor
 when CLI::CMDS[:ARO][:CREATE]
   CLI.create
 when CLI::CMDS[:ARO][:TECK]
@@ -38,7 +36,7 @@ when CLI::CMDS[:ARO][:INIT]
   Aro::Mancy.init
 else
   unless Aro::Mancy.teck.nil? || CLI::FLAGS[:HELP].include?(CLI::ARGV0)
-    Aro::P.say(I18n.t("cli.messages.welcome", name: "#{Aro::Teck.name}"))
+    Aro::P.say(I18n.t("messages.welcome", name: "#{Aro::Teck.name}"))
     Aro::Mancy.init
     Aro::Mancy.teck.show
 

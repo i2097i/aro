@@ -24,15 +24,15 @@ module CLI
     when CLI::CMDS[:DOM][:INIT]
       if Aro::Dom.is_initialized?
         Aro::P.say(I18n.t("dom.errors.failed_already_initialized"))
-      elsif Aro::Dom.in_arodom? && !Aro::Dom.is_initialized?
+      elsif Aro::Dom.in_aro_dom? && !Aro::Dom.is_initialized?
         Aro::Dom.instance.generate(ARGV[Aro::Mancy::OS], ARGV[Aro::Mancy::E])
       else
         CLI::Nterface.exit_error_invalid_usage!
       end
     when CLI::CMDS[:DOM][:NEW]
       CLI::Nterface.exit_error_missing_args!(:var_dom_name) if CLI::ARGV2.nil?
-      if Aro::Dom.in_arodom?
-        Aro::P.say(I18n.t("dom.errors.failed_already_in_arodom"))
+      if Aro::Dom.in_aro_dom?
+        Aro::P.say(I18n.t("dom.errors.failed_already_in_aro_dom"))
       elsif Aro::Mancy.in_aro?
         Aro::P.say(I18n.t("dom.errors.failed_in_aro_space"))
       else
