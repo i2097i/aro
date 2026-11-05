@@ -14,10 +14,13 @@ require_relative :"./r".to_s
 module Aro
   class P < Aro::Prompt
     def self.say(message)
-      if Aro::Mancy.in_aro? && !Aro::T.is_dev_tarot?
+      if Aro::Dom::Ma_ain.instance.nil? &&
+        Aro::Mancy.in_aro? &&
+        !Aro::T.is_dev_tarot?
+
         Aro::R.say(normalize_message(message))
       else
-        super(normalize_message(message))
+        super("#{Aro::Dom::Ma_ain.ps1_display || Aro::Mancy.ps1_display}#{normalize_message(message)}")
       end
     end
   end

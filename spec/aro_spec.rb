@@ -14,7 +14,7 @@ describe Aro do
 
     it "should create local .aro directory files" do
       Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
-      Dir.chdir(TESTING_NAME.to_s) do
+      FileUtils.chdir(TESTING_NAME.to_s) do
         Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
         base_path = Aro::Db.base_aro_dir
         expect(Dir.exist?(base_path)).to be true
@@ -28,7 +28,7 @@ describe Aro do
   context "database" do
     it "should create new database" do
       if Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
-        Dir.chdir(TESTING_NAME.to_s) do
+        FileUtils.chdir(TESTING_NAME.to_s) do
           Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
           expect(ActiveRecord::Base.connection.database_exists?).to be true
         end

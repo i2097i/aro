@@ -27,7 +27,7 @@ module Reiquire
     I18n.default_locale = :en
 
     # require sys folders
-    Reiquire::requires([:shr, :aro, :dom, :cli])
+    Reiquire::requires([:shr, :aro, :cli])
 
     # require cli module
     require_relative :"./cli".to_s
@@ -36,7 +36,7 @@ module Reiquire
   def self.requires(dirs)
     dirs.each{|d|
       Dir[
-        File.join(__dir__, d.to_s, :"**/*.rb".to_s)
+        File.join(__dir__, d.to_s, :"**/**/*.rb".to_s)
       ].each { |f| require f}
     }
   end

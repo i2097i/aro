@@ -45,7 +45,7 @@ module CLI
         Aro::P.say(I18n.t("messages.shuffling", name: Aro::Mancy.teck.name))
         Aro::Mancy.teck.shuffle
       when CLI::CMDS[:TECK][:DRAW]
-        Aro::Cor.instance.load
+        Aro::Cor.instance.load_env
         Aro::P.say(I18n.t("messages.drawing", name: Aro::Mancy.teck.name))
         Aro::P.say(I18n.t("messages.drawing_from_dimension", dimension: "#{Aro::Cor.ivar(:DIMENSION)}"))
         Aro::Mancy.teck.draw(
@@ -57,7 +57,7 @@ module CLI
         Aro::Mancy.teck.replace
       when CLI::CMDS[:TECK][:RESET]
         Aro::P.say("#{I18n.t("messages.confirmation_prompt", name: Aro::Mancy.teck.name)}")
-        if Aro::Mancy::YES.to_s != Aro::P.p.ask("\n#{Aro::Mancy::PS1}$")
+        if Aro::Mancy::YES.to_s != Aro::P.p.ask("\n#{Aro::Mancy.ps1_display}$")
           Aro::P.say(I18n.t("messages.understood", name: Aro::Mancy.teck.name))
           exit(CLI::EXIT_CODES[:SUCCESS])
         end

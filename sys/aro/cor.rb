@@ -18,14 +18,14 @@ module Aro
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
-    Aro::Cor.instance.load
+    Aro::Cor.instance.load_env
     Aro::Cor.process_command(ARGV)
   end
 
   class Cor
     include Singleton
 
-    attr_accessor :base_lines_def, :cor_path, :display_lines, :use_less
+    attr_accessor :base_lines_def, :display_lines, :use_less
 
     def self.process_command(args)
       k = Aro::Cor::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
@@ -41,7 +41,7 @@ module Aro
         self.instance.display_lines = Aro::Cor.base_lines(args)
       end
 
-      if Aro::Mancy.in_aro? && !Aro::Dom.in_aro_dom?
+      if Aro::Mancy.in_aro?
         if self.instance.use_less
           Aro::P.less(self.instance.display_lines.join("\n"))
         else
@@ -362,12 +362,6 @@ module Aro
         value: Aro::Mancy::N,
         description: I18n.t("cor.aro_env.N_description"),
       },
-      PS1: {
-        type: Aro::Cor::TYPES[:STRING],
-        access: Aro::Cor::DEF_ACCESS[:READ],
-        value: Aro::Mancy::PS1,
-        description: I18n.t("cor.aro_env.PS1_description"),
-      },
       NAME_FILE: {
         type: Aro::Cor::TYPES[:STRING],
         access: Aro::Cor::DEF_ACCESS[:READ],
@@ -394,11 +388,8 @@ module Aro
       },
     }
 
-    def load
-      self.cor_path = nil
+    def load_env
       self.base_lines_def = nil
-      Aro::Dom.instance.eg_path = nil
-      return if Aro::Cor.get_cor_path.nil?
       unless File.exist?(Aro::Cor.cor_filepath)
         generate_config
       end
@@ -437,37 +428,9 @@ module Aro
       return self.instance.base_lines_def
     end
 
-
-    def self.get_cor_path
-      if self.instance.cor_path.nil?
-        Aro::Db.load
-        if Aro::Dom.in_aro_dom?
-          puts "#{self.name} => #{__method__} => not updated for aro dom yet"
-          # Aro::Mancy.instance.load_you!
-          # if Aro::Mancy.instance.you.root?
-          #   self.instance.cor_path = Aro::Cor.dom_cor_path
-          # else
-          #   self.instance.cor_path = Aro::Mancy.instance.you_flag.home
-          # end
-        elsif Aro::Mancy.in_aro?
-          self.instance.cor_path = Aro::Cor.aro_cor_path
-        end
-      end
-
-      return self.instance.cor_path
-    end
-
-    def self.aro_cor_path
-      File.join(Dir.pwd, Aro::Db.base_aro_dir)
-    end
-
-    def self.dom_cor_path
-      File.join(Aro::Dom::dom_root, Aro::Dom.room_path(:cor))
-    end
-
     def self.cor_filepath
       File.join(
-        Aro::Cor.get_cor_path,
+        Aro::Db.base_aro_dir,
         Aro::Cor::COR_FILE.to_s
       )
     end
@@ -479,20 +442,12 @@ module Aro
     def self.discon
       height = Aro::Cor.ivar(:HEIGHT).to_i
       width = Aro::Cor.ivar(:WIDTH).to_i
-      if !Aro::Dom.in_aro_dom? ||
-        Aro::Cor.ivar(:INTERFACE) == Aro::Cor::INTERFACES[:TERMINAL].to_s
-        # use console for terminal always
-        h_con, w_con = IO.console.winsize
-        height = h_con if h_con > 0
-        width = w_con if w_con > 0
-      end
 
       result = {
         HEIGHT: height,
         WIDTH: width,
         DIVIDER: :".".to_s
       }
-      # Aro::V.say(result)
 
       result
     end
@@ -529,7 +484,7 @@ module Aro
       # set ruby ENV key value
       # only write to ruby ENV from here
       ENV[Aro::Cor.ivar_k(k.to_s)] = converted
-      Aro::Dom::P.say("#{k} set to #{converted}")
+      Aro::P.say("#{k} set to #{converted}")
       return true
     end
 
@@ -540,13 +495,13 @@ module Aro
       if k == :DIMENSION &&
         new_value == Aro::Cor::DMS[:DEV_TAROT].to_s &&
         !Aro::T.is_dev_tarot_avail?
-        Aro::Dom::P.say("unable to set dimension dev_tarot. device not present.")
+        Aro::P.say("unable to set dimension dev_tarot. device not present.")
         return
       end
 
       # ensure the var name is valid
       unless current_value.nil?
-        Aro::Dom::P.say("validating #{k} with value #{new_value}")
+        Aro::P.say("validating #{k} with value #{new_value}")
         if Aro::Cor.instance.valid_var?(new_value, k, Aro::Cor::DEF[k])
           Aro::Cor.instance.cor_set_ruby_env!(k, new_value)
           # flush existing config and regen
@@ -554,10 +509,10 @@ module Aro
           Aro::Cor.instance.source_config
           Aro::Db.configure_logger
         else
-          Aro::Dom::P.say("the ivar value you entered is invalid. ignoring.")
+          Aro::P.say("the ivar value you entered is invalid. ignoring.")
         end
       else
-        Aro::Dom::P.say("the ivar name you entered is invalid. ignoring.")
+        Aro::P.say("the ivar name you entered is invalid. ignoring.")
       end
     end
 
@@ -674,18 +629,10 @@ module Aro
     end
 
     def write_config(lines)
-      to_write = Aro::Cor.cor_filepath
-      File.open(to_write, "w") do |file|
+      File.open(Aro::Cor.cor_filepath, "w+") do |file|
         file.write(lines.join("\n"))
         file.write("\n")
       end
-
-      # unless (to_write == Aro::Cor.aro_cor_path) && Aro::Mancy.in_aro?
-      #   File.open(Aro::Cor.aro_cor_path, "w") do |file|
-      #     file.write(lines.join("\n"))
-      #     file.write("\n")
-      #   end
-      # end
     end
 
     def lines_div

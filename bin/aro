@@ -28,10 +28,12 @@ when CLI::CMDS[:ARO][:COR]
   Aro.cor
 when CLI::CMDS[:ARO][:CREATE]
   CLI.create
+when CLI::CMDS[:ARO][:CONSOLE]
+  require "irb"
+  require "irb/completion"
+  IRB.start
 when CLI::CMDS[:ARO][:TECK]
   CLI.teck
-when CLI::CMDS[:ARO][:DOM]
-  CLI.dom
 when CLI::CMDS[:ARO][:INIT]
   Aro::Mancy.init
 else

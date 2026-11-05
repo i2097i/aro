@@ -26,14 +26,14 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.4.7"
 
   # development gems
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "listen"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "bundler",              "~> 4.0", ">= 4.0.22"
+  spec.add_development_dependency "listen",              "~> 3.10", ">= 3.10.1"
+  spec.add_development_dependency "rake",              "~> 13.4", ">= 13.4.2"
+  spec.add_development_dependency "rspec",              "~> 3.13", ">= 3.13.2"
 
   # runtime gems
-  spec.add_runtime_dependency     "activerecord"
-  spec.add_runtime_dependency     "i18n"
-  spec.add_runtime_dependency     "sqlite3"
-  spec.add_runtime_dependency     "tty-prompt"
+  spec.add_runtime_dependency     "activerecord",              "~> 8.1", ">= 8.1.4.1"
+  spec.add_runtime_dependency     "i18n",              "~> 1.15", ">= 1.15.2"
+  spec.add_runtime_dependency     "sqlite3",              "~> 2.10", ">= 2.10.2"
+  spec.add_runtime_dependency     "tty-prompt",              "~> 0.23", ">= 0.23.1"
 end

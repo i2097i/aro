@@ -13,6 +13,11 @@ module Aro
     include Singleton
 
     CMDS = {
+      CONSOLE: {
+        key: :console,
+        description: I18n.t("cmd.commands.console_description"),
+        usage: I18n.t("cmd.commands.console_usage")
+      },
       CREATE: {
         key: :create,
         description: I18n.t("cmd.commands.create_description"),
@@ -77,23 +82,6 @@ module Aro
           }
         }
       },
-      DOM: {
-        key: :dom,
-        description: I18n.t("cmd.commands.dom_description"),
-        usage: I18n.t("cmd.commands.dom_usage"),
-        subcommands: {
-          INIT: {
-            key: :init,
-            description: I18n.t("cmd.subcommands.init_description"),
-            usage: I18n.t("cmd.subcommands.init_usage")
-          },
-          NEW: {
-            key: :new,
-            description: I18n.t("cmd.subcommands.dom_new_description"),
-            usage: I18n.t("cmd.subcommands.dom_new_usage")
-          }
-        }
-      },
       INIT: {
         key: :init,
         description: I18n.t("cmd.commands.init_description"),
@@ -104,11 +92,5 @@ module Aro
     def self.display_lines
       JSON.pretty_generate(CMDS).split("\n")
     end
-
-    def self.is_cmd?(arg)
-      # determine if command is Aro::Cmd::CMDS
-      Aro::Cmd::CMDS.values.map{|v| v[:key]}.include?(arg.to_sym)
-    end
-
   end
 end

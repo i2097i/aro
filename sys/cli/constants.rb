@@ -25,15 +25,11 @@ module CLI
 
   CMDS = {
     ARO: {
+      CONSOLE: :console,
       CREATE: :create,
       COR: :cor,
       TECK: :teck,
-      DOM: :dom,
       INIT: :init,
-    },
-    DOM: {
-      INIT: :init,
-      NEW: :new,
     },
     TECK: {
       DRAW: :draw,

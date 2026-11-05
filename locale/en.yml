@@ -13,7 +13,6 @@ en:
     missing_teck: "%{cmd} says no teck selected. use 'aro teck' to select one or 'aro teck new var_name' to create one."
     not_found: "%{cmd} not found."
     not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
-    not_initialized_dom: "%{cmd} says you need to initialize dom. $ aro dom init var_root_username var_root_password"
     not_initialized: "%{cmd} says you need to initialize aro. run 'aro init' to do so"
   warnings:
     invalid_order: "the order specified for displaying tlogs in invalid. using default (desc)."

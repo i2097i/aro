@@ -2,10 +2,10 @@ PATH
   remote: .
   specs:
     aro (0.2.6)
-      activerecord
-      i18n
-      sqlite3
-      tty-prompt
+      activerecord (~> 8.1, >= 8.1.4.1)
+      i18n (~> 1.15, >= 1.15.2)
+      sqlite3 (~> 2.10, >= 2.10.2)
+      tty-prompt (~> 0.23, >= 0.23.1)
 
 GEM
   remote: https://rubygems.org/
@@ -117,10 +117,10 @@ PLATFORMS
 
 DEPENDENCIES
   aro!
-  bundler
-  listen
-  rake
-  rspec
+  bundler (~> 4.0, >= 4.0.22)
+  listen (~> 3.10, >= 3.10.1)
+  rake (~> 13.4, >= 13.4.2)
+  rspec (~> 3.13, >= 3.13.2)
 
 CHECKSUMS
   activemodel (8.1.4.1) sha256=063caf105372fbc98b2d789e4be23de63ac5c043f7d9330f04e2caddb7012805

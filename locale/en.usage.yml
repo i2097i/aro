@@ -21,40 +21,10 @@ en:
 
           $ aro cor var_name var_value
 
-    dom: |
-      aro dom
-        aro dom management.
-
-        $ aro dom var_command
-
-        quickstart or tldr;
-
-        $ aro dom new var_name && cd var_name && aro dom init var_root_username var_root_password
-
-        COMMANDS
-          init
-            initialize and generate the aro dom.
-            run once from the dom base directory.
-
-            usage:
-
-              $ aro dom init
-
-          new
-            create a new aro dom with the specified name.
-
-              example:
-
-                $ aro dom new var_name
-
-
-      aro by i2097i is copyright (2026)
     main: |
       SUMMARY
 
-        aro is a cli for tarot. it includes three command-line executables.
-
-        1) aro
+        aro.
 
       SYNOPSIS
 
@@ -98,11 +68,6 @@ en:
           aro data commands.
 
             $ aro data [-h | --help]
-
-        dom
-          aro dom management.
-
-            $ aro dom [-h | --help]
 
 
       aro by i2097i is copyright (2026)

@@ -3,15 +3,15 @@ require_relative :rspec_helper.to_s
 describe Aro::Teck do
   before :all do
     Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
-    Dir.chdir(TESTING_NAME.to_s)
-    Aro::Cor.instance.load
+    FileUtils.chdir(TESTING_NAME.to_s)
+    Aro::Cor.instance.load_env
     Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
     # Aro::Cor.set_ivar(:VERBOSE, Aro::Cor::BOOLS[:TRUE].to_s)
     Aro::Teck.make(TESTING_TECK.to_s)
   end
 
   after :all do
-    Dir.chdir("..")
+    FileUtils.chdir("..")
     FileUtils.rm_rf(TESTING_NAME.to_s)
   end
 

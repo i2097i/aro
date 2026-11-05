@@ -22,7 +22,6 @@ module Aro
     N  = 4
     V  = 5
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
-    PS1 = :">[#{Aro::Mancy.name}]>: "
     NAME_FILE = :".aro_space"
     ARO_FILE = :".aro"
     I2097I = :i2097i
@@ -80,9 +79,9 @@ module Aro
         FileUtils.mkdir(aro_name)
       end
 
-      Dir.chdir(aro_name) do
-        Aro::Cor.instance.load
+      FileUtils.chdir(aro_name) do
         Aro::Mancy.init
+        Aro::Cor.instance.load_env
       end
       return true
     end
@@ -109,11 +108,15 @@ module Aro
     end
 
     def self.domain
-      "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Mancy}"
+      is_initialized? ? "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Mancy}" : `whoami`
     end
 
     def self.aro_mancy_name
       File.read(Aro::Mancy::NAME_FILE.to_s).strip
+    end
+
+    def self.ps1_display(cls_name = nil)
+      :">[#{cls_name || Aro::Mancy.domain || aro_mancy_name}]>: ".to_s
     end
   end
 end

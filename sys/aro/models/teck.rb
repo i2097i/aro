@@ -110,18 +110,13 @@ class Aro::Teck < ActiveRecord::Base
 
     Aro::D.say(I18n.t("messages.showing", name: name, count: count_n, order: order_o))
 
-    Aro::Views::Teck.show_game({
-      teck: self,
-      tlog_records: tlog_records,
-      count_n: count_n,
-      order_o: order_o
-    })
+    Aro::Views::Teck.show
   end
 
   def explore
     # allows user to browse each card in the current teck.
     answer = Aro::P.p.select(
-      Aro::Mancy::PS1.to_s + I18n.t("messages.choose_card"),
+      Aro::Mancy::ps1_display.to_s + I18n.t("messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
       per_page: Aro::Cor.discon[:HEIGHT] - Aro::Mancy::S,

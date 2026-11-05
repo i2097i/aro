@@ -6,7 +6,6 @@ en:
       OS_description: "read-only env var for holding OS."
       E_description: "read-only env var for holding E."
       N_description: "read-only env var for holding N"
-      PS1_description: "read-only env var for holding default PS1."
       NAME_FILE_description: "read-only env var for name file."
       I2097I_description: "read-only env var for i2097i."
       YES_description: "read-only env var for 'aroyes'."

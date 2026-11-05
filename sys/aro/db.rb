@@ -47,7 +47,7 @@ module Aro
     def setup_local_aro
       aro_name = Aro::Mancy.in_aro? ? Aro::Mancy.aro_mancy_name : nil
       # todo: exit here if error
-      return if aro_name.nil? || Aro::Dom::D.reserved_words.include?(aro_name.to_sym)
+      return if aro_name.nil?
 
       # create local .aro/ directory
       unless File.exist?(Aro::Db.base_aro_dir)
