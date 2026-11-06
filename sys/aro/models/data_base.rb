@@ -18,31 +18,44 @@ class Aro::Dom::DataBase < ActiveRecord::Base
 
   def self.open_menu(menu_sym)
     # load menu data
-    menus_data_base = Aro::Dom::DataBase.find_or_create_by(unix_path: Aro::Dom::Menu.table_name)
-    menus_data_base.data_base_directories.where(
-      uuid: Dir[::File.join(menus_data_base.aro_data_base_path, "*")].select{|d| Dir.exist?(d)}.map{|d| ::File.basename(d)}
+    # menus_data_base.data_base_directories.where(
+    #   uuid: Dir[::File.join(menu_data_base.aro_data_base_path, "*")].select{|d| Dir.exist?(d)}.map{|d| ::File.basename(d)}
+    # )
+    data_base_directory = menu_data_base.data_base_directories.find_or_create_by(
+      unix_path: menu_sym
+    )
+    menu = Aro::Dom::Menu.find_or_create_by(
+      uuid: data_base_directory.uuid,
+      i18n_display_key: "#{menu_sym}.i18n_display_key",
     )
 
-    if menus_data_base.data_base_directories.empty?
-      menus_data_base.data_base_directories.create(unix_path: menu_sym)
-      # todo: create files here
-    end
+    return menu
+  end
+
+  def self.menu_data_base
+    Aro::Dom::DataBase.find_or_create_by(unix_path: Aro::Dom::Menu.table_name)
+  end
+
+  def self.sync_menu_item(menu_item)
+    # todo:
+    puts "todo: #{__method__} #{menu_item.inspect}"
   end
 
   def self.ensure_data_base_exist!
-    unless Dir.exist?(table_name)
+    unless Dir.exist?(root_aro_unix_data_dir)
       Aro::P.say(__method__)
-      Aro::P.say("creating #{table_name}")
-      FileUtils.mkdir(table_name)
+      Aro::P.say("creating #{root_aro_unix_data_dir}")
+      FileUtils.mkdir(root_aro_unix_data_dir)
       ensure_data_base_git!
     end
   end
 
 
   def self.ensure_data_base_git!
-    ensure_data_base_exist! unless Dir.exist?(table_name)
-    FileUtils.chdir table_name do
-      # todo:
+    ensure_data_base_exist! unless Dir.exist?(root_aro_unix_data_dir)
+    FileUtils.chdir(root_aro_unix_data_dir) do
+      Aro::P.say("todo:")
+      Aro::P.say(__method__)
       # system("git init")
     end
   end
@@ -52,7 +65,11 @@ class Aro::Dom::DataBase < ActiveRecord::Base
   end
 
   def aro_data_base_path
-    ::File.join(self.class.table_name, unix_path)
+    ::File.join(Aro::Dom::DataBase.root_aro_unix_data_dir, unix_path)
+  end
+
+  def self.root_aro_unix_data_dir
+    ::File.join(Aro::Mancy.root_dir, table_name)
   end
 
   def ensure_unix_exists!

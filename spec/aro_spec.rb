@@ -16,11 +16,11 @@ describe Aro do
       Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
       FileUtils.chdir(TESTING_NAME.to_s) do
         Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
-        base_path = Aro::Db.base_aro_dir
+        base_path = Aro::Mancy.root_dir
         expect(Dir.exist?(base_path)).to be true
-        expect(File.exist?(File.join(Aro::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s))).to be true
-        expect(File.exist?(File.join(Aro::Db.base_aro_dir, Aro::Db::SQL_FILE.to_s))).to be true
-        expect(File.exist?(File.join(Aro::Db.base_aro_dir, Aro::Db::SCHEMA_FILE.to_s))).to be true
+        expect(File.exist?(File.join(Aro::Mancy.root_dir, Aro::Db::DATABASE_YML.to_s))).to be true
+        expect(File.exist?(File.join(Aro::Mancy.root_dir, Aro::Db::SQL_FILE.to_s))).to be true
+        expect(File.exist?(File.join(Aro::Mancy.root_dir, Aro::Db::SCHEMA_FILE.to_s))).to be true
       end
     end
   end

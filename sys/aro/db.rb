@@ -11,14 +11,11 @@
 module Aro
   class Db
     include Singleton
-
     DATABASE_YML = :"database.yml"
-    GEM_DB_PATH = :"sys/aro/db"
-    MIGRATIONS_DIR = :"db/migrate"
     SCHEMA_FILE = :"schema.rb"
-    SQL_FILE = :"aro.sql"
+    SQL_FILE = :"base.sql"
 
-    def self.load
+    def self.ensure_connected!
       Aro::Db.configure_logger
       if Aro::Mancy.in_aro?
         self.instance.setup_local_aro
@@ -33,15 +30,22 @@ module Aro
       end
     end
 
-    def self.base_aro_dir
-      base_aro_file = Aro::Mancy::ARO_FILE.to_s
-      return "#{base_aro_file}_#{Aro::Cor::ENVS[:TEST]}" if Aro::Cor.is_test?
+    def self.base_db_dir
+      db_dir = File.join(Aro::Mancy.root_dir, :db.to_s)
+      return "#{db_dir}_#{Aro::Cor::ENVS[:TEST]}" if Aro::Cor.is_test?
+      db_dir
+    end
 
-      base_aro_file
+    def self.local_migrate_dir
+      File.join(Aro::Db.base_db_dir, :migrate.to_s)
+    end
+
+    def self.sql_filepath
+      File.join(Aro::Db.base_db_dir, Aro::Db::SQL_FILE.to_s)
     end
 
     def db_config_filepath
-      @db_config_filepath ||= File.join(Aro::Db.base_aro_dir, Aro::Db::DATABASE_YML.to_s)
+      @db_config_filepath ||= File.join(Aro::Db.base_db_dir, Aro::Db::DATABASE_YML.to_s)
     end
 
     def setup_local_aro
@@ -50,27 +54,31 @@ module Aro
       return if aro_name.nil?
 
       # create local .aro/ directory
-      unless File.exist?(Aro::Db.base_aro_dir)
-        Aro::P.say("creating #{Aro::Mancy::ARO_FILE.to_s} directory...")
-        FileUtils.mkdir(Aro::Db.base_aro_dir)
+      unless File.exist?(Aro::Db.base_db_dir)
+        Aro::P.say("creating #{Aro::Db.base_db_dir} directory...")
+        FileUtils.mkdir_p(Aro::Db.base_db_dir)
       end
 
       unless File.exist?(db_config_filepath)
+        pw = Aro::P.p.ask(I18n.t("messages.base_db_password_prompt", aro_name: aro_name, sql_filepath: self.class.sql_filepath))
+        pw = aro_name unless pw.present?
         # create database config yaml file
         c = {
           adapter: :sqlite3.to_s,
-          database: File.join(Aro::Db.base_aro_dir, Aro::Db::SQL_FILE.to_s),
+          database: self.class.sql_filepath,
           username: aro_name,
-          password: aro_name,
+          password: pw,
           pool: 11
         }.to_yaml
         File.open(db_config_filepath, "w") do |file|
           file.write(c)
         end
+        Aro::P.say("set #{self.class.sql_filepath} password to #{pw}")
+        Aro::P.say(Psych.load(db_config_filepath))
       end
 
       connect
-      migrate(aro_name)
+      migrate
     end
 
     def connect
@@ -79,19 +87,17 @@ module Aro
       )
     end
 
-    def migrate(aro_name)
-      local_migrate_dir = File.join(Aro::Db.base_aro_dir, Aro::Db::MIGRATIONS_DIR.to_s)
-      unless Dir.exist?(local_migrate_dir)
-        gem_dir = Dir[Reiquire::GEM_PATH || '.'].first
-        FileUtils.cp_r(File.join(gem_dir, Aro::Db::GEM_DB_PATH.to_s), Aro::Db.base_aro_dir)
-      end
-
-      migration_version = Dir["#{local_migrate_dir}/*.rb"].map{|n|
+    def migrate
+      Reiquire.copy_db_migrations_from_gem! unless Dir.exist?(Aro::Db.local_migrate_dir)
+      migration_version = Dir["#{Aro::Db.local_migrate_dir}/*.rb"].map{|n|
         Pathname.new(n).basename.to_s.split("_")[0].to_i
       }.max
-      ActiveRecord::MigrationContext.new(local_migrate_dir).migrate(migration_version)
+      ActiveRecord::MigrationContext.new(Aro::Db.local_migrate_dir).migrate(migration_version)
+      dump_schema
+    end
 
-      filename = File.join(Aro::Db.base_aro_dir, Aro::Db::SCHEMA_FILE.to_s)
+    def dump_schema
+      filename = File.join(Aro::Db.base_db_dir, Aro::Db::SCHEMA_FILE.to_s)
       File.open(filename, "w+") do |f|
         ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection_pool, f)
       end

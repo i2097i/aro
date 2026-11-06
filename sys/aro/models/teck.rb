@@ -20,7 +20,7 @@ class Aro::Teck < ActiveRecord::Base
   after_commit :generate_log
 
   def self.make(new_name)
-    Aro::Db.load
+    Aro::Db.ensure_connected!
     return nil unless Aro::Mancy.is_initialized?
     new_teck = Aro::Teck.create(name: new_name)
     Aro::Teck.select_teck(new_teck) if Aro::Teck.current_teck.nil?
@@ -32,7 +32,7 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def populate_cards
-    Aro::Db.load
+    Aro::Db.ensure_connected!
     self.cards = Aro::Teck.fresh_cards
   end
 
@@ -49,7 +49,7 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def self.display_selection_menu
-    Aro::Db.load
+    Aro::Db.ensure_connected!
     unless Aro::Teck.any?
       Aro::P.say(I18n.t("messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
@@ -63,15 +63,15 @@ class Aro::Teck < ActiveRecord::Base
   def self.select_teck(teck)
     return unless teck.present?
     Aro::P.say(I18n.t("messages.teck_selected", name: teck.name, room: Aro::Mancy::aro_mancy_name))
-    File.open(File.join(Aro::Db.base_aro_dir, Aro::Teck::TECK_FILE.to_s), "w") do |file|
+    File.open(File.join(Aro::Mancy.root_dir, Aro::Teck::TECK_FILE.to_s), "w") do |file|
       file.write(teck.id)
     end
   end
 
   def self.current_teck
-    Aro::Db.load
-    if File.exist?(File.join(Aro::Db.base_aro_dir, TECK_FILE.to_s))
-      current_teck_id = File.read(File.join(Aro::Db.base_aro_dir, TECK_FILE.to_s))
+    Aro::Db.ensure_connected!
+    if File.exist?(File.join(Aro::Mancy.root_dir, TECK_FILE.to_s))
+      current_teck_id = File.read(File.join(Aro::Mancy.root_dir, TECK_FILE.to_s))
       return Aro::Teck.find_by(id: current_teck_id)
     end
   end
@@ -99,7 +99,7 @@ class Aro::Teck < ActiveRecord::Base
     end
 
     # perform query
-    Aro::Db.load
+    Aro::Db.ensure_connected!
     tlog_records = tlogs.order(created_at: order_o).first(count_n)
 
     # todo: this is doing more work than it needs to. needs debugging.
@@ -119,7 +119,7 @@ class Aro::Teck < ActiveRecord::Base
       Aro::Mancy::ps1_display.to_s + I18n.t("messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,
-      per_page: Aro::Cor.discon[:HEIGHT] - Aro::Mancy::S,
+      per_page: TTY::Screen.height - Aro::Mancy::OS,
       cycle: true,
       default: Aro::Mancy::S
     )
@@ -246,7 +246,7 @@ class Aro::Teck < ActiveRecord::Base
     # insert dev_tarot to drawn
     drawn_arr << dev_tarot
     Aro::Teck.print_card(dev_tarot)
-    Aro::Db.load
+    Aro::Db.ensure_connected!
 
     # update database 
     update(

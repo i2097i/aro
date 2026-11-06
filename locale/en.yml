@@ -1,4 +1,9 @@
 en:
+  open_menu:
+    design_menu_title: "designing open menu"
+    get_new_value_from_user: "input new value (press enter to cancel): "
+    designer:
+      create_menu: "create_menu"
   constants:
     commands: "COMMANDS"
     subcommands: "SUBCOMMANDS"
@@ -14,9 +19,11 @@ en:
     not_found: "%{cmd} not found."
     not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
     not_initialized: "%{cmd} says you need to initialize aro. run 'aro init' to do so"
+    missing_base_migrations: "missing_base_migrations"
   warnings:
     invalid_order: "the order specified for displaying tlogs in invalid. using default (desc)."
   messages:
+    base_db_password_prompt: "enter main password for base sqlite3 database <%{sql_filepath}> (default %{aro_name}): "
     choose_card: "choose a card."
     choose_teck: "choose a teck."
     confirmation_prompt: "input 'aroyes' to reset %{name}, or enter to cancel (cancel): "

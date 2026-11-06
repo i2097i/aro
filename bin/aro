@@ -29,8 +29,11 @@ when CLI::CMDS[:ARO][:COR]
 when CLI::CMDS[:ARO][:CREATE]
   CLI.create
 when CLI::CMDS[:ARO][:CONSOLE]
+  ARGV.clear
   require "irb"
   require "irb/completion"
+  Aro::Db.ensure_connected!
+  Aro::Cor.instance.load_env
   IRB.start
 when CLI::CMDS[:ARO][:TECK]
   CLI.teck

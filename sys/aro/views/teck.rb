@@ -14,7 +14,6 @@ require_relative :"./base".to_s
 module Aro
   module Views
     class Teck < Aro::Views::Base
-      DIV_CHAR = :"."
 
       def self.show
         if Aro::Mancy.teck.nil?
@@ -25,6 +24,7 @@ module Aro
         Aro::P.say(:"Aro::Dom::Ma_ain.run".to_s)
         draw(Aro::Dom::Ma_ain.run)
       end
+
     end
   end
 end

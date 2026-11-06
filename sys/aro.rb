@@ -9,8 +9,7 @@
 =end
 
 require_relative :reiquire.to_s
-Reiquire::aro
 
 module Aro
-
+  Reiquire::aro
 end

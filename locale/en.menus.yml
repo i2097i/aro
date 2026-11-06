@@ -1,2 +1,3 @@
 en:
-  ma_ain: "main menu"
+  ma_ain:
+    i18n_display_key: "main menu"

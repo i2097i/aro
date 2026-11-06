@@ -430,7 +430,7 @@ module Aro
 
     def self.cor_filepath
       File.join(
-        Aro::Db.base_aro_dir,
+        Aro::Mancy.root_dir,
         Aro::Cor::COR_FILE.to_s
       )
     end

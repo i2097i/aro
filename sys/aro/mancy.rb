@@ -8,6 +8,8 @@
 
 =end
 
+#
+
 module Aro
   class Mancy
     include Singleton
@@ -96,11 +98,15 @@ module Aro
         end
       end
 
-      Aro::Db.load
+      Aro::Db.ensure_connected!
+    end
+
+    def self.root_dir
+      Aro::Mancy::ARO_FILE.to_s
     end
 
     def self.is_initialized?
-      !Aro::Db.base_aro_dir.nil? && Dir.exist?(Aro::Db.base_aro_dir)
+      in_aro? && Dir.exist?(Aro::Mancy.root_dir)
     end
 
     def self.in_aro?
@@ -108,7 +114,7 @@ module Aro
     end
 
     def self.domain
-      is_initialized? ? "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Mancy}" : `whoami`
+      is_initialized? ? "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Mancy}" : `whoami`.strip
     end
 
     def self.aro_mancy_name

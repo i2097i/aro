@@ -22,12 +22,16 @@ class Aro::Dom::DataBase::Directory < ActiveRecord::Base
     unless Dir.exist?(aro_directory_path)
       Aro::P.say("creating #{Aro::Dom::DataBase::Directory} for #{aro_directory_path}")
       FileUtils.mkdir(aro_directory_path)
-      ::File.write(File.join(aro_directory_path, ".uuid"), uuid)
+      ::File.write(::File.join(aro_directory_path, ".uuid"), uuid)
     end
   end
 
   def aro_directory_path
     ::File.join(data_base.aro_data_base_path, unix_path)
+  end
+
+  def schema
+    ::File.join(aro_directory_path, :def_directory, ".json")
   end
 
   private

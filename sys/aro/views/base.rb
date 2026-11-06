@@ -17,7 +17,7 @@ module Aro
       end
 
       def self.draw(lines)
-
+        Aro::P.say(lines)
       end
 
     end

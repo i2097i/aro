@@ -24,6 +24,6 @@ module Aro::Dom::Uuid
       :uuid,
       :uuid_v7,
       :uuid_v4
-    ].sample)
+    ].sample) if self.uuid.nil?
   end
 end

@@ -16,7 +16,10 @@ module Aro
     def self.say(message)
       return unless Aro::D.should_print?
 
-      super([">[#{Aro::Mancy::I2097I}]>: #{normalize_message(message)}"])
+      super([
+        "#{Aro::Mancy.ps1_display(Aro::Mancy::I2097I)}",
+        "#{normalize_message(message)}"
+      ])
     end
 
     def self.should_print?
