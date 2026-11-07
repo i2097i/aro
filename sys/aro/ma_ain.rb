@@ -2,7 +2,7 @@
 
   ma_ain.rb
 
-  aro mancy ma_ain.
+  aro dom ma_ain.
 
   by i2097i
 

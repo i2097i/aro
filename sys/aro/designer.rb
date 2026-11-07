@@ -18,8 +18,10 @@ module Aro
         )
 
         # create i18n entry for new_name as i18n_display_key
-        menus_local_yaml = Psych.load(Aro::Dom::Locale.menus)
+        i18n_display_key = Aro::Dom::Locale.add_i18n_key(new_name)
+
         # create menu active record with i18n_display_key
+        new_menu = Aro::Dom::DataBase.open_menu(i18n_display_key.to_sym)
 
         # open new menu in designer
         design_menu(new_menu)
@@ -48,8 +50,8 @@ module Aro
           new_name = get_new_value_from_user(
             "rename #{menu.class} '#{menu.localized_name}'"
           )
-          Aro::P.say("# todo: update locale yml for menu's i18n key")
-          # Aro::Dom::Locale...
+
+          Aro::Dom::Locale.update_i18n_key(new_name, menu.i18n_display_key)
         else
           design_menu_item(menu.menu_items.find_by(uuid: v))
         end
