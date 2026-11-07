@@ -1,0 +1,16 @@
+#! /usr/bin/env ruby
+
+=begin
+
+  aro
+
+  entry point for oss_om.
+
+  by i2097i
+
+=end
+
+require :aro.to_s
+require :oss_om.to_s
+
+Aro::OssOm.start

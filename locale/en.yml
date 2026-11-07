@@ -1,9 +1,12 @@
 en:
   open_menu:
-    design_menu_title: "designing open menu"
+    welcome: "welcome to oss_om"
+    edit_menu_localized_name: "designing open menu '%{localized_name}'"
     get_new_value_from_user: "input new value (press enter to cancel): "
     designer:
-      create_menu: "create_menu"
+      create_menu: "enter display text for the new menu"
+    errors:
+      invalid_i18n_path: "invalid_i18n_path"
   constants:
     commands: "COMMANDS"
     subcommands: "SUBCOMMANDS"
@@ -20,6 +23,7 @@ en:
     not_in_aro: "%{cmd} says you are not in aro space. that command will not work here."
     not_initialized: "%{cmd} says you need to initialize aro. run 'aro init' to do so"
     missing_base_migrations: "missing_base_migrations"
+    locale_load_error: "locale_load_error: failed to load locale %{named} library"
   warnings:
     invalid_order: "the order specified for displaying tlogs in invalid. using default (desc)."
   messages:

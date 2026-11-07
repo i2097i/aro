@@ -7,6 +7,7 @@ class CreateDataBases < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
+    add_index :data_bases, :uuid, unique: true
     add_index :data_bases, :unix_path, unique: true
   end
 end

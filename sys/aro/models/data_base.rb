@@ -17,18 +17,19 @@ class Aro::Dom::DataBase < ActiveRecord::Base
   after_commit :sync
 
   def self.open_menu(menu_sym)
-    # load menu data
-    # menus_data_base.data_base_directories.where(
-    #   uuid: Dir[::File.join(menu_data_base.aro_data_base_path, "*")].select{|d| Dir.exist?(d)}.map{|d| ::File.basename(d)}
-    # )
+    # get the menu directory
     data_base_directory = menu_data_base.data_base_directories.find_or_create_by(
       unix_path: menu_sym
     )
-    menu = Aro::Dom::Menu.find_or_create_by(
-      uuid: data_base_directory.uuid,
-      i18n_display_key: "#{menu_sym}.i18n_display_key",
-    )
 
+    menu = Aro::Dom::Menu.find_by(uuid: data_base_directory.uuid)
+    if menu.nil?
+      # find or create the new menu
+      menu = Aro::Dom::Menu.create(uuid: data_base_directory.uuid)
+      Aro::Dom::Locale.add_i18n_key(menu_sym.to_s, new_i18n_display_key: menu.uuid)
+    end
+
+    # return the menu
     return menu
   end
 

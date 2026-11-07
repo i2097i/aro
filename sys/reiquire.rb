@@ -77,9 +77,14 @@ module Reiquire
 
   def self.configure_i18n
     Aro::D.say(__method__)
+    gem_dir_variable = gem_dir
     copy_locale_files_from_gem!
-    aro_i18n_library = File.join(gem_dir, :locale.to_s, "*.yml")
+    aro_i18n_library = File.join(gem_dir_variable, :locale.to_s, "*.yml")
     if Aro::Mancy.in_aro?
+      I18n.load_path = I18n.load_path.select{|lp|
+        # stop using gem locales if in_aro?
+        !gem_dir_variable.include?(lp)
+      }
       aro_i18n_library = File.join(Aro::Dom::Locale.locale_dir, "*.yml")
     end
     I18n.load_path += Dir[aro_i18n_library]
@@ -92,6 +97,8 @@ module Reiquire
     Aro::D.say(I18n.available_locales)
     Aro::D.say("I18n.default_locale")
     Aro::D.say(I18n.default_locale)
+    Aro::D.say("I18n.reload!")
+    Aro::D.say(I18n.reload!)
   end
 
 end

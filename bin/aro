@@ -10,6 +10,11 @@
 
 =end
 
+puts "exec oss_om"
+system(:"exec oss_om".to_s)
+return
+
+
 require :aro.to_s
 
 if CLI::FLAGS[:VERSION].include?(CLI::ARGV0)
@@ -32,7 +37,6 @@ when CLI::CMDS[:ARO][:CONSOLE]
   ARGV.clear
   require "irb"
   require "irb/completion"
-  Aro::Db.ensure_connected!
   Aro::Cor.instance.load_env
   IRB.start
 when CLI::CMDS[:ARO][:TECK]

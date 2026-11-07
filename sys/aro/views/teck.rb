@@ -16,13 +16,13 @@ module Aro
     class Teck < Aro::Views::Base
 
       def self.show
-        if Aro::Mancy.teck.nil?
-          draw(["no teck loaded...exiting..."])
-          return
-        end
+        # if Aro::Mancy.teck.nil?
+        #   draw(["no teck loaded...exiting..."])
+        #   return
+        # end
 
-        Aro::P.say(:"Aro::Dom::Ma_ain.run".to_s)
-        draw(Aro::Dom::Ma_ain.run)
+        # Aro::P.say(:"Aro::Dom::Ma_ain.run".to_s)
+        # draw(Aro::Dom::Ma_ain.run)
       end
 
     end

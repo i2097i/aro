@@ -19,7 +19,11 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
   end
 
   def localized_name
-    I18n.t(i18n_display_key)
+    I18n.t(full_i18n_path)
+  end
+
+  def full_i18n_path
+    "#{self.class.table_name}.#{uuid}"
   end
 
   def aro_directory
@@ -38,10 +42,6 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
   private
 
   def sync
-    if tty_name.to_sym == :noop
-      Aro::Dom::Designer.design_menu_item(self)
-    else
-      Aro::Dom::DataBase.sync_menu_item(self)
-    end
+    Aro::Dom::DataBase.sync_menu_item(self)
   end
 end

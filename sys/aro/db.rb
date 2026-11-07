@@ -11,15 +11,25 @@
 module Aro
   class Db
     include Singleton
+
+    attr_accessor :active_record_connection_instance
+    HEARTBEAT_DURATION = 11
     DATABASE_YML = :"database.yml"
     SCHEMA_FILE = :"schema.rb"
     SQL_FILE = :"base.sql"
 
     def self.ensure_connected!
+      return if self.instance.connected?
+
       Aro::Db.configure_logger
       if Aro::Mancy.in_aro?
         self.instance.setup_local_aro
       end
+    end
+
+    def connected?
+      !self.active_record_connection_instance.nil? &&
+        self.active_record_connection_instance.connected?
     end
 
     def self.configure_logger
@@ -82,9 +92,10 @@ module Aro
     end
 
     def connect
-      ActiveRecord::Base.establish_connection(
+      self.active_record_connection_instance = ActiveRecord::Base.establish_connection(
         YAML.load_file(db_config_filepath)
       )
+      Aro::P.say("#{self}#{__method__}#{self.active_record_connection_instance.inspect}")
     end
 
     def migrate

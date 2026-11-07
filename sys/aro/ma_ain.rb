@@ -2,7 +2,7 @@
 
   ma_ain.rb
 
-  aro mancy ma_ain.
+  aro dom ma_ain.
 
   by i2097i
 
@@ -13,53 +13,38 @@ module Aro
     class Ma_ain < Aro::Mancy
       # inherits Singleton
 
-      attr_accessor :ma_ain_menu, :data_mutex, :store_mutex, :stores
+      attr_accessor :current_menu
+      attr_accessor :oss_om_mutex, :data_mutex, :store_mutex
+      attr_accessor :stores
+      attr_accessor :oss_om_thread, :oss_om_busy
 
       def initialize
+        self.oss_om_mutex = Mutex.new
         self.data_mutex = Mutex.new
         self.store_mutex = Mutex.new
+        self.oss_om_thread = nil
         @stores = {}
+
+        self.oss_om_mutex.synchronize do
+          begin
+            Thread.new do
+              self.start_oss_om_thread
+            end
+            self.oss_om_thread.join
+          rescue NoMethodError => e
+          rescue StandardError => e
+          rescue ThreadError => e
+            Aro::P.say([e.inspect] + Thread.current.backtrace)
+          end
+        end
       end
 
       def self.domain
-        self.instance.ma_ain_menu.nil? ? super : "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Dom::Ma_ain}"
+        self.instance.current_menu.nil? ? super : "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Dom::Ma_ain}"
       end
 
       def self.ps1_display(cls_name = nil)
         super(domain)
-      end
-
-      def self.run
-        return unless Aro::Dom::Ma_ain.instance.ma_ain_menu.nil?
-        Aro::Db.ensure_connected!
-        Aro::Dom::Ma_ain.instance.ma_ain_menu = Aro::Dom::DataBase.open_menu(:ma_ain)
-        begin
-          loop do
-            current_menu = Aro::Dom::Ma_ain.instance.ma_ain_menu
-            selected_menu_item_uuid = Aro::P.p.select(
-              "#{current_menu.localized_name}",
-              current_menu.menu_items.map{|mi| mi.as_tty},
-              show_help: :always,
-              cycle: true,
-              per_page: 11
-            )
-
-            if current_menu.menu_items.count == 1 &&
-              current_menu.menu_items.first.tty_name.to_sym == :noop
-              Aro::Dom::Designer.design_menu(current_menu)
-            else
-              Aro::Dom::Designer.design_menu_item(
-                current_menu.menu_items.find_by(uuid: selected_menu_item_uuid)
-              )
-            end
-          end
-        rescue NoMethodError => e
-        rescue StandardError => e
-        rescue ThreadError => e
-          return [e.inspect] + Thread.current.backtrace
-        end
-
-        return ["#{self.name} complete."]
       end
 
       def get_store_for(aro_file)
@@ -74,6 +59,25 @@ module Aro
 
         return Aro::Dom::Ma_ain.instance.stores[aro_file.uuid]
       end
+
+      private
+
+      def start_oss_om_thread
+        return if @oss_om_busy
+        @oss_om_busy = true
+        self.oss_om_thread&.exit
+        self.oss_om_thread&.kill
+        self.oss_om_thread = Thread.new do
+          loop do
+            @oss_om_busy = true
+            self.oss_om_mutex.synchronize do
+              Aro::Dom::Designer.design
+            end
+            @oss_om_busy = false
+          end
+        end
+      end
+
     end
   end
 end

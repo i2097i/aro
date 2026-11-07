@@ -14,7 +14,7 @@ module Aro
   class Mancy
     include Singleton
 
-    attr_accessor :current
+    attr_accessor :current, :db_busy, :db_thread
 
     A  = :"@"
     O  = 0
@@ -25,7 +25,7 @@ module Aro
     V  = 5
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
     NAME_FILE = :".aro_space"
-    ARO_FILE = :".aro"
+    ARO_DIRECTORY = :".aro"
     I2097I = :i2097i
     YES = :aroyes
     ALL = :all
@@ -61,7 +61,25 @@ module Aro
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
 
+    def initialize
+      Aro::Dom::Ma_ain.instance.data_mutex.synchronize do
+        # kick it off
+        Thread.new do
+          Aro::Db.ensure_connected!
+        end
+
+        # start monitoring
+        self.start_db_thread
+      end
+
+      while self.db_thread.status.to_sym == :run ||
+        !Aro::Db.instance.connected?
+        sleep(0.1)
+      end
+    end
+
     def self.teck
+      self.init
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         self.instance.current = Aro::Teck.current_teck
       end
@@ -78,10 +96,10 @@ module Aro
       # create the new aro directory and database
       if !Dir.exist?(aro_name)
         Aro::P.say(I18n.t("messages.no_tecks"))
-        FileUtils.mkdir(aro_name)
+        FileUtils.mkdir(::File.join(self.root_dir, aro_name))
       end
 
-      FileUtils.chdir(aro_name) do
+      FileUtils.chdir(::File.join(self.root_dir, aro_name)) do
         Aro::Mancy.init
         Aro::Cor.instance.load_env
       end
@@ -97,12 +115,14 @@ module Aro
           file.write(new_name)
         end
       end
-
-      Aro::Db.ensure_connected!
     end
 
     def self.root_dir
-      Aro::Mancy::ARO_FILE.to_s
+      return Dir.pwd unless in_aro?
+      ::File.join(
+        ::File.path(::File.basename(".")),
+        Aro::Mancy::ARO_DIRECTORY.to_s
+      )
     end
 
     def self.is_initialized?
@@ -124,5 +144,27 @@ module Aro
     def self.ps1_display(cls_name = nil)
       :">[#{cls_name || Aro::Mancy.domain || aro_mancy_name}]>: ".to_s
     end
+
+    private
+
+    def start_db_thread
+      return if @db_busy
+      @db_busy = true
+      self.db_thread&.exit
+      self.db_thread&.kill
+      self.db_thread = Thread.new do
+        loop do
+          @db_busy = true
+          Aro::Dom::Ma_ain.instance.data_mutex.synchronize do
+            Aro::V.say(Aro::Mancy.instance.db_thread.inspect)
+            Aro::V.say(__method__)
+            Aro::Db.ensure_connected!
+          end
+          @db_busy = false
+          sleep(Aro::Db::HEARTBEAT_DURATION)
+        end
+      end
+    end
+
   end
 end

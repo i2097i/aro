@@ -11,77 +11,174 @@
 module Aro
   module Dom
     class Designer
+      ACTION_LJUST = 22
+      CLASS_LJUST = 33
 
-      def create_menu
-        new_name = get_new_value_from_user(
-          "#{I18n.t("open_menu.#{__method__}")}(#{menu.class})"
-        )
+      def self.design
+        return unless Aro::Dom::Ma_ain.instance.current_menu.nil?
+        Aro::Cor.instance.load_env
+        Aro::Dom::Ma_ain.instance.current_menu = Aro::Dom::DataBase.open_menu(:ma_ain)
 
-        # create i18n entry for new_name as i18n_display_key
-        menus_local_yaml = Psych.load(Aro::Dom::Locale.menus)
-        # create menu active record with i18n_display_key
-
-        # open new menu in designer
-        design_menu(new_menu)
-      end
-
-      def self.design_menu(menu)
-        if menu.nil?
-          create_menu
-          return
-        end
-
-        options = [
-          {
-            name: "#{:update_menu_title}(#{menu.uuid}): #{menu.localized_name}",
-            value: :update_menu_title
-          }
-        ] + menu.menu_items.map{|mi|
-          {
-            name: "#{:edit_menu_item}(#{mi.uuid}): #{mi.localized_name}",
-            value: mi.uuid
-          }
-        }
-
-        v = Aro::P.p.select(I18n.t("open_menu.design_menu_title"), options)
-        if v == :update_menu_title
-          new_name = get_new_value_from_user(
-            "rename #{menu.class} '#{menu.localized_name}'"
+        loop do
+          selected_menu_item_uuid = Aro::P.p.select(
+            "#{Aro::Dom::Ma_ain.instance.current_menu.localized_name}",
+            [{name: :open_menu, value: :open_menu}] + Aro::Dom::Ma_ain.instance.current_menu.menu_items.map{|mi| mi.as_tty},
+            show_help: :always,
+            cycle: true,
+            per_page: 11
           )
-          Aro::P.say("# todo: update locale yml for menu's i18n key")
-          # Aro::Dom::Locale...
-        else
-          design_menu_item(menu.menu_items.find_by(uuid: v))
+
+          if selected_menu_item_uuid == :open_menu
+            Aro::Dom::Designer.design_menu(Aro::Dom::Ma_ain.instance.current_menu)
+          else
+            Aro::Dom::Designer.design_menu_item(
+              selected_menu_item_uuid,
+              Aro::Dom::Ma_ain.instance.current_menu
+            )
+          end
         end
       end
 
-      def self.design_menu_item(menu_item)
-        return if menu_item.nil?
-
-        #  only name update for now
+      def self.create_menu
         new_name = get_new_value_from_user(
-          "rename #{menu_item.class} '#{I18n.t(menu_item.i18n_display_key)}'"
+          "#{Aro::Dom::Menu.name} #{I18n.t("open_menu.designer.#{__method__}")}"
         )
 
         unless new_name.nil? ||
+            new_name.empty? ||
+            new_name.kind_of?(FalseClass)
+
+          # create menu active record with i18n_display_key
+          new_menu = Aro::Dom::DataBase.open_menu(Aro::Dom::Locale.i18n_keyify_text(new_name))
+
+          # open new menu in designer
+          design_menu(new_menu)
+        else
+          Aro::P.say("#{new_name.inspect} is invalid")
+        end
+      end
+
+      def self.create_menu_item(menu)
+        return create_menu if menu.nil?
+
+        new_name = get_new_value_from_user(
+          "#{__method__} #{Aro::Dom::MenuItem.name} for menu: '#{I18n.t(menu.full_i18n_path)}'"
+        )
+        unless new_name.nil? ||
+          new_name.empty? ||
           new_name.kind_of?(FalseClass)
 
-
-          Aro::P.say([
-            to_s,
-            "=> writing property :tty_name => '#{new_name}'",
-            "=> to #{menu_item.aro_file.class}(#{menu_item.aro_file.uuid})",
-            "=> in #{Aro::Dom::DataBase.name} #{menu_item.aro_file.aro_file_path}",
-            "=> for #{menu_item.class}(#{menu_item.uuid})"
-          ].join("\n"))
-
-          menu_item.aro_file.write!({tty_name: new_name})
+          menu_item = menu.menu_items.create(tty_name: Aro::Dom::Locale.i18n_keyify_text(new_name))
+          Aro::Dom::Locale.add_i18n_key(
+            new_name,
+            menu_item.uuid,
+            library_name: :menu_items
+          )
+        else
+          Aro::P.say("#{new_name.inspect} is invalid")
         end
+
+        design_menu(menu)
+      end
+
+      def self.design_menu(menu = nil)
+        return create_menu if menu.nil?
+
+        # action,class,value
+        options = [
+          {
+            name: :back,
+            value: :back
+          },
+          {
+            name: "(edit_title)".ljust(ACTION_LJUST) +
+              "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST) +
+              "#{menu.localized_name}",
+            value: :edit_title
+          }
+        ] + menu.menu_items.map{|mi|
+          {
+            name: "(edit_item)".ljust(ACTION_LJUST) +
+              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST) +
+              "#{mi.localized_name}",
+            value: mi.uuid
+          }
+        } + [
+          {
+            name: "(create_item)".ljust(ACTION_LJUST) +
+              "#{Aro::Dom::MenuItem.name}(+)".ljust(CLASS_LJUST),
+            value: :create_item
+          }
+        ]
+
+        v = Aro::P.p.select(
+          I18n.t("open_menu.edit_menu_localized_name", localized_name: menu.localized_name),
+          options
+        )
+
+        case v.to_sym
+        when :edit_title
+          new_name = get_new_value_from_user(
+            "rename #{menu.class} '#{menu.localized_name}'"
+          )
+          unless new_name.nil? ||
+            new_name.empty? ||
+            new_name.kind_of?(FalseClass)
+
+            Aro::Dom::Locale.update_i18n_key(
+              new_name,
+              menu.uuid
+            )
+          else
+            Aro::P.say("#{new_name.inspect} is invalid")
+          end
+        when :create_item
+          create_menu_item(menu)
+        when :back
+          return
+        else
+          design_menu_item(v, menu)
+        end
+      end
+
+      def self.design_menu_item(menu_item_uuid = nil, menu)
+        return create_menu_item(menu) if menu_item_uuid.nil?
+
+        menu_item = menu.menu_items.find_by(uuid: menu_item_uuid)
+
+        new_name = get_new_value_from_user(
+          "rename #{menu_item.class} '#{I18n.t(menu_item.full_i18n_path)}'"
+        )
+        unless new_name.nil? ||
+          new_name.empty? ||
+          new_name.kind_of?(FalseClass)
+
+          Aro::Dom::Locale.update_i18n_key(
+            new_name,
+            menu_item.uuid,
+            library_name: :menu_items
+          )
+        else
+          Aro::P.say("#{new_name.inspect} is invalid")
+        end
+
+        # this is for updating data stores
+        # todo:
+        #   Aro::P.say([
+        #     to_s,
+        #     "=> writing property :tty_name => '#{new_name}'",
+        #     "=> to #{menu_item.aro_file.class}(#{menu_item.aro_file.uuid})",
+        #     "=> in #{Aro::Dom::DataBase.name} #{menu_item.aro_file.aro_file_path}",
+        #     "=> for #{menu_item.class}(#{menu_item.uuid})"
+        #   ].join("\n"))
+
+        #   menu_item.aro_file.write!({tty_name: new_name})
       end
 
       private
 
       def self.get_new_value_from_user(ask_text)
+        Aro::P.say(__method__)
         new_val = nil
         user_cancelled = false
         while new_val.nil? && !user_cancelled
@@ -94,6 +191,7 @@ module Aro
         return user_cancelled if user_cancelled
         return new_val
       end
+
     end
   end
 end

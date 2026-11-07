@@ -20,7 +20,6 @@ class Aro::Teck < ActiveRecord::Base
   after_commit :generate_log
 
   def self.make(new_name)
-    Aro::Db.ensure_connected!
     return nil unless Aro::Mancy.is_initialized?
     new_teck = Aro::Teck.create(name: new_name)
     Aro::Teck.select_teck(new_teck) if Aro::Teck.current_teck.nil?
@@ -32,7 +31,6 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def populate_cards
-    Aro::Db.ensure_connected!
     self.cards = Aro::Teck.fresh_cards
   end
 
@@ -49,7 +47,6 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def self.display_selection_menu
-    Aro::Db.ensure_connected!
     unless Aro::Teck.any?
       Aro::P.say(I18n.t("messages.no_tecks"))
       exit(CLI::EXIT_CODES[:SUCCESS])
@@ -69,7 +66,6 @@ class Aro::Teck < ActiveRecord::Base
   end
 
   def self.current_teck
-    Aro::Db.ensure_connected!
     if File.exist?(File.join(Aro::Mancy.root_dir, TECK_FILE.to_s))
       current_teck_id = File.read(File.join(Aro::Mancy.root_dir, TECK_FILE.to_s))
       return Aro::Teck.find_by(id: current_teck_id)
@@ -99,7 +95,6 @@ class Aro::Teck < ActiveRecord::Base
     end
 
     # perform query
-    Aro::Db.ensure_connected!
     tlog_records = tlogs.order(created_at: order_o).first(count_n)
 
     # todo: this is doing more work than it needs to. needs debugging.
@@ -246,7 +241,6 @@ class Aro::Teck < ActiveRecord::Base
     # insert dev_tarot to drawn
     drawn_arr << dev_tarot
     Aro::Teck.print_card(dev_tarot)
-    Aro::Db.ensure_connected!
 
     # update database 
     update(
