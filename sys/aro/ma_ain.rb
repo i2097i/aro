@@ -14,20 +14,17 @@ module Aro
       # inherits Singleton
 
       attr_accessor :current_menu
-      attr_accessor :oss_om_mutex, :data_mutex, :store_mutex
+      attr_accessor :data_mutex, :store_mutex
       attr_accessor :stores
 
-
       def reign!
-        self.start_oss_om_thread
-        self.oss_om_thread.join
+        Aro::P.say("opening #{Aro::Dom::Designer.name}...")
+        Aro::Dom::Designer.design
       end
 
       def initialize
-        self.oss_om_mutex = Mutex.new
         self.data_mutex = Mutex.new
         self.store_mutex = Mutex.new
-        self.oss_om_thread = nil
         @stores = {}
       end
 
@@ -50,25 +47,6 @@ module Aro
         end
 
         return Aro::Dom::Ma_ain.instance.stores[aro_file.uuid]
-      end
-
-      private
-
-      attr_accessor :oss_om_thread, :oss_om_busy
-
-      def start_oss_om_thread
-        return if @oss_om_busy
-        @oss_om_busy = true
-        self.oss_om_thread&.exit
-        self.oss_om_thread&.kill
-        self.oss_om_thread = Thread.new do
-          @oss_om_busy = true
-          Aro::Mancy.init if Aro::Mancy.in_aro? && !Aro::Mancy.is_initialized?
-          Aro::P.say("opening #{Aro::Dom::Designer.name}...")
-          Aro::Mancy.instance.remember!
-          Aro::Dom::Designer.design
-          @oss_om_busy = false
-        end
       end
 
     end

@@ -10,7 +10,7 @@
 
 module CLI
   def self.teck
-    Aro::Mancy.init
+    Aro::Mancy.init(Aro::Mancy.root_dir)
     action = CLI::ARGV1&.to_sym
     if CLI::FLAGS[:HELP].include?(action)
       CLI.usage_teck

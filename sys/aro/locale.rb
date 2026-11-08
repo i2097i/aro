@@ -62,6 +62,10 @@ module Aro
         ::File.join(Aro::Mancy.root_dir, :locale.to_s)
       end
 
+      def self.locales_filepaths
+        ::File.join(locale_dir, "*.yml")
+      end
+
       def self.i18n_keyify_text(text)
         # downcase'd, gsub non-word characters with "_"
         text.downcase.gsub(/[\W]/, "_")
@@ -84,8 +88,9 @@ module Aro
 
       def self.valid_library!(library_yaml, library_name: :menus)
         if library_yaml.nil?
-          Aro::D.say("todo: handle parse error")
-          raise "invalid yaml"
+          FileUtils.rm_rf(locale_dir)
+          Reiquire.configure_i18n
+          return false
         end
         puts library_yaml.inspect
 

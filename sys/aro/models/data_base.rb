@@ -26,7 +26,10 @@ class Aro::Dom::DataBase < ActiveRecord::Base
     if menu.nil?
       # find or create the new menu
       menu = Aro::Dom::Menu.create(uuid: data_base_directory.uuid)
-      Aro::Dom::Locale.add_i18n_key(menu_sym.to_s, new_i18n_display_key: menu.uuid)
+      Aro::Dom::Locale.add_i18n_key(
+        menu_sym.to_s,
+        new_i18n_display_key: menu.uuid
+      )
     end
 
     # return the menu

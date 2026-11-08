@@ -25,7 +25,8 @@ module Aro
     V  = 5
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
     NAME_FILE = :".aro_space"
-    ARO_DIRECTORY = :".aro"
+    ARO_DIRECTORY = :".oss_om"
+
     I2097I = :i2097i
     YES = :aroyes
     ALL = :all
@@ -62,19 +63,12 @@ module Aro
     }
 
     def remember!
-      Aro::Dom::Ma_ain.instance.data_mutex.synchronize do
-        # kick it off
-        Thread.new do
-          Aro::Db.ensure_connected!
-        end
-
-        # start monitoring
-        self.start_db_thread
-      end
+      # start monitoring
+      self.start_db_thread
     end
 
     def self.teck
-      self.init
+      self.init(root_dir)
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
         self.instance.current = Aro::Teck.current_teck
       end
@@ -82,47 +76,32 @@ module Aro
     end
 
     def self.create(aro_name, is_test: false)
-      return false if (!is_test && Aro::Mancy.in_aro?) ||
-        aro_name.nil?
-
-      # explicitly only allow String/Symbol types for name
-      return false unless aro_name.kind_of?(String) || aro_name.kind_of?(Symbol)
-      aro_name = aro_name.to_s.strip
-      # create the new aro directory and database
-      if !Dir.exist?(aro_name)
-        Aro::P.say(I18n.t("messages.no_tecks"))
-        FileUtils.mkdir(::File.join(self.root_dir, aro_name))
-      end
-
-      FileUtils.chdir(::File.join(self.root_dir, aro_name)) do
-        Aro::Mancy.init
-        Aro::Mancy.instance
-        Aro::Cor.instance.load_env
-      end
+      Aro::D.say(__method__)
+      Aro::D.say(:depricated)
       return true
     end
 
-    def self.init
+    def self.init(root_dir_path)
       unless Aro::Mancy.in_aro? || Aro::Cor.is_test?
-        Aro::P.say("init aro running in present directory...")
-        new_name = File.basename(Dir.pwd)
+        Aro::P.say("init aro running in #{root_dir_path} directory...")
+        new_name = File.basename(root_dir_path)
         Aro::P.say("echo #{new_name} > #{Aro::Mancy::NAME_FILE.to_s}")
         File.open(Aro::Mancy::NAME_FILE.to_s, "w") do |file|
           file.write(new_name)
+          file.write("\n")
         end
       end
     end
 
     def self.root_dir
-      return Dir.pwd unless in_aro?
       ::File.join(
-        ::File.path(::File.basename(".")),
+        Aro::Cor.ivar(:OSS_OM_HOME) || Dir.pwd,
         Aro::Mancy::ARO_DIRECTORY.to_s
       )
     end
 
     def self.is_initialized?
-      in_aro? && Dir.exist?(Aro::Mancy.root_dir)
+      in_aro? && in_aro? && Aro::Db.instance.connected?
     end
 
     def self.in_aro?
@@ -151,11 +130,9 @@ module Aro
       self.db_thread = Thread.new do
         loop do
           @db_busy = true
-          Aro::Dom::Ma_ain.instance.data_mutex.synchronize do
-            Aro::V.say(Aro::Mancy.instance.db_thread.inspect)
-            Aro::V.say(__method__)
-            Aro::Db.ensure_connected!
-          end
+          Aro::V.say(Aro::Mancy.instance.db_thread.inspect)
+          Aro::V.say(__method__)
+          Aro::Db.ensure_connected!
           @db_busy = false
           sleep(Aro::Db::HEARTBEAT_DURATION)
         end

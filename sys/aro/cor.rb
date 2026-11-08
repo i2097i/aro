@@ -71,15 +71,6 @@ module Aro
       TEST: :test
     }
 
-    # possible formats
-    #
-    # example usage:
-    # Aro::Cor::FORMATS[:TEXT]
-    FORMATS = {
-      TEXT: :text,
-      JSON: :json,
-    }
-
     # possible interfaces
     #
     # example usage:
@@ -248,15 +239,13 @@ module Aro
         value: Aro::Cor::BOOLS[:FALSE],
         description: I18n.t("cor.log_aro_db_description"),
       },
-      FORMAT: {
-        type: Aro::Cor::TYPES[:VALUES],
-        implemented: false,
+      OSS_OM_HOME: {
+        type: Aro::Cor::TYPES[:STRING],
         access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Cor::FORMATS[:TEXT],
-        description: I18n.t("cor.format.description"),
+        value: nil,
+        description: I18n.t("cor.oss_om_home.description"),
         possible_values: {
-          text: I18n.t("cor.format.text_description"),
-          json: I18n.t("cor.format.json_description")
+          any_valid_path: I18n.t("cor.oss_om_home.any_valid_path_description"),
         }
       },
       INTERFACE: {
@@ -452,10 +441,6 @@ module Aro
       result
     end
 
-    def self.is_format_text?
-      Aro::Cor.ivar(:FORMAT)&.to_sym == Aro::Cor::FORMATS[:TEXT]
-    end
-
     # out vars
     def self.ovar(suffix)
       Aro::Cor::DEF[suffix][:value]
@@ -484,7 +469,7 @@ module Aro
       # set ruby ENV key value
       # only write to ruby ENV from here
       ENV[Aro::Cor.ivar_k(k.to_s)] = converted
-      Aro::P.say("#{k} set to #{converted}")
+      Aro::P.say("#{k} set to #{converted}") unless converted.nil? || converted.empty?
       return true
     end
 
@@ -497,6 +482,19 @@ module Aro
         !Aro::T.is_dev_tarot_avail?
         Aro::P.say("unable to set dimension dev_tarot. device not present.")
         return
+      elsif k == :OSS_OM_HOME
+        unless Dir.exist?(new_value)
+          Aro::P.say("cannot set #{k} to #{new_value}. the directory does not exist.")
+        end
+
+        if Aro::Cor.instance.valid_var?(new_value, k, Aro::Cor::DEF[k])
+          Aro::Cor.instance.cor_set_ruby_env!(k, new_value)
+          # flush existing config and regen
+          Aro::Cor.instance.generate_config(true)
+          Aro::Cor.instance.source_config
+          Aro::Db.configure_logger
+          return
+        end
       end
 
       # ensure the var name is valid

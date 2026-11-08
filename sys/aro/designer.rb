@@ -19,24 +19,40 @@ module Aro
         Aro::P.say(:"checking for bash env var $HOME in ruby ENV".to_s)
         Aro::P.say(:"$HOME is set to #{env_home_val}".to_s)
         abs_home = Aro::P.p.ask(:"use alternative aro_root? (empty to use $HOME): ".to_s)
-
         raise "missing required value for aro_root!" if abs_home.nil? && env_home_val.nil?
-
-        Dir.chdir(abs_home || env_home_val) do
-          Aro::Mancy.init
-          Aro::Mancy.instance
+        aro_home_dir = abs_home || env_home_val
+        oss_om_base_dir = ::File.join(aro_home_dir, Aro::Mancy::ARO_DIRECTORY.to_s)
+        Aro::P.say("FileUtils.mkdir_p(#{oss_om_base_dir})")
+        FileUtils.mkdir_p(oss_om_base_dir)
+        Aro::P.say("FileUtils.chdir(#{aro_home_dir})")
+        FileUtils.chdir(aro_home_dir) do
+          Aro::P.say("Aro::Cor.instance.load_env")
           Aro::Cor.instance.load_env
+          Aro::P.say("Aro::Cor.set_ivar(:OSS_OM_HOME, #{File.absolute_path(aro_home_dir)})")
+          Aro::Cor.set_ivar(:OSS_OM_HOME, File.absolute_path(aro_home_dir))
+          Aro::P.say("Aro::Db.ensure_connected!")
+          Aro::Db.ensure_connected!
+          Aro::P.say("Aro::Mancy.init(#{aro_home_dir})")
+          Aro::Mancy.init(aro_home_dir)
+          Aro::P.say("Reiquire.reload_i18n!")
+          Reiquire.reload_i18n!
           # design_menu(Aro::Dom::Menu.first)
-          design
         end
+
+        if File.absolute_path(Dir.pwd) != Aro::Cor.ivar(:OSS_OM_HOME)
+          Aro::P.say("user needs to cd")
+          Aro::P.say("enter $ cd #{Aro::Cor.ivar(:OSS_OM_HOME)}")
+          exit
+        end
+        design
       end
 
+
       def self.design
-        unless Aro::Mancy.in_aro?
+        if Aro::Cor.ivar(:OSS_OM_HOME).nil?
           design_aro
           return
         end
-        Aro::Cor.instance.load_env
         Aro::Dom::Ma_ain.instance.current_menu = Aro::Dom::DataBase.open_menu(:ma_ain)
 
         loop do
@@ -91,8 +107,8 @@ module Aro
           menu_item = menu.menu_items.create(tty_name: Aro::Dom::Locale.i18n_keyify_text(new_name))
           Aro::Dom::Locale.add_i18n_key(
             new_name,
-            menu_item.uuid,
-            library_name: :menu_items
+            library_name: :menu_items,
+            new_i18n_display_key: menu_item.uuid,
           )
         else
           Aro::P.say("#{new_name.inspect} is invalid")
@@ -166,20 +182,68 @@ module Aro
 
         menu_item = menu.menu_items.find_by(uuid: menu_item_uuid)
 
-        new_name = get_new_value_from_user(
-          "rename #{menu_item.class} '#{I18n.t(menu_item.full_i18n_path)}'"
-        )
-        unless new_name.nil? ||
-          new_name.empty? ||
-          new_name.kind_of?(FalseClass)
+        # new_name = get_new_value_from_user(
+        #   "rename #{menu_item.class} '#{I18n.t(menu_item.full_i18n_path)}'"
+        # )
+        # unless new_name.nil? ||
+        #   new_name.empty? ||
+        #   new_name.kind_of?(FalseClass)
 
-          Aro::Dom::Locale.update_i18n_key(
-            new_name,
-            menu_item.uuid,
-            library_name: :menu_items
+        #   Aro::Dom::Locale.update_i18n_key(
+        #     new_name,
+        #     menu_item.uuid,
+        #     library_name: :menu_items
+        #   )
+        # else
+        #   Aro::P.say("#{new_name.inspect} is invalid")
+        # end
+
+        # action,class,value
+        options = [
+          {
+            name: :back,
+            value: :back
+          },
+          {
+            name: "(edit_title)".ljust(ACTION_LJUST) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST) +
+              "#{menu_item.localized_name}",
+            value: :edit_title
+          },
+          {
+            name: "(edit_action)".ljust(ACTION_LJUST) +
+              "Aro::Dom::MenuItem::Action(+)".ljust(CLASS_LJUST),
+            value: :edit_action
+          }
+        ]
+
+        v = Aro::P.p.select(
+          I18n.t("open_menu.edit_menu_item_localized_name", localized_name: menu_item.localized_name),
+          options
+        )
+
+        case v.to_sym
+        when :edit_title
+          new_name = get_new_value_from_user(
+            "rename #{menu_item.class} '#{menu_item.localized_name}'"
           )
-        else
-          Aro::P.say("#{new_name.inspect} is invalid")
+          unless new_name.nil? ||
+            new_name.empty? ||
+            new_name.kind_of?(FalseClass)
+
+            Aro::Dom::Locale.update_i18n_key(
+              new_name,
+              menu_item.uuid,
+              library_name: :menu_items
+            )
+          else
+            Aro::P.say("#{new_name.inspect} is invalid")
+          end
+        when :edit_action
+          puts "this is where i am working"
+          return
+        when :back
+          return
         end
 
         # this is for updating data stores
