@@ -61,7 +61,7 @@ module Aro
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
 
-    def initialize
+    def remember!
       Aro::Dom::Ma_ain.instance.data_mutex.synchronize do
         # kick it off
         Thread.new do
@@ -70,11 +70,6 @@ module Aro
 
         # start monitoring
         self.start_db_thread
-      end
-
-      while self.db_thread.status.to_sym == :run ||
-        !Aro::Db.instance.connected?
-        sleep(0.1)
       end
     end
 
@@ -101,6 +96,7 @@ module Aro
 
       FileUtils.chdir(::File.join(self.root_dir, aro_name)) do
         Aro::Mancy.init
+        Aro::Mancy.instance
         Aro::Cor.instance.load_env
       end
       return true

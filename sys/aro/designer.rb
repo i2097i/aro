@@ -14,8 +14,28 @@ module Aro
       ACTION_LJUST = 22
       CLASS_LJUST = 33
 
+      def self.design_aro
+        env_home_val = ENV[:HOME.to_s]
+        Aro::P.say(:"checking for bash env var $HOME in ruby ENV".to_s)
+        Aro::P.say(:"$HOME is set to #{env_home_val}".to_s)
+        abs_home = Aro::P.p.ask(:"use alternative aro_root? (empty to use $HOME): ".to_s)
+
+        raise "missing required value for aro_root!" if abs_home.nil? && env_home_val.nil?
+
+        Dir.chdir(abs_home || env_home_val) do
+          Aro::Mancy.init
+          Aro::Mancy.instance
+          Aro::Cor.instance.load_env
+          # design_menu(Aro::Dom::Menu.first)
+          design
+        end
+      end
+
       def self.design
-        return unless Aro::Dom::Ma_ain.instance.current_menu.nil?
+        unless Aro::Mancy.in_aro?
+          design_aro
+          return
+        end
         Aro::Cor.instance.load_env
         Aro::Dom::Ma_ain.instance.current_menu = Aro::Dom::DataBase.open_menu(:ma_ain)
 

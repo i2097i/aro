@@ -110,7 +110,7 @@ module Aro
       def self.load_library(library_name: :menus)
         library_filepath = library_named(library_name)
         unless ::File.exist?(library_filepath)
-          FileUtils.touch(yaml_file)
+          FileUtils.touch(library_filepath)
         end
 
         loaded_file = nil

@@ -16,7 +16,12 @@ module Aro
       attr_accessor :current_menu
       attr_accessor :oss_om_mutex, :data_mutex, :store_mutex
       attr_accessor :stores
-      attr_accessor :oss_om_thread, :oss_om_busy
+
+
+      def reign!
+        self.start_oss_om_thread
+        self.oss_om_thread.join
+      end
 
       def initialize
         self.oss_om_mutex = Mutex.new
@@ -24,19 +29,6 @@ module Aro
         self.store_mutex = Mutex.new
         self.oss_om_thread = nil
         @stores = {}
-
-        self.oss_om_mutex.synchronize do
-          begin
-            Thread.new do
-              self.start_oss_om_thread
-            end
-            self.oss_om_thread.join
-          rescue NoMethodError => e
-          rescue StandardError => e
-          rescue ThreadError => e
-            Aro::P.say([e.inspect] + Thread.current.backtrace)
-          end
-        end
       end
 
       def self.domain
@@ -62,19 +54,20 @@ module Aro
 
       private
 
+      attr_accessor :oss_om_thread, :oss_om_busy
+
       def start_oss_om_thread
         return if @oss_om_busy
         @oss_om_busy = true
         self.oss_om_thread&.exit
         self.oss_om_thread&.kill
         self.oss_om_thread = Thread.new do
-          loop do
-            @oss_om_busy = true
-            self.oss_om_mutex.synchronize do
-              Aro::Dom::Designer.design
-            end
-            @oss_om_busy = false
-          end
+          @oss_om_busy = true
+          Aro::Mancy.init if Aro::Mancy.in_aro? && !Aro::Mancy.is_initialized?
+          Aro::P.say("opening #{Aro::Dom::Designer.name}...")
+          Aro::Mancy.instance.remember!
+          Aro::Dom::Designer.design
+          @oss_om_busy = false
         end
       end
 

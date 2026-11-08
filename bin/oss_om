@@ -11,6 +11,10 @@
 =end
 
 require :aro.to_s
-require :oss_om.to_s
+# require :oss_om.to_s
 
-Aro::OssOm.start
+# Aro::OssOm.start
+
+Aro::Dom::Ma_ain.instance.oss_om_mutex.synchronize do
+  Aro::Dom::Ma_ain.instance.reign!
+end
