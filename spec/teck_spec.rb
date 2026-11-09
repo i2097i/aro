@@ -4,7 +4,7 @@ describe Aro::Teck do
   before :all do
     Aro::Mancy.create(TESTING_NAME.to_s, is_test: true)
     FileUtils.chdir(TESTING_NAME.to_s)
-    Aro::Cor.instance.load_env
+    Aro::Cor.instance.load_env!
     Aro::Cor.set_ivar(:ENV, Aro::Cor::ENVS[:TEST].to_s)
     # Aro::Cor.set_ivar(:VERBOSE, Aro::Cor::BOOLS[:TRUE].to_s)
     Aro::Teck.make(TESTING_TECK.to_s)

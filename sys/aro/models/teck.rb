@@ -110,7 +110,7 @@ class Aro::Teck < ActiveRecord::Base
 
   def explore
     # allows user to browse each card in the current teck.
-    answer = Aro::P.p.select(
+    answer = Aro::P.default_select(
       Aro::Mancy::ps1_display.to_s + I18n.t("messages.choose_card"),
       # formatted for tty-prompt gem
       cards.split(Aro::Teck::CARD_DELIM.to_s).map{|c| [I18n.t("cards.#{Aro::Teck.card_strip(c)}.name"), c]}.to_h,

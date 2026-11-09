@@ -32,10 +32,13 @@ class Aro::Dom::Store
   def self.edit(aro_file, updates)
     return if aro_file.nil?
     unless ::File.exist?(aro_file.aro_file_path)
-      ::File.write(aro_file.aro_file_path, "{}")
+      ::File.write(aro_file.aro_file_path, {}.to_json)
     end
 
-    # todo: validate updates
+    Aro::Dom::Ma_ain.i2097i_bookmark
+    puts :todo_validate_updates_or_depricate
+    puts __method__
+
     Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
       store_instance = Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
       updates.each{|k, v|
@@ -46,6 +49,29 @@ class Aro::Dom::Store
         ])
       }
     end
+  end
+
+
+  def self.save_exec_oss_om_params!(oss_om_const, oss_om_method)
+    Aro::P.say(__method__)
+    built = build_exec_oss_om_params!(oss_om_const, oss_om_method)
+    Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
+      built.each{|k, v| self.instance.set_key(k, v)}
+    end
+  end
+
+  def self.build_exec_oss_om_params!(oss_om_const, oss_om_method, label: nil)
+    Aro::P.say(__method__)
+    raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const)
+    raise "invalid oss_om_method!" unless oss_om_const.methods.include?(oss_om_method.to_sym)
+    {
+      action_name: label || "#{oss_om_const.name}.#{oss_om_method}",
+      action_key: :exec_oss_om,
+      action_params: {
+        aro_class_name: oss_om_const.name,
+        aro_class_method: oss_om_method
+      }
+    }
   end
 
   def get_key(key)

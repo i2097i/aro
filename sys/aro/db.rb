@@ -20,11 +20,8 @@ module Aro
 
     def self.ensure_connected!
       return if self.instance.connected?
-
       Aro::Db.configure_logger
-      if Aro::Mancy.in_aro?
-        self.instance.setup_local_aro
-      end
+      self.instance.setup_local_aro if Aro::Mancy.in_aro?
     end
 
     def connected?
@@ -44,10 +41,6 @@ module Aro
       db_dir = File.join(Aro::Mancy.root_dir, :db.to_s)
       return "#{db_dir}_#{Aro::Cor::ENVS[:TEST]}" if Aro::Cor.is_test?
       db_dir
-    end
-
-    def self.migrate_dir
-      File.join(Aro::Db.base_db_dir, :migrate.to_s)
     end
 
     def self.sql_filepath
@@ -98,36 +91,21 @@ module Aro
       Aro::D.say("#{self}#{__method__}#{self.active_record_connection_instance.inspect}")
     end
 
-    def self.migrations_filepaths
-      File.join(Aro::Db.migrate_dir, "*.rb")
+    def self.gem_migrations_filepaths
+      File.join(gem_migration_dir, "*.rb")
     end
 
-    def self.gem_migrations_filepaths
-      File.join(Reiquire.gem_migrations_path, :migrate.to_s, "*.rb")
+    def self.gem_migration_dir
+      File.join(Reiquire.gem_migrations_path, :migrate.to_s)
     end
 
     def migrate
-      puts __method__
-      migration_file_names = Dir[self.class.migrations_filepaths].map{|fp| File.basename(fp)}
-      puts "migration_file_names: #{migration_file_names}"
       gem_migration_file_names = Dir[self.class.gem_migrations_filepaths].map{|fp| File.basename(fp)}
-      puts "gem_migration_file_names: #{gem_migration_file_names}"
-      mfs_all = gem_migration_file_names.all?{|gmf|
-        migration_file_names.include?(gmf)
-      }
-      puts "mfs_all: #{mfs_all}"
 
-      unless Dir.exist?(Aro::Db.migrate_dir) && mfs_all
-        puts "Reiquire.copy_db_migrations_from_gem!"
-        puts "ls #{Aro::Db.migrate_dir}"
-        puts migration_file_names
-        Reiquire.copy_db_migrations_from_gem! 
-      end
-
-      migration_version = migration_file_names.map{|n|
+      migration_version = gem_migration_file_names.map{|n|
         n.to_s.split("_")[0].to_i
       }.max
-      ActiveRecord::MigrationContext.new(Aro::Db.migrate_dir).migrate(migration_version)
+      ActiveRecord::MigrationContext.new(Aro::Db.gem_migration_dir).migrate(migration_version)
       dump_schema!
     end
 

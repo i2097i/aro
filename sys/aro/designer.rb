@@ -24,53 +24,55 @@ module Aro
         oss_om_base_dir = ::File.join(aro_home_dir, Aro::Mancy::ARO_DIRECTORY.to_s)
         Aro::P.say("FileUtils.mkdir_p(#{oss_om_base_dir})")
         FileUtils.mkdir_p(oss_om_base_dir)
-        Aro::P.say("FileUtils.chdir(#{aro_home_dir})")
-        FileUtils.chdir(aro_home_dir) do
-          Aro::P.say("Aro::Cor.instance.load_env")
-          Aro::Cor.instance.load_env
-          Aro::P.say("Aro::Cor.set_ivar(:OSS_OM_HOME, #{File.absolute_path(aro_home_dir)})")
-          Aro::Cor.set_ivar(:OSS_OM_HOME, File.absolute_path(aro_home_dir))
-          Aro::P.say("Aro::Db.ensure_connected!")
-          Aro::Db.ensure_connected!
-          Aro::P.say("Aro::Mancy.init(#{aro_home_dir})")
-          Aro::Mancy.init(aro_home_dir)
-          Aro::P.say("Reiquire.reload_i18n!")
-          Reiquire.reload_i18n!
-          # design_menu(Aro::Dom::Menu.first)
-        end
 
-        if File.absolute_path(Dir.pwd) != Aro::Cor.ivar(:OSS_OM_HOME)
-          Aro::P.say("user needs to cd")
-          Aro::P.say("enter $ cd #{Aro::Cor.ivar(:OSS_OM_HOME)}")
+        Aro::P.say("Aro::Cor.set_ivar(:OSS_OM_HOME, #{File.absolute_path(aro_home_dir)})")
+        Aro::Cor.set_ivar(:OSS_OM_HOME, File.absolute_path(aro_home_dir))
+
+        if File.absolute_path(Dir.pwd) != File.absolute_path(Aro::Cor.ivar(:OSS_OM_HOME))
+          Aro::P.say("run the following commands to continue:")
+          Aro::P.say("$ cd #{Aro::Cor.ivar(:OSS_OM_HOME)} && oss_om")
+          Aro::P.say("exiting...")
           exit
+        else
+          Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
+          Aro::Dom::Oss_OpenMenu.boot!
         end
         design
       end
-
 
       def self.design
         if Aro::Cor.ivar(:OSS_OM_HOME).nil?
           design_aro
           return
         end
-        Aro::Dom::Ma_ain.instance.current_menu = Aro::Dom::DataBase.open_menu(:ma_ain)
 
+        Aro::P.say("Aro::Dom::Ma_ain.open!")
+        Aro::Dom::Ma_ain.open!
         loop do
-          selected_menu_item_uuid = Aro::P.p.select(
+          selected_menu_item_uuid = Aro::P.default_select(
             "#{Aro::Dom::Ma_ain.instance.current_menu.localized_name}",
-            [{name: :open_menu, value: :open_menu}] + Aro::Dom::Ma_ain.instance.current_menu.menu_items.map{|mi| mi.as_tty},
-            show_help: :always,
-            cycle: true,
-            per_page: 11
+            Aro::Dom::Ma_ain.get_current_options
           )
 
-          if selected_menu_item_uuid == :open_menu
-            Aro::Dom::Designer.design_menu(Aro::Dom::Ma_ain.instance.current_menu)
-          else
-            Aro::Dom::Designer.design_menu_item(
-              selected_menu_item_uuid,
+          case selected_menu_item_uuid.to_sym
+          when :back
+            Aro::Dom::Ma_ain.back!
+          when :open_menu
+            design_menu(
               Aro::Dom::Ma_ain.instance.current_menu
             )
+          else
+            if Aro::Dom::Ma_ain.running?
+              selected_menu_item = Aro::Dom::Ma_ain.instance.current_menu.menu_items.find_by(
+                uuid: selected_menu_item_uuid
+              )
+              selected_menu_item.run!
+            else
+              design_menu_item(
+                selected_menu_item_uuid,
+                Aro::Dom::Ma_ain.instance.current_menu
+              )
+            end
           end
         end
       end
@@ -100,16 +102,12 @@ module Aro
         new_name = get_new_value_from_user(
           "#{__method__} #{Aro::Dom::MenuItem.name} for menu: '#{I18n.t(menu.full_i18n_path)}'"
         )
+
         unless new_name.nil? ||
           new_name.empty? ||
           new_name.kind_of?(FalseClass)
 
-          menu_item = menu.menu_items.create(tty_name: Aro::Dom::Locale.i18n_keyify_text(new_name))
-          Aro::Dom::Locale.add_i18n_key(
-            new_name,
-            library_name: :menu_items,
-            new_i18n_display_key: menu_item.uuid,
-          )
+          design_menu_item(menu.generate_new_item(new_name))
         else
           Aro::P.say("#{new_name.inspect} is invalid")
         end
@@ -125,6 +123,10 @@ module Aro
           {
             name: :back,
             value: :back
+          },
+          {
+            name: :toggle_run_mode,
+            value: :toggle_run_mode
           },
           {
             name: "(edit_title)".ljust(ACTION_LJUST) +
@@ -147,7 +149,7 @@ module Aro
           }
         ]
 
-        v = Aro::P.p.select(
+        v = Aro::P.default_select(
           I18n.t("open_menu.edit_menu_localized_name", localized_name: menu.localized_name),
           options
         )
@@ -172,6 +174,9 @@ module Aro
           create_menu_item(menu)
         when :back
           return
+        when :toggle_run_mode
+          Aro::Dom::Ma_ain.toggle_run_mode
+          return
         else
           design_menu_item(v, menu)
         end
@@ -181,22 +186,6 @@ module Aro
         return create_menu_item(menu) if menu_item_uuid.nil?
 
         menu_item = menu.menu_items.find_by(uuid: menu_item_uuid)
-
-        # new_name = get_new_value_from_user(
-        #   "rename #{menu_item.class} '#{I18n.t(menu_item.full_i18n_path)}'"
-        # )
-        # unless new_name.nil? ||
-        #   new_name.empty? ||
-        #   new_name.kind_of?(FalseClass)
-
-        #   Aro::Dom::Locale.update_i18n_key(
-        #     new_name,
-        #     menu_item.uuid,
-        #     library_name: :menu_items
-        #   )
-        # else
-        #   Aro::P.say("#{new_name.inspect} is invalid")
-        # end
 
         # action,class,value
         options = [
@@ -217,7 +206,7 @@ module Aro
           }
         ]
 
-        v = Aro::P.p.select(
+        v = Aro::P.default_select(
           I18n.t("open_menu.edit_menu_item_localized_name", localized_name: menu_item.localized_name),
           options
         )
@@ -240,26 +229,88 @@ module Aro
             Aro::P.say("#{new_name.inspect} is invalid")
           end
         when :edit_action
-          puts "this is where i am working"
-          return
+          design_action_for(menu_item)
         when :back
           return
         end
-
-        # this is for updating data stores
-        # todo:
-        #   Aro::P.say([
-        #     to_s,
-        #     "=> writing property :tty_name => '#{new_name}'",
-        #     "=> to #{menu_item.aro_file.class}(#{menu_item.aro_file.uuid})",
-        #     "=> in #{Aro::Dom::DataBase.name} #{menu_item.aro_file.aro_file_path}",
-        #     "=> for #{menu_item.class}(#{menu_item.uuid})"
-        #   ].join("\n"))
-
-        #   menu_item.aro_file.write!({tty_name: new_name})
       end
 
-      private
+      def self.edit_action_for(menu_item)
+        # {
+        #   action_name:,
+        #   action_key: Aro::Dom::Action::TYPES[*][:key],
+        #   action_params: {
+        #     aro_class_name:,
+        #     aro_class_method:
+        #   }
+        # }
+
+        action_name = menu_item.store.get_key("action_name")&.to_sym
+
+        raise "missing action!" if action_name.nil?
+
+        options = [
+          {
+            name: :back,
+            value: :back
+          },
+          {
+            name: "(edit_type)".ljust(ACTION_LJUST) +
+              "#{Aro::Dom::Action.name}(#{action_name})".ljust(CLASS_LJUST) +
+              "#{menu_item.action_storage_key}",
+            value: :edit_type
+          },
+          {
+            name: "(edit_action)".ljust(ACTION_LJUST) +
+              "Aro::Dom::MenuItem::Action(#{action_name})".ljust(CLASS_LJUST),
+            value: :edit_action
+          }
+        ]
+        v = Aro::P.default_select(
+          I18n.t("open_menu.edit_action_for_menu_item", localized_name: menu_item.localized_name, action_name: action_name),
+          options
+        )
+
+        case v.to_sym
+        when :edit_type
+          design_action_for(menu_item, overwrite: true)
+        when :edit_action
+          Aro::Dom::Ma_ain.i2097i_bookmark
+          puts :todo_open_action_editor
+        end
+      end
+
+      def self.design_action_for(menu_item, overwrite: false)
+        return if menu_item.nil?
+        return edit_action_for(menu_item) if menu_item.actionable? && !overwrite
+
+        # action,class,value
+        options = [
+          {
+            name: :back,
+            value: :back
+          }
+        ] + Aro::Dom::Action::TYPES.keys.map{|k|
+          {
+            name: "(#{k})".ljust(ACTION_LJUST) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST) +
+              "#{menu_item.localized_name}",
+            value: k
+          }
+        }
+
+        v = Aro::P.default_select(
+          I18n.t("open_menu.design_action_for_menu_item", localized_name: menu_item.localized_name),
+          options
+        )
+
+        case v.to_sym
+        when :back
+          return
+        else
+          Aro::Dom::Action.create(v, menu_item)
+        end
+      end
 
       def self.get_new_value_from_user(ask_text)
         Aro::P.say(__method__)
@@ -272,7 +323,7 @@ module Aro
           new_val = nil if user_cancelled
         end
 
-        return user_cancelled if user_cancelled
+        return nil if user_cancelled
         return new_val
       end
 

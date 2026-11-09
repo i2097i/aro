@@ -45,7 +45,7 @@ module CLI
         Aro::P.say(I18n.t("messages.shuffling", name: Aro::Mancy.teck.name))
         Aro::Mancy.teck.shuffle
       when CLI::CMDS[:TECK][:DRAW]
-        Aro::Cor.instance.load_env
+        Aro::Cor.instance.load_env!
         Aro::P.say(I18n.t("messages.drawing", name: Aro::Mancy.teck.name))
         Aro::P.say(I18n.t("messages.drawing_from_dimension", dimension: "#{Aro::Cor.ivar(:DIMENSION)}"))
         Aro::Mancy.teck.draw(

@@ -18,7 +18,7 @@ module Aro
       exit(CLI::EXIT_CODES[:SUCCESS])
     end
 
-    Aro::Cor.instance.load_env
+    Aro::Cor.instance.load_env!
     Aro::Cor.process_command(ARGV)
   end
 
@@ -245,7 +245,16 @@ module Aro
         value: nil,
         description: I18n.t("cor.oss_om_home.description"),
         possible_values: {
-          any_valid_path: I18n.t("cor.oss_om_home.any_valid_path_description"),
+          path: I18n.t("cor.oss_om_home.path_description"),
+        }
+      },
+      OSS_OM_PKEY_PATH: {
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: nil,
+        description: I18n.t("cor.oss_om_pkey_path.description"),
+        possible_values: {
+          path: I18n.t("cor.oss_om_pkey_path.path_description"),
         }
       },
       INTERFACE: {
@@ -379,14 +388,20 @@ module Aro
 
     def load_env
       self.base_lines_def = nil
+      return unless File.exist?(Aro::Cor.cor_filepath)
+
+      source_config
+      Aro::P.say("running in #{Aro::Cor.ivar(:ENV)} env.")
+
+      self.display_lines = Aro::Cor.base_lines
+    end
+
+    def load_env!
       unless File.exist?(Aro::Cor.cor_filepath)
         generate_config
       end
 
-      source_config
-      Aro::D.say("running in #{Aro::Cor.ivar(:ENV)} env.")
-
-      self.display_lines = Aro::Cor.base_lines
+      load_env
     end
 
     def self.base_lines(args = nil)
@@ -469,7 +484,7 @@ module Aro
       # set ruby ENV key value
       # only write to ruby ENV from here
       ENV[Aro::Cor.ivar_k(k.to_s)] = converted
-      Aro::P.say("#{k} set to #{converted}") unless converted.nil? || converted.empty?
+      Aro::D.say("#{k} set to #{converted}") unless converted.nil? || converted.empty?
       return true
     end
 

@@ -32,6 +32,15 @@ class Aro::Dom::DataBase < ActiveRecord::Base
       )
     end
 
+    case menu_sym
+    when :ma_ain
+      # nothing to do here yet
+      menu.generate_ma_ain!
+    when :security
+      # todo:
+      menu.generate_security!
+    end
+
     # return the menu
     return menu
   end
@@ -57,11 +66,11 @@ class Aro::Dom::DataBase < ActiveRecord::Base
 
   def self.ensure_data_base_git!
     ensure_data_base_exist! unless Dir.exist?(root_aro_unix_data_dir)
-    FileUtils.chdir(root_aro_unix_data_dir) do
-      Aro::P.say("todo:")
-      Aro::P.say(__method__)
-      # system("git init")
-    end
+    # FileUtils.chdir(root_aro_unix_data_dir) do
+    #   Aro::P.say("todo:")
+    #   Aro::P.say(__method__)
+    #   # system("git init")
+    # end
   end
 
   def unix_path_valid?

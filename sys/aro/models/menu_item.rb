@@ -9,7 +9,9 @@
 =end
 
 class Aro::Dom::MenuItem < ActiveRecord::Base
+  include Aro::Dom::TarGoForRootSec
   include Aro::Dom::Uuid
+
   belongs_to :menu, class_name: "Aro::Dom::Menu"
 
   after_create :sync
@@ -37,6 +39,41 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
       uuid: uuid,
       data_base_directory: aro_directory
     )
+  end
+
+  def actionable?
+    !action_storage_key.nil?
+  end
+
+  def action_storage_key
+    return @ask unless @ask.nil?
+    action_typedef_key = store.get_key("action_key")&.to_sym
+    unless Aro::Dom::Action::TYPES.select{|k, v| v[:key] == action_typedef_key}.any?
+      raise "missing or invalid #{__method__}! (#{action_typedef_key})"
+    end
+
+    @ask = action_typedef_key.to_s&.gsub("exec_", "")&.upcase&.to_sym
+    @ask
+  end
+
+  def store
+    Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
+  end
+
+  def run!
+    unless action_storage_key.nil?
+      Aro::Dom::Action.perform(
+        Aro::Dom::Action::TYPES.keys.select{|k|
+          k == action_storage_key
+        }.first,
+        store.get_key("action_params")
+      )
+    else
+      Aro::Dom::Ma_ain.i2097i_bookmark
+      puts __method__
+      puts inspect
+      puts :todo_implement_invalid_action_handling
+    end
   end
 
   private

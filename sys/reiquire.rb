@@ -18,9 +18,6 @@ module Reiquire
 
     # configure locale
     configure_i18n
-
-    # ensure base migrations exist
-    copy_db_migrations_from_gem! if Aro::Mancy.in_aro?
   end
 
   def self.requires(dirs)
@@ -48,34 +45,18 @@ module Reiquire
     File.join(gem_locale_dir, "*.yml")
   end
 
-  def self.copy_db_migrations_from_gem!
-    puts __method__
-    puts Aro::Cor.ivar(:OSS_OM_HOME)
-    return if Aro::Cor.ivar(:OSS_OM_HOME).nil? || oss_om_up_to_date?(
-      Aro::Db.gem_migrations_filepaths,
-      Aro::Db.migrations_filepaths
-    )
-
-    FileUtils.mkdir_p(Aro::Db.migrate_dir)
-    FileUtils.cp_r(
-      gem_migrations_path,
-      Aro::Db.migrate_dir
-    )
-  end
-
   private
 
   def self.copy_locale_files_from_gem!
-    puts __method__
-    puts Aro::Cor.ivar(:OSS_OM_HOME)
+    Aro::D.say(__method__)
     return if Aro::Cor.ivar(:OSS_OM_HOME).nil? || oss_om_up_to_date?(
       gem_locales_filepaths,
       Aro::Dom::Locale.locales_filepaths
     )
 
-    oss_wtf = File.join(Aro::Mancy.root_dir, :locale.to_s, :locale.to_s)
-    if Dir.exist?(oss_wtf)
-      FileUtils.rm_rf(oss_wtf)
+    file_utils_wtf = File.join(Aro::Mancy.root_dir, :locale.to_s, :locale.to_s)
+    if Dir.exist?(file_utils_wtf)
+      FileUtils.rm_rf(file_utils_wtf)
       oss_om_up_to_date!(
         gem_locales_filepaths,
         Aro::Dom::Locale.locale_dir
@@ -91,29 +72,29 @@ module Reiquire
   end
 
   def self.oss_om_up_to_date!(gem_filepaths, oss_om_dir)
-    puts __method__
+    Aro::D.say(__method__)
     gem_files_abs = Dir[gem_filepaths].map{|fp| File.absolute_path(fp)}
-    puts "gem_files_abs: #{gem_files_abs}"
+    Aro::D.say("gem_files_abs: #{gem_files_abs}")
     
-    puts "FileUtils.mkdir_p(#{oss_om_dir})"
+    Aro::D.say("FileUtils.mkdir_p(#{oss_om_dir})")
     FileUtils.mkdir_p(oss_om_dir)
     gem_files_abs.each{|gfa|
-      puts "FileUtils.cp(#{File.basename(gfa)}, #{File.basename(oss_om_dir)})"
+      Aro::D.say("FileUtils.cp(#{File.basename(gfa)}, #{File.basename(oss_om_dir)})")
       FileUtils.cp(gfa, oss_om_dir)
     }
   end
 
   def self.oss_om_up_to_date?(gem_filepaths, oss_om_filepaths)
-    puts __method__
+    Aro::P.say(__method__)
     file_names = Dir[oss_om_filepaths].map{|fp| File.basename(fp)}
-    puts "file_names: #{file_names}"
+    Aro::D.say("file_names: #{file_names}")
     gem_file_names = Dir[gem_filepaths].map{|fp| File.basename(fp)}
-    puts "gem_file_names: #{gem_file_names}"
-    mfs_all = gem_file_names.all?{|gfn|
+    Aro::D.say("gem_file_names: #{gem_file_names}")
+    up_to_date = gem_file_names.all?{|gfn|
       file_names.include?(gfn)
     }
-    puts "mfs_all: #{mfs_all}"
-    mfs_all
+    Aro::P.say("up_to_date: #{up_to_date}")
+    up_to_date
   end
 
   def self.require_reiquires!
@@ -130,6 +111,7 @@ module Reiquire
       :"active_record/schema_dumper",
       :fileutils,
       :i18n,
+      :"tty-font",
       :"tty-prompt"
     ].each{|d| require d.to_s}
   end

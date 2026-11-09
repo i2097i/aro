@@ -13,33 +13,140 @@ module Aro
     class Ma_ain < Aro::Mancy
       # inherits Singleton
 
-      attr_accessor :current_menu
+      RUN_MODES = [
+        :design,
+        :run
+      ]
+
+      UNICODE_KEYS = {
+        check:    "\u2713",
+        close:    "\u2A2F",
+        secure:   "\u266F",
+        unsecure: "\u266D",
+        bang:     "\u0021"
+      }
+
+      attr_accessor :current_menu, :previous_menu
       attr_accessor :data_mutex, :store_mutex
       attr_accessor :stores
+      attr_accessor :valid_security
+      attr_accessor :run_mode
 
       def reign!
-        Aro::P.say("opening #{Aro::Dom::Designer.name}...")
-        Aro::Dom::Designer.design
+        begin
+          self.run_mode = Aro::Mancy::O
+          Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
+          Aro::Dom::Oss_OpenMenu.boot!
+          Aro::P.say("Aro::Dom::Designer.design")
+          Aro::Dom::Designer.design
+        rescue RuntimeError => e
+          Aro::P.say("#{e.class}! #{e.inspect}")
+          reign!
+        end
       end
 
       def initialize
         self.data_mutex = Mutex.new
         self.store_mutex = Mutex.new
+
         @stores = {}
+      end
+
+      def self.i2097i_bookmark
+        Aro::P.less(
+          Thread.current.backtrace.reverse.map{|l|
+            l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
+          }.last(11).join("\n")
+        )
+        puts __method__
+      end
+
+      def self.init!
+        root_dir_path = Aro::Cor.ivar(:OSS_OM_HOME)
+        return false if root_dir_path.nil? || !Dir.exist?(root_dir_path)
+        Aro::P.say("#{self.name} initializing in #{root_dir_path}")
+        Aro::Mancy.init(root_dir_path)
+      end
+
+      def self.is_encrypted?
+        !Aro::Cor.ivar(:oss_om_ssh_key).nil? &&
+          !self.instance.valid_security.nil?
       end
 
       def self.domain
         self.instance.current_menu.nil? ? super : "#{Aro::Mancy.aro_mancy_name}#{Aro::Mancy::A}#{Aro::Dom::Ma_ain}"
       end
 
+      def self.mini_hud_for(display_text = nil)
+        cryption_text = UNICODE_KEYS[
+          is_encrypted? ? :secure : :unsecure
+        ] + UNICODE_KEYS[:bang]
+
+        if is_encrypted?
+          cryption_text = "#{UNICODE_KEYS[:secure]}#{UNICODE_KEYS[:bang]}"
+        else
+          cryption_text = "#{UNICODE_KEYS[:unsecure]}#{UNICODE_KEYS[:bang]}"
+        end
+
+        mode_text = RUN_MODES[self.instance.run_mode || Aro::Mancy::O]
+        [
+          "(#{cryption_text})[#{mode_text}: ",
+          display_text
+        ].join("")
+      end
+
       def self.ps1_display(cls_name = nil)
         super(domain)
+      end
+
+      def self.open!(data_base = :ma_ain)
+        Aro::P.say("Aro::Dom::DataBase.open_menu(#{data_base})")
+        staged_menu = nil
+        begin
+          staged_menu = Aro::Dom::DataBase.open_menu(data_base)
+        rescue StandardError => e
+          raise "open_menu error! #{e.inspect}"
+        end
+        self.instance.previous_menu = self.instance.current_menu
+        self.instance.current_menu = staged_menu
+      end
+
+      def self.back!
+        self.instance.current_menu = nil
+        open!
+      end
+
+      def self.toggle_run_mode
+        self.instance.run_mode = self.instance.run_mode == 0 ? 1 : 0
+      end
+
+      def self.running?
+        RUN_MODES[self.instance.run_mode || Aro::Mancy::O] == :run
+      end
+
+      def self.get_current_options
+        options = []
+
+        options << {back: :back, value: :back} unless self.instance.previous_menu.nil?
+
+        options << {name: :open_menu, value: :open_menu}
+
+        options += self.instance.current_menu.menu_items.map{|mi| mi.as_tty}
+
+        options
+      end
+
+      def self.exec_security!
+        Aro::Dom::Ma_ain.open!(:security)
+      end
+
+      def self.exec_quit!
+        exit
       end
 
       def get_store_for(aro_file)
         return if aro_file.nil?
 
-        # todo validate aro_file
         if @stores[aro_file.uuid].nil?
           new_store = Aro::Dom::Store.new
           new_store.open_file_path = aro_file.aro_file_path

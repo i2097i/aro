@@ -36,7 +36,6 @@ module Aro
 
     def self.normalize_message(message)
       return message.join("\n") if message.kind_of?(Array)
-
       message
     end
   end

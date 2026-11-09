@@ -62,11 +62,6 @@ module Aro
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
 
-    def remember!
-      # start monitoring
-      self.start_db_thread
-    end
-
     def self.teck
       self.init(root_dir)
       if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
@@ -91,6 +86,7 @@ module Aro
           file.write("\n")
         end
       end
+      return true
     end
 
     def self.root_dir
@@ -101,7 +97,7 @@ module Aro
     end
 
     def self.is_initialized?
-      in_aro? && in_aro? && Aro::Db.instance.connected?
+      in_aro? && Aro::Db.instance.connected?
     end
 
     def self.in_aro?
@@ -119,25 +115,5 @@ module Aro
     def self.ps1_display(cls_name = nil)
       :">[#{cls_name || Aro::Mancy.domain || aro_mancy_name}]>: ".to_s
     end
-
-    private
-
-    def start_db_thread
-      return if @db_busy
-      @db_busy = true
-      self.db_thread&.exit
-      self.db_thread&.kill
-      self.db_thread = Thread.new do
-        loop do
-          @db_busy = true
-          Aro::V.say(Aro::Mancy.instance.db_thread.inspect)
-          Aro::V.say(__method__)
-          Aro::Db.ensure_connected!
-          @db_busy = false
-          sleep(Aro::Db::HEARTBEAT_DURATION)
-        end
-      end
-    end
-
   end
 end

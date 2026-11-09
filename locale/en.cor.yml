@@ -15,8 +15,11 @@ en:
       dev_tarot_description: "reads from /dev/tarot device if available."
       ruby_facot_description: "generated ruby_facot (facade randomness)."
     oss_om_home:
-      description: "the directory where .oss_om lives."
-      any_valid_path_description: "any valid path. if null $HOME is used."
+      description: "the directory where .oss_om/ lives."
+      path_description: "any valid path filepath. defaults to $HOME"
+    oss_om_pkey_path:
+      description: "path to openssl public key. used to perform oss_om actions."
+      path_description: "path to openssl key (usually ~/.ssh/id_key_name.pub)"
     interface:
       description: "aro output interface."
       terminal_description: "render terminal output (default)."

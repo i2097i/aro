@@ -13,7 +13,7 @@ class Aro::Dom::DataBase::File < ActiveRecord::Base
   self.table_name = :data_base_files
   belongs_to :data_base_directory, class_name: "Aro::Dom::DataBase::Directory"
 
-  def write!(updates = {})
+  def write!(updates)
     Aro::Dom::Store.edit(self, updates)
   end
 
