@@ -14,35 +14,37 @@ module Aro
       ACTION_LJUST = 22
       CLASS_LJUST = 33
 
-      def self.design_aro
-        env_home_val = ENV[:HOME.to_s]
-        Aro::P.say(:"checking for bash env var $HOME in ruby ENV".to_s)
-        Aro::P.say(:"$HOME is set to #{env_home_val}".to_s)
-        abs_home = Aro::P.p.ask(:"use alternative aro_root? (empty to use $HOME): ".to_s)
-        raise "missing required value for aro_root!" if abs_home.nil? && env_home_val.nil?
-        aro_home_dir = abs_home || env_home_val
-        oss_om_base_dir = ::File.join(aro_home_dir, Aro::Mancy::ARO_DIRECTORY.to_s)
+      def self.design_oss_om
+        oss_home_path = File.expand_path(Dir.pwd)
+        Aro::P.say("set up oss_om home directory in '#{oss_home_path}'?")
+        abs_home = Aro::Dom::Designer.get_new_value_from_user(
+          "leave empty to use '#{oss_home_path}' as home.",
+          "enter new path: "
+        )
+        raise "missing required value for oss_om home!" if abs_home.nil? && oss_home_path.nil?
+        oss_home_path = abs_home.nil? ? oss_home_path : File.expand_path(abs_home)
+        oss_om_base_dir = ::File.join(oss_home_path, Aro::Mancy::ARO_DIRECTORY.to_s)
         Aro::P.say("FileUtils.mkdir_p(#{oss_om_base_dir})")
         FileUtils.mkdir_p(oss_om_base_dir)
 
-        Aro::P.say("Aro::Cor.set_ivar(:OSS_OM_HOME, #{File.absolute_path(aro_home_dir)})")
-        Aro::Cor.set_ivar(:OSS_OM_HOME, File.absolute_path(aro_home_dir))
+        Aro::P.say("Aro::Cor.set_ivar(:OSS_OM_HOME, #{oss_home_path})")
+        Aro::Cor.set_ivar(:OSS_OM_HOME, oss_home_path)
 
-        if File.absolute_path(Dir.pwd) != File.absolute_path(Aro::Cor.ivar(:OSS_OM_HOME))
+        if ::File.expand_path(Dir.pwd) != Aro::Cor.ivar(:OSS_OM_HOME)
           Aro::P.say("run the following commands to continue:")
           Aro::P.say("$ cd #{Aro::Cor.ivar(:OSS_OM_HOME)} && oss_om")
           Aro::P.say("exiting...")
           exit
         else
-          Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
-          Aro::Dom::Oss_OpenMenu.boot!
+          # restart Aro::Dom::Ma_ain
+          raise "needs install!"
         end
         design
       end
 
       def self.design
         if Aro::Cor.ivar(:OSS_OM_HOME).nil?
-          design_aro
+          design_oss_om
           return
         end
 
@@ -129,6 +131,10 @@ module Aro
             value: :toggle_run_mode
           },
           {
+            name: :open_shell,
+            value: :open_shell
+          },
+          {
             name: "(edit_title)".ljust(ACTION_LJUST) +
               "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST) +
               "#{menu.localized_name}",
@@ -177,6 +183,9 @@ module Aro
         when :toggle_run_mode
           Aro::Dom::Ma_ain.toggle_run_mode
           return
+        when :open_shell
+          Aro::P.say("starting bash session for #{`whoami`.strip}")
+          system(:bash.to_s)
         else
           design_menu_item(v, menu)
         end
@@ -312,13 +321,14 @@ module Aro
         end
       end
 
-      def self.get_new_value_from_user(ask_text)
+      def self.get_new_value_from_user(ask_text, prompt_text_override = nil)
         Aro::P.say(__method__)
         new_val = nil
         user_cancelled = false
         while new_val.nil? && !user_cancelled
           Aro::P.say(ask_text)
-          new_val = Aro::P.p.ask(I18n.t("open_menu.get_new_value_from_user"))
+          puts "\n"
+          new_val = Aro::P.p.ask(prompt_text_override || I18n.t("open_menu.get_new_value_from_user"))
           user_cancelled = new_val.nil? || new_val.empty?
           new_val = nil if user_cancelled
         end

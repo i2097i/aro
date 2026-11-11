@@ -26,6 +26,10 @@ module Aro
       Aro::Cor::BOOLS[:TRUE]
     end
 
+    def self.ask(message)
+      gets message
+    end
+
     def self.say(message)
       p.say(normalize_message(message))
     end

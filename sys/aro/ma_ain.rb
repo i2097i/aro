@@ -35,8 +35,14 @@ module Aro
       def reign!
         begin
           self.run_mode = Aro::Mancy::O
-          Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
-          Aro::Dom::Oss_OpenMenu.boot!
+          Aro::P.say("Aro::Dom::Oss_OpenMenu.install!")
+          if Aro::Dom::Oss_OpenMenu.install!
+            Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
+            Aro::Dom::Oss_OpenMenu.boot!
+          else
+            Aro::P.say("installation failed. exiting now...")
+            exit
+          end
           Aro::P.say("Aro::Dom::Designer.design")
           Aro::Dom::Designer.design
         rescue RuntimeError => e
@@ -56,7 +62,7 @@ module Aro
         Aro::P.less(
           Thread.current.backtrace.reverse.map{|l|
             l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
-          }.last(11).join("\n")
+          }.last(Aro::Mancy::V).join("\n")
         )
         puts __method__
       end

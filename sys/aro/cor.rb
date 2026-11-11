@@ -529,7 +529,6 @@ module Aro
       end
     end
 
-    # todo: add_to_docs
     def self.ivars_dump
       dump = []
       Aro::Cor::DEF.select{|k, v|
