@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   menu.rb
@@ -14,7 +16,10 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
 
   belongs_to :menu, class_name: "Aro::Dom::Menu"
 
-  after_create :sync
+  enum :type_flag, [
+    :system,
+    :user
+  ]
 
   def as_tty
     {name: localized_name, value: uuid}
@@ -46,14 +51,38 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
   end
 
   def action_storage_key
-    return @ask unless @ask.nil?
-    action_typedef_key = store.get_key("action_key")&.to_sym
+    return @ask unless @ask.nil? || @ask.empty?
+    action_typedef_key = store.safe_get_key("action_key")&.to_sym
     unless Aro::Dom::Action::TYPES.select{|k, v| v[:key] == action_typedef_key}.any?
       raise "missing or invalid #{__method__}! (#{action_typedef_key})"
     end
 
-    @ask = action_typedef_key.to_s&.gsub("exec_", "")&.upcase&.to_sym
+    @ask = action_typedef_key.to_s.gsub("exec_", "").upcase.to_sym
     @ask
+  end
+
+  def action_display_text
+    raise "invalid action typedef!" if !Aro::Dom::Action::TYPES.keys.include?(action_storage_key) ||
+      Aro::Dom::Action::TYPES[action_storage_key].nil?
+
+    action_params = store.safe_get_key("action_params")
+    unless action_params.kind_of?(Hash)
+      raise "missing or invalid action_params: #{action_params.inspect}"
+    end
+
+    result = nil
+    case action_storage_key
+    when :OSS_OM
+      result = [:aro_class_name, :aro_class_method].map{|k|
+        action_params[k].to_s.split("::").last
+      }.join(".")
+    when :SYSTEM
+      result = :todo_unpack_system_action_here.to_s
+    when :CREATE_DATA_BASE
+      result = :todo_unpack_create_data_base_action_here.to_s
+    end
+
+    result
   end
 
   def store
@@ -61,12 +90,15 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
   end
 
   def run!
+    raise "invalid action typedef!" if !Aro::Dom::Action::TYPES.keys.include?(action_storage_key) ||
+      Aro::Dom::Action::TYPES[action_storage_key].nil?
+
     unless action_storage_key.nil?
       Aro::Dom::Action.perform(
         Aro::Dom::Action::TYPES.keys.select{|k|
           k == action_storage_key
         }.first,
-        store.get_key("action_params")
+        store.safe_get_key("action_params")
       )
     else
       Aro::Dom::Ma_ain.i2097i_bookmark
@@ -74,11 +106,5 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
       puts inspect
       puts :todo_implement_invalid_action_handling
     end
-  end
-
-  private
-
-  def sync
-    Aro::Dom::DataBase.sync_menu_item(self)
   end
 end

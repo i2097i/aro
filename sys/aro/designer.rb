@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   designer.rb
@@ -11,9 +13,9 @@
 module Aro
   module Dom
     class Designer
-      ACTION_LJUST = 22
-      VALUE_LJUST = 22
-      CLASS_LJUST = 22
+      ACTION_LJUST = 27
+      VALUE_LJUST = 27
+      CLASS_LJUST = 27
 
       def self.design_oss_om
         oss_home_path = File.expand_path(Dir.pwd)
@@ -59,6 +61,7 @@ module Aro
 
           case selected_menu_item_uuid.to_sym
           when :back
+            # todo: call_stack_bread_crumbs
             Aro::Dom::Ma_ain.back!
           when :open_menu
             design_menu(
@@ -110,12 +113,14 @@ module Aro
           new_name.empty? ||
           new_name.kind_of?(FalseClass)
 
-          design_menu_item(menu.generate_new_item(new_name))
+          new_item = menu.generate_new_item(new_name)
+          raise "error generating new item!" if new_item.nil?
+
+          design_menu_item(new_item.uuid, menu)
         else
           Aro::P.say("#{new_name.inspect} is invalid")
+          design_menu(menu)
         end
-
-        design_menu(menu)
       end
 
       def self.design_menu(menu = nil)
@@ -215,7 +220,7 @@ module Aro
           },
           {
             name: "(edit_action)".ljust(ACTION_LJUST) +
-              "".ljust(VALUE_LJUST) +
+              "#{menu_item.action_display_text}".ljust(VALUE_LJUST) +
               "Aro::Dom::MenuItem::Action(+)".ljust(CLASS_LJUST),
             value: :edit_action
           }
@@ -251,16 +256,7 @@ module Aro
       end
 
       def self.edit_action_for(menu_item)
-        # {
-        #   action_name:,
-        #   action_key: Aro::Dom::Action::TYPES[*][:key],
-        #   action_params: {
-        #     aro_class_name:,
-        #     aro_class_method:
-        #   }
-        # }
-
-        action_name = menu_item.store.get_key("action_name")&.to_sym
+        action_name = menu_item.store.safe_get_key("action_name")&.to_sym
 
         raise "missing action!" if action_name.nil?
 
@@ -276,10 +272,10 @@ module Aro
             value: :edit_type
           },
           {
-            name: "(edit_action)".ljust(ACTION_LJUST) +
-              "".ljust(VALUE_LJUST) +
+            name: "(edit_method)".ljust(ACTION_LJUST) +
+              "#{menu_item.action_display_text}".ljust(VALUE_LJUST) +
               "Aro::Dom::MenuItem::Action(#{action_name})".ljust(CLASS_LJUST),
-            value: :edit_action
+            value: :edit_method
           }
         ]
         v = Aro::P.default_select(
@@ -290,9 +286,9 @@ module Aro
         case v.to_sym
         when :edit_type
           design_action_for(menu_item, overwrite: true)
-        when :edit_action
-          Aro::Dom::Ma_ain.i2097i_bookmark
-          puts :todo_open_action_editor
+        when :edit_method
+          # todo: case when for oss_om_entry types here
+          Aro::Dom::Oss_OpenMenu.create_exec_oss_om_entry_for(menu_item)
         end
       end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   menu.rb
@@ -25,14 +27,10 @@ class Aro::Dom::Menu < ActiveRecord::Base
     Aro::Dom::DataBase::Directory.find_by(uuid: uuid)
   end
 
-  def generate_new_item(new_item_name)
+  def generate_new_item(localized_name, for_type: :user)
     new_menu_item = new_menu_item&.to_s
-    new_menu_item = menu_items.create
-    Aro::Dom::Locale.add_i18n_key(
-      new_item_name,
-      library_name: :menu_items,
-      new_i18n_display_key: new_menu_item.uuid,
-    )
+    new_menu_item = menu_items.create(type_flag: for_type)
+    Aro::Dom::DataBase.sync_menu_item!(new_menu_item, localized_name)
     new_menu_item
   end
 
@@ -40,59 +38,42 @@ class Aro::Dom::Menu < ActiveRecord::Base
     return unless is_menu_named?(:ma_ain) &&
       menu_items.empty?
 
-    [:security, :quit].each{|k|
-      i = generate_new_item(k)
+    [:settings, :quit].each{|k|
+      i = generate_new_item(k, for_type: :system)
 
       i.aro_file.write!(
         Aro::Dom::Store.build_exec_oss_om_params!(
           Aro::Dom::Ma_ain,
           "exec_#{k}!",
-          label: k
+          k
         )
       )
     }
   end
 
-  def generate_security!
-    return unless is_menu_named?(:security) &&
+  def generate_settings!
+    return unless is_menu_named?(:settings) &&
       menu_items.empty?
 
-    [:git, :ssh].each{|s|
-      k = "#{s}_config"
-      i = generate_new_item(k)
+    [:git, :ssh].each{|k|
+      i = generate_new_item(k, for_type: :system)
 
       i.aro_file.write!(
         Aro::Dom::Store.build_exec_oss_om_params!(
           Aro::Dom::Oss_OpenMenu,
-          "open_#{k}",
-          label: k
+          "open_#{k}!",
+          k
         )
       )
     }
   end
 
-  def generate_ssh_config!
-    return unless is_menu_named?(:ssh_config) &&
-      menu_items.empty?
-
-
-    # [].each{|s|
-    #   k = "#{s}_config"
-    #   i = generate_new_item(k)
-
-    #   i.aro_file.write!(
-    #     Aro::Dom::Store.build_exec_oss_om_params!(
-    #       Aro::Dom::Oss_OpenMenu,
-    #       "open_#{k}",
-    #       label: k
-    #     )
-    #   )
-    # }
+  def generate_user_default!
+    return unless menu_items.empty?
+    generate_new_item(I18n.t("open_menu.default_user_item_text", localized_name: localized_name))
   end
 
-  def generate_git_config!
-
-  end
+  private
 
   def is_menu_named?(name_sym)
     name_sym = name_sym&.to_sym
@@ -100,4 +81,14 @@ class Aro::Dom::Menu < ActiveRecord::Base
     !directory.nil? &&
       directory.unix_path.to_sym == name_sym
   end
+
+  # todo:
+  # def generate_ssh!
+
+  # end
+
+  # def generate_git!
+
+  # end
+
 end

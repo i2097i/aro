@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
   
   v.rb

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   tar_go_for_root_sec.rb

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   data.rb
@@ -34,11 +36,11 @@ class Aro::Dom::DataBase < ActiveRecord::Base
 
     case menu_sym
     when :ma_ain
-      # nothing to do here yet
       menu.generate_ma_ain!
-    when :security
-      # todo:
-      menu.generate_security!
+    when :settings
+      menu.generate_settings!
+    else
+      menu.generate_user_default!
     end
 
     # return the menu
@@ -49,9 +51,28 @@ class Aro::Dom::DataBase < ActiveRecord::Base
     Aro::Dom::DataBase.find_or_create_by(unix_path: Aro::Dom::Menu.table_name)
   end
 
-  def self.sync_menu_item(menu_item)
-    # todo:
-    puts "todo: #{__method__} #{menu_item.inspect}"
+  def self.sync_menu_item!(menu_item, localized_name)
+    raise "missing menu_item!" unless !menu_item.nil? &&
+      menu_item.kind_of?(Aro::Dom::MenuItem)
+
+    Aro::Dom::Locale.update_i18n_key(
+      localized_name,
+      menu_item.uuid,
+      library_name: :menu_items
+    )
+
+    # set up by system menus
+    return true if menu_item.system?
+
+    # ensure default menu_item.aro_file exists
+    # for user-created menu items
+    menu_item.aro_file.write!(
+      Aro::Dom::Store.build_exec_oss_om_params!(
+        Aro::Dom::Oss_OpenMenu,
+        :name, # just call Aro::Dom::Oss_OpenMenu.name
+        menu_item.localized_name
+      )
+    )
   end
 
   def self.ensure_data_base_exist!

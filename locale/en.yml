@@ -8,6 +8,7 @@ en:
     get_new_value_from_user: "input new value (press enter to cancel): "
     select_exec_oss_om_const: "which oss_om class will run this action?"
     select_exec_oss_om_method: "%{class} method to run?"
+    default_user_item_text: "item 1 for %{localized_name} menu"
     designer:
       create_menu: "enter display text for the new menu"
     errors:

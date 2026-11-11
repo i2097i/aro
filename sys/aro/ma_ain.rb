@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 =begin
 
   ma_ain.rb
@@ -28,6 +30,12 @@ module Aro
       #
       #
 
+      EXEC_METHODS = [
+        :exec_browse_data_bases!,
+        :exec_settings!,
+        :exec_quit!
+      ]
+
       RUN_MODES = [
         :design,
         :run
@@ -46,7 +54,8 @@ module Aro
       attr_accessor :current_menu, :previous_menu
       attr_accessor :data_mutex, :store_mutex
       attr_accessor :stores
-      attr_accessor :valid_security
+      # todo: unused currently. init instance with hashing algo stuff
+      attr_accessor :valid_settings
       attr_accessor :run_mode
 
       def reign!
@@ -64,7 +73,9 @@ module Aro
           Aro::P.say("Aro::Dom::Designer.design")
           Aro::Dom::Designer.design
         rescue RuntimeError => e
+
           Aro::P.say("#{e.class}! #{e.inspect}")
+          self.class.i2097i_bookmark
           reign!
         end
       end
@@ -77,8 +88,8 @@ module Aro
       end
 
       def self.i2097i_bookmark
-        Aro::P.less(
-          Thread.current.backtrace.reverse.map{|l|
+        Aro::P.less("\n#{UNICODE_KEYS[:bang] * Aro::Mancy::OS} <breakpoint> #{self.name}\n\n" +
+          Thread.current.backtrace[1..].reverse.map{|l|
             l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
           }.last(Aro::Mancy::V).join("\n")
         )
@@ -94,7 +105,7 @@ module Aro
 
       def self.is_encrypted?
         !Aro::Cor.ivar(:oss_om_ssh_key).nil? &&
-          !self.instance.valid_security.nil?
+          !self.instance.valid_settings.nil?
       end
 
       def self.domain
@@ -155,13 +166,18 @@ module Aro
 
         options << {name: "#{UNICODE_KEYS[:integral]}(#{Aro::Mancy::ARO_DIRECTORY})", value: :open_menu}
 
-        options += self.instance.current_menu.menu_items.map{|mi| mi.as_tty}
+        options += self.instance.current_menu.menu_items.select{|mi| mi.user?}.map{|mi| mi.as_tty}
+        options += self.instance.current_menu.menu_items.select{|mi| mi.system?}.map{|mi| mi.as_tty}
 
         options
       end
 
-      def self.exec_security!
-        Aro::Dom::Ma_ain.open!(:security)
+      def self.exec_browse_data_bases!
+        Aro::Dom::Ma_ain.open!(:browse_data_bases)
+      end
+
+      def self.exec_settings!
+        Aro::Dom::Ma_ain.open!(:settings)
       end
 
       def self.exec_quit!
@@ -169,7 +185,7 @@ module Aro
       end
 
       def get_store_for(aro_file)
-        return if aro_file.nil?
+        raise "invalid aro_file!" if aro_file.nil?
 
         if @stores[aro_file.uuid].nil?
           new_store = Aro::Dom::Store.new

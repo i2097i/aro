@@ -39,33 +39,45 @@ class Aro::Dom::Store
     puts :todo_validate_updates_or_depricate
     puts __method__
 
-    Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
+    # Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
       store_instance = Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
       updates.each{|k, v|
-        store_instance.set_key(k, v)
+
+        store_instance.save_key_value_pair(k, v)
         Aro::P.say([
           "reading in #{k} after setting to #{v} in #{aro_file.aro_file_path}",
-          "got value => #{store_instance.get_key(k)}"
+          "got value => #{store_instance.safe_get_key(k)}"
         ])
       }
-    end
+    # end
   end
 
+  def save_key_value_pair(k, v)
+    set_key(k, v)
+  end
 
-  def self.save_exec_oss_om_params!(oss_om_const, oss_om_method)
+  def save_exec_oss_om_params!(oss_om_const, oss_om_method, label)
     Aro::P.say(__method__)
-    built = build_exec_oss_om_params!(oss_om_const, oss_om_method)
     Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
-      built.each{|k, v| self.instance.set_key(k, v)}
+      built = self.class.build_exec_oss_om_params!(oss_om_const, oss_om_method, label)
+      built.each{|k, v| self.set_key(k, v)}
     end
   end
 
-  def self.build_exec_oss_om_params!(oss_om_const, oss_om_method, label: nil)
+  def self.build_exec_oss_om_params!(oss_om_const, oss_om_method, label)
     Aro::P.say(__method__)
+    # {
+    #   action_name:,
+    #   action_key: Aro::Dom::Action::TYPES[:OSS_OM][:key],
+    #   action_params: {
+    #     aro_class_name:,
+    #     aro_class_method:
+    #   }
+    # }
     raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const)
     raise "invalid oss_om_method!" unless oss_om_const.methods.include?(oss_om_method.to_sym)
     {
-      action_name: label || "#{oss_om_const.name}.#{oss_om_method}",
+      action_name: label,
       action_key: :exec_oss_om,
       action_params: {
         aro_class_name: oss_om_const.name,
@@ -73,6 +85,17 @@ class Aro::Dom::Store
       }
     }
   end
+
+  def safe_get_key(k)
+    safe_key = nil
+    Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
+      safe_key = get_key(k)
+    end
+
+    safe_key
+  end
+
+  private
 
   def get_key(key)
     return if open_file_path.nil?
@@ -88,20 +111,19 @@ class Aro::Dom::Store
     # open storage
     @is_open = true
     storage_contents = {}
-    begin
+    @parser_error = Aro::Dom::Ssh.decrypt_file!(open_file_path)
+    unless @parser_error.kind_of?(StandardError) ||
+      StandardError.subclasses.include?(@parser_error.class)
+
+      # return value from Aro::Dom::Ssh.decrypt_file!
+      # is not an error.
+      storage_contents = @parser_error
       @parser_error = nil
-      # read storage
-      storage_contents = JSON.parse(
-        ::File.read(open_file_path, encoding: "UTF-8")
-      )
-    rescue StandardError => e
+    end
+
+    unless @parser_error.nil?
       @is_open = false
-      if @parser_error.nil?
-        @parser_error = e
-        return get_key(key)
-      else
-        raise @parser_error
-      end
+      raise @parser_error
     end
 
     # only update the cache value if present in storage
@@ -132,25 +154,25 @@ class Aro::Dom::Store
 
     # return if storage open
     # non-persisted cache values update next cycle
-    return if @is_open
+    return true if @is_open
 
     # open storage
     @is_open = true
     storage_contents = {}
-    begin
+
+    @parser_error = Aro::Dom::Ssh.decrypt_file!(open_file_path)
+    unless @parser_error.kind_of?(StandardError) ||
+      StandardError.subclasses.include?(@parser_error.class)
+
+      # return value from Aro::Dom::Ssh.decrypt_file!
+      # is not an error.
+      storage_contents = @parser_error
       @parser_error = nil
-      # read storage
-      storage_contents = JSON.parse(
-        ::File.read(open_file_path, encoding: "UTF-8")
-      )
-    rescue StandardError => e
+    end
+
+    unless @parser_error.nil?
       @is_open = false
-      if @parser_error.nil?
-        @parser_error = e
-        return get_key(key)
-      else
-        raise @parser_error
-      end
+      raise @parser_error
     end
 
     # update storage and cache
@@ -162,12 +184,16 @@ class Aro::Dom::Store
     }
 
     # write storage
-    ::File.open(open_file_path, "w+") do |f|
-      f.write(storage_contents.to_json)
+    write_result = Aro::Dom::Ssh.write_encrypted_file!(open_file_path, storage_contents.to_json)
+    unless write_result == true
+      @is_open = false
+      raise write_result
     end
 
     # close storage
     @is_open = false
     clear_cache! if @clear_flag
+
+    write_result
   end
 end
