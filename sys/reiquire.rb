@@ -99,10 +99,7 @@ module Reiquire
 
   def self.require_reiquires!
     # require sys folders
-    Reiquire::requires([:shr, :aro, :cli])
-
-    # require cli module
-    require_relative :"./cli".to_s
+    Reiquire::requires([:shr, :aro])
   end
 
   def self.require_dependencies!

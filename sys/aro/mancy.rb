@@ -13,9 +13,6 @@
 module Aro
   class Mancy
     include Singleton
-
-    attr_accessor :current, :db_busy, :db_thread
-
     A  = :"@"
     O  = 0
     S  = 1
@@ -24,7 +21,7 @@ module Aro
     N  = 4
     V  = 5
     DATE_FORMAT = "%A %d %b %Y %I:%M:%S %p"
-    NAME_FILE = :".aro_space"
+    NAME_FILE = :".oss_om_space"
     ARO_DIRECTORY = :".oss_om"
 
     I2097I = :i2097i
@@ -61,14 +58,6 @@ module Aro
       C:       100,
       MMXCVII: Aro::Mancy::I2097I[Aro::Mancy::S..Aro::Mancy::N].to_i,
     }
-
-    def self.teck
-      self.init(root_dir)
-      if Aro::Mancy.in_aro? && Aro::Mancy.is_initialized?
-        self.instance.current = Aro::Teck.current_teck
-      end
-      self.instance.current
-    end
 
     def self.create(aro_name, is_test: false)
       Aro::D.say(__method__)

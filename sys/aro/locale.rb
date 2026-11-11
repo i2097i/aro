@@ -123,7 +123,7 @@ module Aro
           Aro::P.say("Psych.load_file(#{library_filepath})")
           loaded_file = Psych.load_file(library_filepath)
         rescue Psych::SyntaxError => e
-          Aro::P.say(I18n.t("errors.locale_load_error", named: library_name))
+          Aro::P.say(I18n.t("open_menu.errors.locale_load_error", named: library_name))
           Aro::P.say(e.inspect)
           Aro::P.say(e.message)
           return nil

@@ -11,7 +11,6 @@
 module Aro
   module Dom
     class Oss_OpenMenu
-
       EXEC_CLASSES = [
         Aro::Dom::Oss_OpenMenu,
         Aro::Dom::Ma_ain
@@ -39,7 +38,7 @@ module Aro
         Reiquire.reload_i18n!
 
         puts TTY::Font.new(:standard).write(
-          "open_menu",
+          "f#{Aro::Mancy::ARO_DIRECTORY}",
           letter_spacing: 1
         )
       end
@@ -125,10 +124,10 @@ module Aro
         # run the install program until setup is complete
         # return false to cancel
         while missing_required_files do
-          gitconfig_path = ::File.join(Aro::Dom::Ma_ain.root_dir, ".git/config")
+          gitconfig_path = ::File.join(key_path, ".git/config")
           Aro::P.say("checking for local .git/config at #{gitconfig_path}")
-          if ::File.exist?(gitconfig_path) &&
-            required_local_files.any?{|rlf| !::File.exist?(rlf)}
+          if ::File.exist?(gitconfig_path)
+            break unless required_local_files.empty?{|rlf| !::File.exist?(rlf)}
 
             Aro::P.say("#{self.name} already installed. continuing...")
             return git_log!
@@ -201,7 +200,7 @@ module Aro
             default_config = {
               user_email: git_email,
               user_name: git_username,
-              init_defaultBranch: :open_menu,
+              init_defaultBranch: :foss_om,
               user_signingkey: "#{private_key_path}.pub",
               gpg_format: :ssh,
               commit_gpgsign: true,

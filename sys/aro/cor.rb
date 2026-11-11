@@ -2,7 +2,7 @@
   
   cor.rb
 
-  cor interface.
+  oss_om cor.
 
   by i2097i
 
@@ -11,17 +11,6 @@
 require_relative :"./mancy".to_s
 
 module Aro
-  # cli entrypoint
-  def self.cor
-    if CLI::FLAGS[:HELP].include?(CLI::ARGV1)
-      CLI.usage_cor
-      exit(CLI::EXIT_CODES[:SUCCESS])
-    end
-
-    Aro::Cor.instance.load_env!
-    Aro::Cor.process_command(ARGV)
-  end
-
   class Cor
     include Singleton
 
@@ -55,11 +44,11 @@ module Aro
     ARO_IVA_PREFIX = :ARO_IVA_
     ARO_OVA_PREFIX = :ARO_OVA_
 
-    COR_FILE = :".cor"
+    COR_FILE = :".om_cor"
 
     DATE_FORMAT = "%Y:%m:%d:%H:%M:%S"
 
-    DBG_MODES = [:development, :test]
+    DEBUG_MODES = [:development, :test]
 
     # possible envs
     #
@@ -69,24 +58,6 @@ module Aro
       DEVELOPMENT: :development,
       PRODUCTION: :production,
       TEST: :test
-    }
-
-    # possible interfaces
-    #
-    # example usage:
-    # Aro::Cor::INTERFACES[:TERMINAL]
-    INTERFACES = {
-      TERMINAL: :terminal,
-      LANIMRET: :lanimret,
-    }
-
-    # possible dimensions
-    #
-    # example usage:
-    # Aro::Cor::DMS[:DEV_TAROT]
-    DMS = {
-      DEV_TAROT: :dev_tarot,
-      RUBY_FACOT: :ruby_facot
     }
 
     # ovar and ivar access
@@ -113,11 +84,11 @@ module Aro
     # types used in definition
     #
     # example usage:
-    # Aro::Cor::DEF_TYPES[:INT][:validator].call(unvalid, Aro::Cor::DEF[:DIMENSION])
+    # Aro::Cor::DEF_TYPES[:INT][:validator].call(unvalid, Aro::Cor::DEF[:])
     DEF_TYPES = {
       BOOL: {
         name: Aro::Cor::TYPES[:BOOL],
-        description: I18n.t("cor.type.bool_description"),
+        description: I18n.t("cor.types.bool_description"),
         converter: Proc.new{|v| v.kind_of?(TrueClass) ? true : false},
         validator: Proc.new{|unvalid, k, v|
           Aro::Cor.def_valid?(k, v) &&
@@ -126,7 +97,7 @@ module Aro
       },
       INT: {
         name: Aro::Cor::TYPES[:INT],
-        description: I18n.t("cor.type.int_description"),
+        description: I18n.t("cor.types.int_description"),
         converter: Proc.new{|v| v.to_i},
         validator: Proc.new{|unvalid, k, v|
           Aro::V.say("validating #{k} (#{Aro::Cor::DEF_TYPES[:INT][:name]})")
@@ -142,7 +113,7 @@ module Aro
       },
       STRING: {
         name: Aro::Cor::TYPES[:STRING],
-        description: I18n.t("cor.type.string_description"),
+        description: I18n.t("cor.types.string_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
           Aro::Cor.def_valid?(k, v) &&
@@ -151,7 +122,7 @@ module Aro
       },
       VALUES: {
         name: Aro::Cor::TYPES[:VALUES],
-        description: I18n.t("cor.type.values_description"),
+        description: I18n.t("cor.types.values_description"),
         converter: Proc.new{|v| v.to_s},
         validator: Proc.new{|unvalid, k, v|
           Aro::Cor.def_valid?(k, v) &&
@@ -227,12 +198,6 @@ module Aro
           test: I18n.t("cor.env.test_description"),
         }
       },
-      VERBOSE: {
-        type: Aro::Cor::TYPES[:BOOL],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Cor::BOOLS[:FALSE],
-        description: I18n.t("cor.verbose_description"),
-      },
       LOG_DATABASE: {
         type: Aro::Cor::TYPES[:BOOL],
         access: Aro::Cor::DEF_ACCESS[:WRITE],
@@ -248,88 +213,22 @@ module Aro
           path: I18n.t("cor.oss_om_home.path_description"),
         }
       },
-      OSS_OM_PKEY_PATH: {
-        type: Aro::Cor::TYPES[:STRING],
+      VERBOSE: {
+        type: Aro::Cor::TYPES[:BOOL],
         access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: nil,
-        description: I18n.t("cor.oss_om_pkey_path.description"),
-        possible_values: {
-          path: I18n.t("cor.oss_om_pkey_path.path_description"),
-        }
-      },
-      INTERFACE: {
-        type: Aro::Cor::TYPES[:VALUES],
-        implemented: false,
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Cor::INTERFACES[:TERMINAL],
-        description: I18n.t("cor.interface.description"),
-        possible_values: {
-          terminal: I18n.t("cor.interface.terminal_description"),
-          lanimret: I18n.t("cor.interface.lanimret_description")
-        }
-      },
-      DIMENSION: {
-        type: Aro::Cor::TYPES[:VALUES],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Cor::DMS[:DEV_TAROT],
-        description: I18n.t("cor.dimension.description"),
-        possible_values: {
-          dev_tarot: I18n.t("cor.dimension.dev_tarot_description"),
-          ruby_facot: I18n.t("cor.dimension.ruby_facot_description"),
-        }
-      },
-      HEIGHT: {
-        type: Aro::Cor::TYPES[:INT],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:XLII],
-        min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:MMXCVII],
-        description: I18n.t(
-          "cor.height_description",
-          min: Aro::Mancy::NUMERALS[:I],
-          max: Aro::Mancy::NUMERALS[:MMXCVII],
-        ),
-      },
-      WIDTH: {
-        type: Aro::Cor::TYPES[:INT],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:C] + Aro::Mancy::NUMERALS[:XXXVII] - Aro::Mancy::S,
-        min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:MMXCVII],
-        description: I18n.t(
-          "cor.width_description",
-          min: Aro::Mancy::NUMERALS[:I],
-          max: Aro::Mancy::NUMERALS[:MMXCVII],
-        ),
-      },
-      Z: {
-        type: Aro::Cor::TYPES[:INT],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:I],
-        min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:MMXCVII],
-        description: I18n.t(
-          "cor.z_description",
-          min: Aro::Mancy::NUMERALS[:I],
-          max: Aro::Mancy::NUMERALS[:MMXCVII],
-        ),
-      },
-      Z_MAX: {
-        type: Aro::Cor::TYPES[:INT],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Mancy::NUMERALS[:VII],
-        min: Aro::Mancy::NUMERALS[:I],
-        max: Aro::Mancy::NUMERALS[:XXII],
-        description: I18n.t(
-          "cor.z_max_description",
-          min: Aro::Mancy::NUMERALS[:I],
-          max: Aro::Mancy::NUMERALS[:XXII],
-        ),
+        value: Aro::Cor::BOOLS[:FALSE],
+        description: I18n.t("cor.verbose_description"),
       },
 
       #
       # => ovars
       #
+      OSS_OM_FILE: {
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:READ],
+        value: Aro::Mancy::NAME_FILE,
+        description: I18n.t("cor.aro_env.OSS_OM_FILE_description"),
+      },
       O: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
@@ -360,29 +259,11 @@ module Aro
         value: Aro::Mancy::N,
         description: I18n.t("cor.aro_env.N_description"),
       },
-      NAME_FILE: {
-        type: Aro::Cor::TYPES[:STRING],
+      N: {
+        type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
-        value: Aro::Mancy::NAME_FILE,
-        description: I18n.t("cor.aro_env.NAME_FILE_description"),
-      },
-      I2097I: {
-        type: Aro::Cor::TYPES[:STRING],
-        access: Aro::Cor::DEF_ACCESS[:READ],
-        value: Aro::Mancy::I2097I,
-        description: I18n.t("cor.aro_env.I2097I_description"),
-      },
-      YES: {
-        type: Aro::Cor::TYPES[:STRING],
-        access: Aro::Cor::DEF_ACCESS[:READ],
-        value: Aro::Mancy::YES,
-        description: I18n.t("cor.aro_env.YES_description"),
-      },
-      ALL: {
-        type: Aro::Cor::TYPES[:STRING],
-        access: Aro::Cor::DEF_ACCESS[:READ],
-        value: Aro::Mancy::ALL,
-        description: I18n.t("cor.aro_env.ALL_description"),
+        value: Aro::Mancy::V,
+        description: I18n.t("cor.aro_env.V_description"),
       },
     }
 
@@ -417,13 +298,6 @@ module Aro
           lines += Aro::Cor.ivars_dump
         when :ovars
           lines += Aro::Cor.ovars_dump
-        else
-          # print cor commands
-          self.instance.use_less = true
-          lines << ""
-          lines << I18n.t("constants.commands")
-          lines << ""
-          lines += Aro::Cmd.display_lines
         end
 
         self.instance.base_lines_def = lines
@@ -492,12 +366,7 @@ module Aro
       k = k.upcase.to_sym
 
       current_value = Aro::Cor.ivar(k)
-      if k == :DIMENSION &&
-        new_value == Aro::Cor::DMS[:DEV_TAROT].to_s &&
-        !Aro::T.is_dev_tarot_avail?
-        Aro::P.say("unable to set dimension dev_tarot. device not present.")
-        return
-      elsif k == :OSS_OM_HOME
+      if k == :OSS_OM_HOME
         unless Dir.exist?(new_value)
           Aro::P.say("cannot set #{k} to #{new_value}. the directory does not exist.")
         end
@@ -705,16 +574,16 @@ module Aro
       lines << "#   => Aro::Cor::DEF_TYPES: #{v[:type]}"
       case v[:type]
       when Aro::Cor::DEF_TYPES[:BOOL][:name]
-        lines << "#   => #{I18n.t("cor.type.bool_description")}"
+        lines << "#   => #{I18n.t("cor.types.bool_description")}"
       when Aro::Cor::DEF_TYPES[:INT][:name]
-        lines << "#   => #{I18n.t("cor.type.int_description")}"
+        lines << "#   => #{I18n.t("cor.types.int_description")}"
         lines << "#   => #{I18n.t("cor.minimum")}: #{v[:min]}"
         lines << "#   => #{I18n.t("cor.maximum")}: #{v[:max]}"
       when Aro::Cor::DEF_TYPES[:STRING][:name]
-        lines << "#   => #{I18n.t("cor.type.string_description")}"
+        lines << "#   => #{I18n.t("cor.types.string_description")}"
         lines << "#   => use \"double quotes\" if there are any spaces."
       when Aro::Cor::DEF_TYPES[:VALUES][:name]
-        lines << "#   => #{I18n.t("cor.type.values_description")}"
+        lines << "#   => #{I18n.t("cor.types.values_description")}"
         lines << "#   => #{I18n.t("cor.possible_values")}:"
         lines += lines_newline_comment
         v[:possible_values].each{|name, description|

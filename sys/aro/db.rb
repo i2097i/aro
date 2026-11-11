@@ -63,7 +63,15 @@ module Aro
       end
 
       unless File.exist?(db_config_filepath)
-        pw = Aro::P.p.ask(I18n.t("messages.base_db_password_prompt", aro_name: aro_name, sql_filepath: self.class.sql_filepath))
+        pw = Aro::P.p.ask(
+          I18n.t(
+            "open_menu.base_db_password_prompt",
+            sql_filepath: self.class.sql_filepath.gsub(
+              Aro::Mancy.root_dir, Aro::Mancy::ARO_DIRECTORY.to_s
+            ),
+            aro_name: aro_name
+          )
+        )
         pw = aro_name unless pw.present?
         # create database config yaml file
         c = {

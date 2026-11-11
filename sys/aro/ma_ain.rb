@@ -13,17 +13,34 @@ module Aro
     class Ma_ain < Aro::Mancy
       # inherits Singleton
 
+      # evolution planning
+      #
+      # Cor       (copy of Aro::Cor)
+      # Engine
+      # Designer
+      # Git
+      # Ssh
+      # Block     (copy of Aro::Dom::DataBase)
+      # Chain     (copy of Aro::Dom::Directory)
+      # Node      (copy of Aro::Dom::File)
+      # List      (copy of Aro::Dom::Menu)
+      # ListItem  (copy of Aro::Dom::MenuItem)
+      #
+      #
+
       RUN_MODES = [
         :design,
         :run
       ]
 
       UNICODE_KEYS = {
+        bang:     "\u0021",
         check:    "\u2713",
         close:    "\u2A2F",
+        integral: "\u222B",
         secure:   "\u266F",
         unsecure: "\u266D",
-        bang:     "\u0021"
+        yinyang:  "\u262F",
       }
 
       attr_accessor :current_menu, :previous_menu
@@ -34,7 +51,8 @@ module Aro
 
       def reign!
         begin
-          self.run_mode = Aro::Mancy::O
+          # default mode is :run
+          self.run_mode = Aro::Mancy::S
           Aro::P.say("Aro::Dom::Oss_OpenMenu.install!")
           if Aro::Dom::Oss_OpenMenu.install!
             Aro::P.say("Aro::Dom::Oss_OpenMenu.boot!")
@@ -135,7 +153,7 @@ module Aro
 
         options << {back: :back, value: :back} unless self.instance.previous_menu.nil?
 
-        options << {name: :open_menu, value: :open_menu}
+        options << {name: "#{UNICODE_KEYS[:integral]}(#{Aro::Mancy::ARO_DIRECTORY})", value: :open_menu}
 
         options += self.instance.current_menu.menu_items.map{|mi| mi.as_tty}
 

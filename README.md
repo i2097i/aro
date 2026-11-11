@@ -1,70 +1,26 @@
-# aro
->__a cli for tarot__ - follow the way of the aro eht.
+## aro
+### oss_om*
+
+> __a oss_om unix utility__
 
 ##### __current version:__
 [![Gem Version](https://badge.fury.io/rb/aro.svg)](https://badge.fury.io/rb/aro)
 
-aro is a command line interface that allows you to manage multiple tarot tecks.
+aro is a unix utility for designing and creating linux applications.
 
-
-### install
+### installation
 
 ```bash
 $ gem install aro
 ```
 
-### use
+### usage
 
 ```bash
-$ aro -h
+$ oss_om
 ```
-
-[usage documentation](https://raw.githubusercontent.com/i2097i/aro/refs/heads/master/locale/en.usage.yml)
-
-
-[card definitions](https://raw.githubusercontent.com/i2097i/aro/refs/heads/master/locale/en.cards.yml)
-
-
-### develop
-
-[rubygems.org guides](https://guides.rubygems.org)
-
-```ruby
-# the Rakefile contains bundler's gem_tasks,
-# which are used for gem development.
-
-# Rakefile
-require "bundler/gem_tasks"
-```
-
-```bash
-# list tasks
-$ rake --tasks
-
-# build gem
-$ rake build
-
-# build and install
-$ rake install
-```
-
-### test
-
-```bash
-$ rspec
-```
-
-#### pre-commit hook:
-```bash
-: cat .git/hooks/pre-commit
-#!/bin/sh
-
-echo "running pre-commit hooks"
-echo "exec rspec -f d -o ./spec/spec.log"
-exec rspec -f d -o ./spec/spec.log
-```
-
 [license](http://opensource.org/licenses/MIT)
+
 [issues](https://github.com/i2097i/aro/issues)
 
->aro by i2097i is copyright (2026)
+##### aro (v0.2.7) by scot reichman is copyright (2026)

@@ -21,7 +21,7 @@ module Aro
 
     def self.should_print?
       return false unless Aro::Cor.ivar(:ENV).present?
-      Aro::Cor::DBG_MODES.include?(Aro::Cor.ivar(:ENV)&.to_sym)
+      Aro::Cor::DEBUG_MODES.include?(Aro::Cor.ivar(:ENV)&.to_sym)
     end
   end
 end

@@ -12,7 +12,8 @@ module Aro
   module Dom
     class Designer
       ACTION_LJUST = 22
-      CLASS_LJUST = 33
+      VALUE_LJUST = 22
+      CLASS_LJUST = 22
 
       def self.design_oss_om
         oss_home_path = File.expand_path(Dir.pwd)
@@ -36,7 +37,7 @@ module Aro
           Aro::P.say("exiting...")
           exit
         else
-          # restart Aro::Dom::Ma_ain
+          # restarts Aro::Dom::Ma_ain.reign!
           raise "needs install!"
         end
         design
@@ -120,36 +121,40 @@ module Aro
       def self.design_menu(menu = nil)
         return create_menu if menu.nil?
 
-        # action,class,value
+        # action,value,class
         options = [
           {
             name: :back,
             value: :back
           },
           {
-            name: :toggle_run_mode,
+            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) toggle_run_mode".ljust(ACTION_LJUST) +
+              ":#{Aro::Dom::Ma_ain::RUN_MODES[Aro::Dom::Ma_ain.instance.run_mode || Aro::Mancy::O]}".ljust(VALUE_LJUST) +
+              "available_modes: #{Aro::Dom::Ma_ain::RUN_MODES.to_s}".ljust(CLASS_LJUST),
             value: :toggle_run_mode
           },
           {
-            name: :open_shell,
+            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) open_shell".ljust(ACTION_LJUST) +
+              "open a bash session".ljust(VALUE_LJUST),
             value: :open_shell
           },
           {
             name: "(edit_title)".ljust(ACTION_LJUST) +
-              "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST) +
-              "#{menu.localized_name}",
+              "#{menu.localized_name}".ljust(VALUE_LJUST) +
+              "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST),
             value: :edit_title
           }
         ] + menu.menu_items.map{|mi|
           {
             name: "(edit_item)".ljust(ACTION_LJUST) +
-              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST) +
-              "#{mi.localized_name}",
+              "#{mi.localized_name}".ljust(VALUE_LJUST) +
+              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST),
             value: mi.uuid
           }
         } + [
           {
             name: "(create_item)".ljust(ACTION_LJUST) +
+              "".ljust(VALUE_LJUST) +
               "#{Aro::Dom::MenuItem.name}(+)".ljust(CLASS_LJUST),
             value: :create_item
           }
@@ -204,12 +209,13 @@ module Aro
           },
           {
             name: "(edit_title)".ljust(ACTION_LJUST) +
-              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST) +
-              "#{menu_item.localized_name}",
+              "#{menu_item.localized_name}".ljust(VALUE_LJUST) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST),
             value: :edit_title
           },
           {
             name: "(edit_action)".ljust(ACTION_LJUST) +
+              "".ljust(VALUE_LJUST) +
               "Aro::Dom::MenuItem::Action(+)".ljust(CLASS_LJUST),
             value: :edit_action
           }
@@ -265,12 +271,13 @@ module Aro
           },
           {
             name: "(edit_type)".ljust(ACTION_LJUST) +
-              "#{Aro::Dom::Action.name}(#{action_name})".ljust(CLASS_LJUST) +
-              "#{menu_item.action_storage_key}",
+              "#{menu_item.action_storage_key}".ljust(VALUE_LJUST) +
+              "#{Aro::Dom::Action.name}(#{action_name})".ljust(CLASS_LJUST),
             value: :edit_type
           },
           {
             name: "(edit_action)".ljust(ACTION_LJUST) +
+              "".ljust(VALUE_LJUST) +
               "Aro::Dom::MenuItem::Action(#{action_name})".ljust(CLASS_LJUST),
             value: :edit_action
           }
@@ -302,8 +309,8 @@ module Aro
         ] + Aro::Dom::Action::TYPES.keys.map{|k|
           {
             name: "(#{k})".ljust(ACTION_LJUST) +
-              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST) +
-              "#{menu_item.localized_name}",
+              "#{menu_item.localized_name}".ljust(VALUE_LJUST) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST),
             value: k
           }
         }
