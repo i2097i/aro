@@ -31,7 +31,7 @@ module Aro
       #
 
       EXEC_METHODS = [
-        :exec_browse_data_bases!,
+        :exec_library!,
         :exec_settings!,
         :exec_quit!
       ]
@@ -73,9 +73,8 @@ module Aro
           Aro::P.say("Aro::Dom::Designer.design")
           Aro::Dom::Designer.design
         rescue RuntimeError => e
-          Aro::P.say(sane_backtrace!)
           Aro::P.say("#{e.class}! #{e.inspect}")
-          reign!
+          raise e
         end
       end
 
@@ -86,19 +85,12 @@ module Aro
         @stores = {}
       end
 
-      def sane_backtrace!
-        Thread.current.backtrace[1..].reverse.map{|l|
+      def self.sane_backtrace!
+        backtrace = Thread.current.backtrace[Aro::Mancy::S..].reverse.map{|l|
           l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
         }.last(Aro::Mancy::V).join("\n")
-      end
 
-      def self.i2097i_bookmark
-        return
-        Aro::P.less(
-          "\n#{UNICODE_KEYS[:bang] * Aro::Mancy::OS} <breakpoint> #{self.name}\n\n" +
-          sane_backtrace!
-        )
-        puts __method__
+        Aro::Cor.is_development? ? Aro::P.less(backtrace) : puts(backtrace)
       end
 
       def self.init!
@@ -145,7 +137,7 @@ module Aro
         begin
           staged_menu = Aro::Dom::DataBase.open_menu(data_base)
         rescue StandardError => e
-          raise "#{self.name} error opening data_base #{data_base}! #{e.inspect}"
+          raise "#{self.name} error opening data_base '#{data_base}'! #{e.inspect}"
         end
         self.instance.previous_menu = self.instance.current_menu
         self.instance.current_menu = staged_menu
@@ -177,8 +169,8 @@ module Aro
         options
       end
 
-      def self.exec_browse_data_bases!
-        Aro::Dom::Ma_ain.open!(:browse_data_bases)
+      def self.exec_library!
+        Aro::Dom::Ma_ain.open!(:library)
       end
 
       def self.exec_settings!

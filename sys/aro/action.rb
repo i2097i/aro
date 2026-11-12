@@ -132,7 +132,7 @@ module Aro
         when :exec_system
           Aro::P.say("todo: implement!")
           Aro::P.say("when :exec_system")
-          Aro::Dom::Ma_ain.i2097i_bookmark
+          Aro::Dom::Ma_ain.sane_backtrace!
           command_string = params[:command_string]
           if command_string.nil?
             raise "invalid command_string! #{command_string}"
@@ -144,7 +144,7 @@ module Aro
         when :exec_data_base
           Aro::P.say("todo: implement!")
           Aro::P.say("when :exec_data_base")
-          Aro::Dom::Ma_ain.i2097i_bookmark
+          Aro::Dom::Ma_ain.sane_backtrace!
         end
       end
 

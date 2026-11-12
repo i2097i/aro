@@ -101,7 +101,7 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
         store.safe_get_key("action_params")
       )
     else
-      Aro::Dom::Ma_ain.i2097i_bookmark
+      Aro::Dom::Ma_ain.sane_backtrace!
       puts __method__
       puts inspect
       puts :todo_implement_invalid_action_handling

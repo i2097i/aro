@@ -45,7 +45,7 @@ class Aro::Dom::Menu < ActiveRecord::Base
     return unless is_menu_named?(:ma_ain) &&
       menu_items.empty?
 
-    [:settings, :quit].each{|k|
+    [:library, :settings, :quit].each{|k|
       i = generate_new_item(k, for_type: :system)
 
       i.aro_file.write!(

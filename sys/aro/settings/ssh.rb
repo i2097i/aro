@@ -20,7 +20,6 @@ module Aro
       ID_KEY_BASE = :id_oss_om
 
       def self.open!
-        generate_ssh_menu_items!
         Aro::Dom::Ma_ain.open!(:ssh)
       end
 
@@ -80,30 +79,8 @@ module Aro
 
       private
 
-      def self.generate_ssh_menu_items!
-        ssh_menu = Aro::Dom::DataBase.open_menu(:ssh)
-        return unless Aro::Mancy::S == ssh_menu.menu_items.count
-        # todo: generate ssh menu items if needed here
-        existing_item = ssh_menu.menu_items.first
-        raise "missing existing item in #{self.name}.#{__method__}!" if existing_item.nil?
-        EXEC_METHODS.each{|method_name|
-          menu_item = existing_item || ssh_menu.generate_new_item(method_name, for_type: :system)
-
-          ssh_menu.rename_item(menu_item, method_name) unless existing_item.nil?
-          menu_item.aro_file.write!(
-            Aro::Dom::Store.build_exec_oss_om_params!(
-              self,
-              method_name,
-              "#{:ssh} #{method_name}"
-            )
-          )
-          # clear existing item var
-          existing_item = nil unless existing_item.nil?
-        }
-      end
-
       def self.encrypt!(decrypted_json)
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
         puts __method__
         puts :expects_decrypted_json
 
@@ -111,7 +88,7 @@ module Aro
       end
 
       def self.decrypt!(encrypted_json)
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
         puts __method__
         puts :expects_encrypted_json
 

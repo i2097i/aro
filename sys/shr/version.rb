@@ -11,10 +11,9 @@
 =end
 
 module Aro
-  VERSION = :"0.2.7"
+  VERSION = :"0.2.8"
   RELEASE_NOTES = [
-    :galvinizes_foss_om_utility,
-    :creates_foss_om_foundation,
-    :removes_tecks
+    :basic_settings,
+    :data_base_management
   ].join(" | ")
 end

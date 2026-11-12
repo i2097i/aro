@@ -349,6 +349,10 @@ module Aro
       Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:TEST].to_s
     end
 
+    def self.is_development?
+      Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:DEVELOPMENT].to_s
+    end
+
     # out vars
     def self.ovar(suffix)
       Aro::Cor::DEF[suffix][:value]

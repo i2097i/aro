@@ -18,6 +18,7 @@ module Aro
         "Aro::Cor",
         "Aro::Dom::Oss_OpenMenu",
         "Aro::Dom::Ma_ain",
+        "Aro::Dom::Library",
         "Aro::Dom::Git",
         "Aro::Dom::Ssh"
       ]
@@ -176,7 +177,7 @@ module Aro
               core_editor: :nano
             }.each{|k, v|
               Aro::P.say("system(git config #{k.to_s.gsub("_", ".")} #{v})")
-              system(:"git config #{k.to_s.gsub("_", ".")} #{v}".to_s)
+              system(:"git config #{k.to_s.gsub("_", ".")} '#{v}'".to_s)
             }
           end
 
@@ -256,7 +257,7 @@ module Aro
 
         puts __method__
         puts self.name
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
       end
 
       def self.create_exec_data_base_entry_for(menu_item)
@@ -269,7 +270,7 @@ module Aro
 
         puts __method__
         puts self.name
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
       end
 
       def self.open_git!
@@ -298,7 +299,7 @@ module Aro
           ".git/hooks/pre-commit"
         )
 
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
         puts "todo: ensure pre-commit file matches current generated content"
         pre_commit_validation_allow_invalid = true
         pre_commit_hook_valid = ::File.exist?(pre_commit_hook_path) && pre_commit_validation_allow_invalid

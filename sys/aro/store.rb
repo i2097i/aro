@@ -35,7 +35,7 @@ class Aro::Dom::Store
       ::File.write(aro_file.aro_file_path, {}.to_json)
     end
 
-    Aro::Dom::Ma_ain.i2097i_bookmark
+    Aro::Dom::Ma_ain.sane_backtrace!
     puts :todo_validate_updates_or_depricate
     puts __method__
 

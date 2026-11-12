@@ -29,7 +29,7 @@ module Aro
         Aro::P.say(__method__)
         Aro::P.say("todo: #{self.class.name}")
         Aro::P.say(self.class.inspect)
-        Aro::Dom::Ma_ain.i2097i_bookmark
+        Aro::Dom::Ma_ain.sane_backtrace!
       end
     end
   end
