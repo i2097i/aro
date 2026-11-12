@@ -74,7 +74,7 @@ class Aro::Dom::Store
     #   }
     # }
     raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const.name)
-    raise "invalid oss_om_method!" unless oss_om_const.methods.include?(oss_om_method.to_sym)
+    raise "invalid oss_om_method! #{oss_om_method}" unless oss_om_const.methods.include?(oss_om_method.to_sym)
     {
       action_name: label,
       action_key: :exec_oss_om,

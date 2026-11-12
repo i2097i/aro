@@ -65,11 +65,14 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
     raise "invalid action typedef!" if !Aro::Dom::Action::TYPES.keys.include?(action_storage_key) ||
       Aro::Dom::Action::TYPES[action_storage_key].nil?
 
-    action_params = store.safe_get_key("action_params")
+    action_params = store.safe_get_key("action_params")&.symbolize_keys
     unless action_params.kind_of?(Hash)
       raise "missing or invalid action_params: #{action_params.inspect}"
     end
 
+    puts action_params
+    puts "here " * 111
+    puts action_storage_key.class
     result = nil
     case action_storage_key
     when :OSS_OM

@@ -31,7 +31,7 @@ module Aro
       def self.boot!
         # soft-load (source vars only) existing .cor
         Aro::P.say("sourcing existing Aro::Cor env...")
-        Aro::Cor.instance.load_env
+        Aro::Cor.instance.source_config
 
         # set up oss_om workspace
         Aro::P.say("Aro::Dom::Ma_ain.init!")
@@ -72,7 +72,7 @@ module Aro
         end
         # soft-load (source vars only) existing .cor
         Aro::P.say("sourcing existing Aro::Cor env...")
-        Aro::Cor.instance.load_env
+        Aro::Cor.instance.source_config
 
         # set up oss_om workspace
         Aro::P.say("Aro::Dom::Ma_ain.init!")
@@ -281,7 +281,7 @@ module Aro
       end
 
       def self.open_cor!
-        Aro::Dom::Ma_ain.open!(:cor)
+        Aro::Cor.open!
       end
 
       private

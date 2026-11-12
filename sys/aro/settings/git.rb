@@ -21,8 +21,7 @@ module Aro
       ]
 
       def self.open!
-        git_menu = Aro::Dom::DataBase.open_menu(:git)
-        generate_git_menu_items! if Aro::Mancy::S == git_menu.menu_items.count
+        generate_git_menu_items!
         Aro::Dom::Ma_ain.open!(:git)
       end
 
@@ -45,7 +44,8 @@ module Aro
 
       def self.generate_git_menu_items!
         git_menu = Aro::Dom::DataBase.open_menu(:git)
-        # todo: generate git menu items if needed here
+        return unless Aro::Mancy::S == git_menu.menu_items.count
+
         existing_item = git_menu.menu_items.first
         raise "missing existing item in #{self.name}.#{__method__}!" if existing_item.nil?
         EXEC_METHODS.each{|method_name|

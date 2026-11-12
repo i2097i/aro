@@ -12,6 +12,10 @@
 
 module Reiquire
   def self.aro
+
+    # ensure i18n is initialized
+    initialize_i18n!
+
     # require runtime dependencies
     require_dependencies!
 
@@ -50,6 +54,18 @@ module Reiquire
   end
 
   private
+
+
+  def self.require_dependencies!
+    [
+      :active_record,
+      :"active_record/schema_dumper",
+      :fileutils,
+      :"tty-font",
+      :"tty-prompt"
+    ].each{|d| require d.to_s}
+  end
+
 
   def self.copy_locale_files_from_gem!
     Aro::D.say(__method__)
@@ -106,25 +122,22 @@ module Reiquire
     Reiquire::requires([:shr, :aro])
   end
 
-  def self.require_dependencies!
-    [
-      :active_record,
-      :"active_record/schema_dumper",
-      :fileutils,
-      :i18n,
-      :"tty-font",
-      :"tty-prompt"
-    ].each{|d| require d.to_s}
-  end
-
   def self.gem_dir
     Dir[
       Gem.loaded_specs[Aro.to_s.downcase]&.full_gem_path
     ].first
   end
 
+  def self.initialize_i18n!
+    require :i18n.to_s
+    aro_i18n_library = File.join(gem_dir, :locale.to_s, "*.yml")
+    I18n.load_path += Dir[aro_i18n_library]
+    I18n.available_locales = [:en]
+    I18n.default_locale = :en
+    I18n.reload!
+  end
+
   def self.configure_i18n
-    Aro::D.say(__method__)
     gem_dir_variable = gem_dir
     copy_locale_files_from_gem!
     aro_i18n_library = File.join(gem_dir_variable, :locale.to_s, "*.yml")
@@ -136,17 +149,8 @@ module Reiquire
       aro_i18n_library = File.join(Aro::Dom::Locale.locale_dir, "*.yml")
     end
     I18n.load_path += Dir[aro_i18n_library]
-
     I18n.available_locales = [:en]
     I18n.default_locale = :en
-    Aro::D.say("I18n.load_path")
-    Aro::D.say(I18n.load_path)
-    Aro::D.say("I18n.available_locales")
-    Aro::D.say(I18n.available_locales)
-    Aro::D.say("I18n.default_locale")
-    Aro::D.say(I18n.default_locale)
-    Aro::D.say("I18n.reload!")
-    Aro::D.say(I18n.reload!)
   end
 
 end

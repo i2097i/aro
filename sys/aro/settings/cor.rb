@@ -17,43 +17,34 @@ module Aro
     include Singleton
 
     EXEC_METHODS = [
-      :print_ivars,
-      :print_ovars
+      :print_env,
+      :print_cor_def,
+      :edit_config
     ]
 
-    attr_accessor :base_lines_def, :display_lines, :use_less
-
-    def self._ivars
-      ivars_dump
+    def self.print_env
+      self.instance.source_config
+      Aro::P.say(:printing_ivars)
+      Aro::P.say("\n")
+      puts ivars_dump.join("\n")
+      Aro::P.say(:printing_ovars)
+      Aro::P.say("\n")
+      puts ovars_dump.join("\n")
     end
 
-    def self.print_ovars
-
+    def self.print_cor_def
+      self.instance.source_config
+      Aro::P.say("Aro::Cor::DEF")
+      Aro::P.say("\n" + Aro::Cor::DEF.map{|k, v|
+        "#{k}: " + JSON.pretty_generate(Aro::Cor::DEF[k])
+      }.join("\n"))
     end
 
-    def self.process_command(args)
-      k = Aro::Cor::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first
-      unless k.nil?
-        unless args[Aro::Mancy::OS].nil?
-          # config var_name var_value
-          Aro::Cor.set_ivar(args[Aro::Mancy::S], args[Aro::Mancy::OS])
-        end
-
-        # basic show var description and value
-        self.instance.display_lines = self.instance.lines_var(k, Aro::Cor::DEF[k], ENV[Aro::Cor.ivar_k(k)])
-      else
-        self.instance.display_lines = Aro::Cor.base_lines(args)
-      end
-
-      if Aro::Mancy.in_aro?
-        if self.instance.use_less
-          Aro::P.less(self.instance.display_lines.join("\n"))
-        else
-          Aro::P.say(self.instance.display_lines)
-        end
-      end
-
-      self.instance.use_less = false
+    def self.edit_config
+      puts self.name
+      puts __method__
+      puts :todo_open_cor_editor
+      Aro::Dom::Ma_ain.i2097i_bookmark
     end
 
     ARO_IVA_PREFIX = :ARO_IVA_
@@ -282,14 +273,10 @@ module Aro
       },
     }
 
-    def load_env
-      self.base_lines_def = nil
-      return unless File.exist?(Aro::Cor.cor_filepath)
-
-      source_config
-      Aro::P.say("running in #{Aro::Cor.ivar(:ENV)} env.")
-
-      self.display_lines = Aro::Cor.base_lines
+    def self.open!
+      cor_menu = Aro::Dom::DataBase.open_menu(:cor)
+      generate_cor_menu_items! if Aro::Mancy::S == cor_menu.menu_items.count
+      Aro::Dom::Ma_ain.open!(:cor)
     end
 
     def load_env!
@@ -297,28 +284,7 @@ module Aro
         generate_config
       end
 
-      load_env
-    end
-
-    def self.base_lines(args = nil)
-      if self.instance.base_lines_def.nil? || args.present?
-        args = [] if args.nil?
-        # print Aro::Cor::DEF
-        lines = []
-        lines << "loaded config at: #{Aro::Cor.cor_filepath}"
-        lines << "<Aro::Cor::DEF>"
-        self.instance.use_less = false
-        case args[Aro::Mancy::S]&.to_sym
-        when :ivars
-          lines += Aro::Cor.ivars_dump
-        when :ovars
-          lines += Aro::Cor.ovars_dump
-        end
-
-        self.instance.base_lines_def = lines
-      end
-
-      return self.instance.base_lines_def
+      source_config
     end
 
     def self.cor_filepath
@@ -330,19 +296,6 @@ module Aro
 
     def self.is_test?
       Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:TEST].to_s
-    end
-
-    def self.discon
-      height = Aro::Cor.ivar(:HEIGHT).to_i
-      width = Aro::Cor.ivar(:WIDTH).to_i
-
-      result = {
-        HEIGHT: height,
-        WIDTH: width,
-        DIVIDER: :".".to_s
-      }
-
-      result
     end
 
     # out vars
@@ -437,6 +390,7 @@ module Aro
     end
 
     def source_config
+      return unless File.exist?(Aro::Cor.cor_filepath)
       Aro::D.say(I18n.t("cor.source", name: Aro::Cor.cor_filepath))
       File.read(Aro::Cor.cor_filepath).split("\n").select{|line|
         line.match?(/export #{Aro::Cor::ARO_IVA_PREFIX}/)
@@ -463,7 +417,7 @@ module Aro
       }
     end
 
-    # from_memory true means write current config to file
+        # from_memory true means write current config to file
     def generate_config(from_memory = false)
       # todo: localize generated config text
       Aro::D.say(I18n.t("cor.generate", name: Aro::Cor.cor_filepath))
@@ -522,6 +476,30 @@ module Aro
         lines += lines_div
       end
       write_config(lines)
+    end
+
+    private
+
+    def self.generate_cor_menu_items!
+      cor_menu = Aro::Dom::DataBase.open_menu(:cor)
+      return unless Aro::Mancy::S == cor_menu.menu_items.count
+
+      existing_item = cor_menu.menu_items.first
+      raise "missing existing item in #{self.name}.#{__method__}!" if existing_item.nil?
+      EXEC_METHODS.each{|method_name|
+        menu_item = existing_item || cor_menu.generate_new_item(method_name, for_type: :system)
+
+        cor_menu.rename_item(menu_item, method_name) unless existing_item.nil?
+        menu_item.aro_file.write!(
+          Aro::Dom::Store.build_exec_oss_om_params!(
+            self,
+            method_name,
+            "#{:cor} #{method_name}"
+          )
+        )
+        # clear existing item var
+        existing_item = nil unless existing_item.nil?
+      }
     end
 
     def write_config(lines)

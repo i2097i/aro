@@ -68,7 +68,7 @@ module Aro
     end
 
     def self.init(root_dir_path)
-      unless Aro::Mancy.in_aro? || Aro::Cor.is_test?
+      unless Aro::Mancy.in_aro?
         Aro::P.say("init aro running in #{root_dir_path} directory...")
         new_name = File.basename(root_dir_path)
         Aro::P.say("echo #{new_name} > #{Aro::Mancy::NAME_FILE.to_s}")

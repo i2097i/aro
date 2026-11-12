@@ -20,8 +20,7 @@ module Aro
       ID_KEY_BASE = :id_oss_om
 
       def self.open!
-        ssh_menu = Aro::Dom::DataBase.open_menu(:ssh)
-        generate_ssh_menu_items! if Aro::Mancy::S == ssh_menu.menu_items.count
+        generate_ssh_menu_items!
         Aro::Dom::Ma_ain.open!(:ssh)
       end
 
@@ -83,6 +82,7 @@ module Aro
 
       def self.generate_ssh_menu_items!
         ssh_menu = Aro::Dom::DataBase.open_menu(:ssh)
+        return unless Aro::Mancy::S == ssh_menu.menu_items.count
         # todo: generate ssh menu items if needed here
         existing_item = ssh_menu.menu_items.first
         raise "missing existing item in #{self.name}.#{__method__}!" if existing_item.nil?

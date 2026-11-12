@@ -40,9 +40,7 @@ module Aro
     end
 
     def self.base_db_dir
-      db_dir = File.join(Aro::Mancy.root_dir, :db.to_s)
-      return "#{db_dir}_#{Aro::Cor::ENVS[:TEST]}" if Aro::Cor.is_test?
-      db_dir
+      File.join(Aro::Mancy.root_dir, :db.to_s)
     end
 
     def self.sql_filepath

@@ -126,6 +126,15 @@ module Aro
       def self.design_menu(menu = nil)
         return create_menu if menu.nil?
 
+        item_mapper = Proc.new{|mi|
+          {
+            name: "(edit_item)".ljust(ACTION_LJUST) +
+              "#{mi.localized_name}".ljust(VALUE_LJUST) +
+              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST),
+            value: mi.uuid
+          }
+        }
+
         # action,value,class
         options = [
           {
@@ -149,17 +158,13 @@ module Aro
               "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST),
             value: :edit_title
           }
-        ] + menu.menu_items.map{|mi|
-          {
-            name: "(edit_item)".ljust(ACTION_LJUST) +
-              "#{mi.localized_name}".ljust(VALUE_LJUST) +
-              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST),
-            value: mi.uuid
-          }
-        } + [
+        ] +
+          menu.menu_items.select{|mi| mi.user?}.map{|mi| item_mapper.call(mi)} +
+          menu.menu_items.select{|mi| mi.system?}.map{|mi| item_mapper.call(mi)} +
+        [
           {
             name: "(create_item)".ljust(ACTION_LJUST) +
-              "".ljust(VALUE_LJUST) +
+              "add new item to #{menu.localized_name}".ljust(VALUE_LJUST) +
               "#{Aro::Dom::MenuItem.name}(+)".ljust(CLASS_LJUST),
             value: :create_item
           }
