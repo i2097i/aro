@@ -15,11 +15,15 @@ module Aro
     class Oss_OpenMenu
 
       EXEC_CLASSES = [
-        Aro::Dom::Oss_OpenMenu,
-        Aro::Dom::Ma_ain
+        "Aro::Cor",
+        "Aro::Dom::Oss_OpenMenu",
+        "Aro::Dom::Ma_ain",
+        "Aro::Dom::Git",
+        "Aro::Dom::Ssh"
       ]
 
       EXEC_METHODS = [
+        :open_cor!,
         :open_git!,
         :open_ssh!
       ]
@@ -85,7 +89,7 @@ module Aro
           File.basename(private_key_path) + :".pub".to_s,
         ]
         missing_required_files = required_local_files.any?{|rlf| !::File.exist?(rlf)}
-        return git_log! unless missing_required_files
+        return Aro::Dom::Git.log unless missing_required_files
         # run the install program until setup is complete
         # return false to cancel
         while missing_required_files do
@@ -95,7 +99,7 @@ module Aro
             break unless required_local_files.empty?{|rlf| !::File.exist?(rlf)}
 
             Aro::P.say("#{self.name} already installed. continuing...")
-            return git_log!
+            return Aro::Dom::Git.log
           else
             Aro::P.say("missing local .git/config!")
             Aro::P.say("setting up local git config...")
@@ -188,7 +192,7 @@ module Aro
           Aro::P.say("#{self.name} installed successfully.")
         end
 
-        return git_log!
+        return Aro::Dom::Git.log
       end
 
       def self.create_exec_oss_om_entry_for(menu_item)
@@ -205,8 +209,8 @@ module Aro
 
         const_options = [
           {name: :back, value: :back}
-        ] + EXEC_CLASSES.map{|oss_om_const|
-          {name: oss_om_const.name, value: oss_om_const.name}
+        ] + EXEC_CLASSES.map{|exec_class_name|
+          {name: exec_class_name, value: exec_class_name}
         }
 
         selected_const_name = Aro::P.default_select(
@@ -218,7 +222,7 @@ module Aro
         Aro::P.say("'#{selected_const_name}' selected")
 
         selected_const = selected_const_name.constantize
-        raise "invalid const! #{selected_const}" unless EXEC_CLASSES.include?(selected_const)
+        raise "invalid const! #{selected_const}" unless EXEC_CLASSES.include?(selected_const.name)
 
         method_options = [{name: :back, value: :back}] +
           selected_const.methods.select{|m|
@@ -269,16 +273,15 @@ module Aro
       end
 
       def self.open_git!
-        Aro::Dom::Ma_ain.open!(:git)
+        Aro::Dom::Git.open!
       end
 
       def self.open_ssh!
-        Aro::Dom::Ma_ain.open!(:ssh)
+        Aro::Dom::Ssh.open!
       end
 
-      def self.git_log!
-        Aro::P.say("opening git log...")
-        system(:"git log".to_s)
+      def self.open_cor!
+        Aro::Dom::Ma_ain.open!(:cor)
       end
 
       private

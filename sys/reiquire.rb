@@ -20,6 +20,8 @@ module Reiquire
 
     # configure locale
     configure_i18n
+
+    require_relative "./ma_ain"
   end
 
   def self.requires(dirs)

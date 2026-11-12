@@ -10,13 +10,26 @@
 
 =end
 
-require_relative :"./mancy".to_s
+# require_relative :"./mancy".to_s
 
 module Aro
   class Cor
     include Singleton
 
+    EXEC_METHODS = [
+      :print_ivars,
+      :print_ovars
+    ]
+
     attr_accessor :base_lines_def, :display_lines, :use_less
+
+    def self._ivars
+      ivars_dump
+    end
+
+    def self.print_ovars
+
+    end
 
     def self.process_command(args)
       k = Aro::Cor::DEF.keys.filter{|k| k == args[Aro::Mancy::S]&.upcase&.to_sym}&.first

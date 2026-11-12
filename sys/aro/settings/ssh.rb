@@ -13,7 +13,21 @@
 module Aro
   module Dom
     class Ssh
+      EXEC_METHODS = [
+        :print_public_key,
+      ]
+
       ID_KEY_BASE = :id_oss_om
+
+      def self.open!
+        ssh_menu = Aro::Dom::DataBase.open_menu(:ssh)
+        generate_ssh_menu_items! if Aro::Mancy::S == ssh_menu.menu_items.count
+        Aro::Dom::Ma_ain.open!(:ssh)
+      end
+
+      def self.print_public_key
+        Aro::P.less(::File.read("#{id_key_path}.pub"))
+      end
 
       def self.write_encrypted_file!(file_path, decrypted_json)
         # todo: validations
@@ -66,6 +80,27 @@ module Aro
       end
 
       private
+
+      def self.generate_ssh_menu_items!
+        ssh_menu = Aro::Dom::DataBase.open_menu(:ssh)
+        # todo: generate ssh menu items if needed here
+        existing_item = ssh_menu.menu_items.first
+        raise "missing existing item in #{self.name}.#{__method__}!" if existing_item.nil?
+        EXEC_METHODS.each{|method_name|
+          menu_item = existing_item || ssh_menu.generate_new_item(method_name, for_type: :system)
+
+          ssh_menu.rename_item(menu_item, method_name) unless existing_item.nil?
+          menu_item.aro_file.write!(
+            Aro::Dom::Store.build_exec_oss_om_params!(
+              self,
+              method_name,
+              "#{:ssh} #{method_name}"
+            )
+          )
+          # clear existing item var
+          existing_item = nil unless existing_item.nil?
+        }
+      end
 
       def self.encrypt!(decrypted_json)
         Aro::Dom::Ma_ain.i2097i_bookmark

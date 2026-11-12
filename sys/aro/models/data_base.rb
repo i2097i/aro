@@ -69,7 +69,7 @@ class Aro::Dom::DataBase < ActiveRecord::Base
     menu_item.aro_file.write!(
       Aro::Dom::Store.build_exec_oss_om_params!(
         Aro::Dom::Oss_OpenMenu,
-        :name, # just call Aro::Dom::Oss_OpenMenu.name
+        :name, # defaults to Aro::Dom::Oss_OpenMenu.name
         menu_item.localized_name
       )
     )
@@ -87,11 +87,6 @@ class Aro::Dom::DataBase < ActiveRecord::Base
 
   def self.ensure_data_base_git!
     ensure_data_base_exist! unless Dir.exist?(root_aro_unix_data_dir)
-    # FileUtils.chdir(root_aro_unix_data_dir) do
-    #   Aro::P.say("todo:")
-    #   Aro::P.say(__method__)
-    #   # system("git init")
-    # end
   end
 
   def unix_path_valid?

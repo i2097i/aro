@@ -39,17 +39,16 @@ class Aro::Dom::Store
     puts :todo_validate_updates_or_depricate
     puts __method__
 
-    # Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
-      store_instance = Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
-      updates.each{|k, v|
 
-        store_instance.save_key_value_pair(k, v)
-        Aro::P.say([
-          "reading in #{k} after setting to #{v} in #{aro_file.aro_file_path}",
-          "got value => #{store_instance.safe_get_key(k)}"
-        ])
-      }
-    # end
+    store_instance = Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
+    updates.each{|k, v|
+
+      store_instance.save_key_value_pair(k, v)
+      Aro::P.say([
+        "reading in #{k} after setting to #{v} in #{aro_file.aro_file_path}",
+        "got value => #{store_instance.safe_get_key(k)}"
+      ])
+    }
   end
 
   def save_key_value_pair(k, v)
@@ -74,7 +73,7 @@ class Aro::Dom::Store
     #     aro_class_method:
     #   }
     # }
-    raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const)
+    raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const.name)
     raise "invalid oss_om_method!" unless oss_om_const.methods.include?(oss_om_method.to_sym)
     {
       action_name: label,

@@ -34,6 +34,13 @@ class Aro::Dom::Menu < ActiveRecord::Base
     new_menu_item
   end
 
+  def rename_item(menu_item, new_name)
+    raise "invalid menu item!" unless !menu_item.nil? &&
+      self.menu_items.include?(menu_item)
+
+    Aro::Dom::DataBase.sync_menu_item!(menu_item, new_name)
+  end
+
   def generate_ma_ain!
     return unless is_menu_named?(:ma_ain) &&
       menu_items.empty?
@@ -55,7 +62,7 @@ class Aro::Dom::Menu < ActiveRecord::Base
     return unless is_menu_named?(:settings) &&
       menu_items.empty?
 
-    [:git, :ssh].each{|k|
+    [:cor, :git, :ssh].each{|k|
       i = generate_new_item(k, for_type: :system)
 
       i.aro_file.write!(
@@ -81,14 +88,4 @@ class Aro::Dom::Menu < ActiveRecord::Base
     !directory.nil? &&
       directory.unix_path.to_sym == name_sym
   end
-
-  # todo:
-  # def generate_ssh!
-
-  # end
-
-  # def generate_git!
-
-  # end
-
 end

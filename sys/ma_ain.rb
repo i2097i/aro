@@ -88,6 +88,7 @@ module Aro
       end
 
       def self.i2097i_bookmark
+        return
         Aro::P.less("\n#{UNICODE_KEYS[:bang] * Aro::Mancy::OS} <breakpoint> #{self.name}\n\n" +
           Thread.current.backtrace[1..].reverse.map{|l|
             l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
@@ -140,7 +141,7 @@ module Aro
         begin
           staged_menu = Aro::Dom::DataBase.open_menu(data_base)
         rescue StandardError => e
-          raise "open_menu error! #{e.inspect}"
+          raise "#{self.name} error opening data_base #{data_base}! #{e.inspect}"
         end
         self.instance.previous_menu = self.instance.current_menu
         self.instance.current_menu = staged_menu
