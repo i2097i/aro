@@ -1,11 +1,18 @@
 en:
   cor:
-    env:
-      description: "oss_om run environment."
-      development_description: "add debugging verbosity to standard oss_om output."
-      production_description: "standard oss_om output."
-      test_description: "used for rspec."
-    aro_env:
+    
+    ivars:
+      env:
+        description: "oss_om run environment."
+        development_description: "add debugging verbosity to standard oss_om output."
+        production_description: "standard oss_om output."
+        test_description: "used for testing."
+      verbose_description: "enable verbose logging in development."
+      oss_om_home:
+        description: "the directory where .oss_om/ lives."
+        path_description: "any valid path file path. defaults to $HOME"
+      log_db_description: "enable database transaction logging."
+    ovars:
       O_description: "zero."
       S_description: "one."
       OS_description: "two."
@@ -13,14 +20,10 @@ en:
       N_description: "four."
       V_description: "five."
       OSS_OM_FILE_description: "generated oss_om project file."
-    oss_om_home:
-      description: "the directory where .oss_om/ lives."
-      path_description: "any valid path file path. defaults to $HOME"
+    
     oss_om_pkey_path:
       description: "path to openssl public key. used to perform oss_om actions."
       path_description: "path to openssl key (usually ~/.ssh/id_key_name.pub)"
-    verbose_description: "enable verbose logging in development."
-    log_aro_db_description: "show aro database transactions"
     generate: "generating default cor file at %{name}."
     source: "installing ivars from %{name}..."
     maximum: "max"

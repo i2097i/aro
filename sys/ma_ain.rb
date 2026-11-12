@@ -73,9 +73,8 @@ module Aro
           Aro::P.say("Aro::Dom::Designer.design")
           Aro::Dom::Designer.design
         rescue RuntimeError => e
-
+          Aro::P.say(sane_backtrace!)
           Aro::P.say("#{e.class}! #{e.inspect}")
-          self.class.i2097i_bookmark
           reign!
         end
       end
@@ -87,12 +86,17 @@ module Aro
         @stores = {}
       end
 
+      def sane_backtrace!
+        Thread.current.backtrace[1..].reverse.map{|l|
+          l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
+        }.last(Aro::Mancy::V).join("\n")
+      end
+
       def self.i2097i_bookmark
         return
-        Aro::P.less("\n#{UNICODE_KEYS[:bang] * Aro::Mancy::OS} <breakpoint> #{self.name}\n\n" +
-          Thread.current.backtrace[1..].reverse.map{|l|
-            l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
-          }.last(Aro::Mancy::V).join("\n")
+        Aro::P.less(
+          "\n#{UNICODE_KEYS[:bang] * Aro::Mancy::OS} <breakpoint> #{self.name}\n\n" +
+          sane_backtrace!
         )
         puts __method__
       end

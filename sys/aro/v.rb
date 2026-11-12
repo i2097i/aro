@@ -20,7 +20,7 @@ module Aro
     end
 
     def self.should_print?
-      Aro::Cor.ivar(:VERBOSE).to_s == Aro::Cor::BOOLS[:TRUE].to_s && super
+      Aro::Cor.ivar(:VERBOSE).to_s == Aro::Cor::BOOLS[:TRUE].to_s
     end
   end
 end

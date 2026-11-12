@@ -70,9 +70,6 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
       raise "missing or invalid action_params: #{action_params.inspect}"
     end
 
-    puts action_params
-    puts "here " * 111
-    puts action_storage_key.class
     result = nil
     case action_storage_key
     when :OSS_OM

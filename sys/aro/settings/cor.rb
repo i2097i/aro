@@ -19,7 +19,7 @@ module Aro
     EXEC_METHODS = [
       :print_env,
       :print_cor_def,
-      :edit_config
+      :edit_ivars
     ]
 
     def self.print_env
@@ -40,12 +40,63 @@ module Aro
       }.join("\n"))
     end
 
-    def self.edit_config
-      puts self.name
-      puts __method__
-      puts :todo_open_cor_editor
-      Aro::Dom::Ma_ain.i2097i_bookmark
-    end
+    def self.edit_ivars
+
+      Aro::P.say("#{self.name}.#{__method__}")
+      selected_def_key = Aro::P.default_select(
+        I18n.t("open_menu.edit_ivars_select"),
+        [{name: :back, value: :back}] + Aro::Cor::DEF.select{|k, v|
+          # do not allow writing to OSS_OM_HOME from oss_om
+          v[:access] == Aro::Cor::DEF_ACCESS[:WRITE] && k != :OSS_OM_HOME
+        }.map{|k, v|
+          {name: "#{k} (#{ivar(k)})", value: k}
+        }
+      )
+
+      return if selected_def_key == :back
+      Aro::P.say("'#{selected_def_key}' selected")
+
+      new_value = nil
+      while new_value.nil? || 
+        !self.instance.valid_var?(
+          new_value,
+          selected_def_key,
+          Aro::Cor::DEF[selected_def_key]
+        )
+
+        case Aro::Cor::DEF[selected_def_key][:type]
+        when :bool
+          new_value = !(ivar(selected_def_key) == :true.to_s)
+        when :int, :string
+          new_value = Aro::P.p.ask(
+            I18n.t(
+              "open_menu.new_ivar_value_prompt",
+              def_key: selected_def_key,
+              current_value: ivar(selected_def_key),
+              value_type: Aro::Cor::DEF[selected_def_key][:type]
+            )
+          )
+        when :values
+          new_value = Aro::P.default_select(
+            I18n.t("open_menu.edit_ivars_possible_values_select", def_key: selected_def_key),
+            [
+              {name: :back, value: :back}
+            ] + Aro::Cor::DEF[
+              selected_def_key
+            ][:possible_values].map{|k, v|
+              Aro::P.say("#{k}_desc: #{v}") # v is description localized text
+              
+              {name: k, value: k}
+            }
+          )
+
+          return if new_value == :back
+        end
+
+      end
+
+      set_ivar(selected_def_key, new_value)
+     end
 
     ARO_IVA_PREFIX = :ARO_IVA_
     ARO_OVA_PREFIX = :ARO_OVA_
@@ -188,7 +239,7 @@ module Aro
     # adapts I18n translations to generate bash environment vars.
     #
     # example usage:
-    # Aro::Cor::DEF[:Z_MAX]
+    # Aro::Cor::DEF[:ENV]
     DEF = {
       #
       # => ivars
@@ -197,33 +248,33 @@ module Aro
         type: Aro::Cor::TYPES[:VALUES],
         access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Cor::ENVS[:PRODUCTION],
-        description: I18n.t("cor.env.description"),
+        description: I18n.t("cor.ivars.env.description"),
         possible_values: {
-          development: I18n.t("cor.env.development_description"),
-          production: I18n.t("cor.env.production_description"),
-          test: I18n.t("cor.env.test_description"),
-        }
-      },
-      LOG_DATABASE: {
-        type: Aro::Cor::TYPES[:BOOL],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: Aro::Cor::BOOLS[:FALSE],
-        description: I18n.t("cor.log_aro_db_description"),
-      },
-      OSS_OM_HOME: {
-        type: Aro::Cor::TYPES[:STRING],
-        access: Aro::Cor::DEF_ACCESS[:WRITE],
-        value: nil,
-        description: I18n.t("cor.oss_om_home.description"),
-        possible_values: {
-          path: I18n.t("cor.oss_om_home.path_description"),
+          development: I18n.t("cor.ivars.env.development_description"),
+          production: I18n.t("cor.ivars.env.production_description"),
+          test: I18n.t("cor.ivars.env.test_description"),
         }
       },
       VERBOSE: {
         type: Aro::Cor::TYPES[:BOOL],
         access: Aro::Cor::DEF_ACCESS[:WRITE],
         value: Aro::Cor::BOOLS[:FALSE],
-        description: I18n.t("cor.verbose_description"),
+        description: I18n.t("cor.ivars.verbose_description"),
+      },
+      OSS_OM_HOME: {
+        type: Aro::Cor::TYPES[:STRING],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: nil,
+        description: I18n.t("cor.ivars.oss_om_home.description"),
+        possible_values: {
+          path: I18n.t("cor.ivars.oss_om_home.path_description"),
+        }
+      },
+      LOG_DATABASE: {
+        type: Aro::Cor::TYPES[:BOOL],
+        access: Aro::Cor::DEF_ACCESS[:WRITE],
+        value: Aro::Cor::BOOLS[:FALSE],
+        description: I18n.t("cor.ivars.log_db_description"),
       },
 
       #
@@ -233,43 +284,43 @@ module Aro
         type: Aro::Cor::TYPES[:STRING],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::NAME_FILE,
-        description: I18n.t("cor.aro_env.OSS_OM_FILE_description"),
+        description: I18n.t("cor.ovars.OSS_OM_FILE_description"),
       },
       O: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::O,
-        description: I18n.t("cor.aro_env.O_description"),
+        description: I18n.t("cor.ovars.O_description"),
       },
       S: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::S,
-        description: I18n.t("cor.aro_env.S_description"),
+        description: I18n.t("cor.ovars.S_description"),
       },
       OS: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::OS,
-        description: I18n.t("cor.aro_env.OS_description"),
+        description: I18n.t("cor.ovars.OS_description"),
       },
       E: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::E,
-        description: I18n.t("cor.aro_env.E_description"),
+        description: I18n.t("cor.ovars.E_description"),
       },
       N: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::N,
-        description: I18n.t("cor.aro_env.N_description"),
+        description: I18n.t("cor.ovars.N_description"),
       },
       N: {
         type: Aro::Cor::TYPES[:INT],
         access: Aro::Cor::DEF_ACCESS[:READ],
         value: Aro::Mancy::V,
-        description: I18n.t("cor.aro_env.V_description"),
+        description: I18n.t("cor.ovars.V_description"),
       },
     }
 
@@ -399,7 +450,7 @@ module Aro
       }.each{|kv|
         Aro::D.say("variable_to_set: #{kv}")
         result = Aro::Cor.instance.cor_set_ruby_env!(kv[0].gsub(Aro::Cor::ARO_IVA_PREFIX.to_s, ""), kv[1])
-        Aro::D.say("value_was_set: #{result}")
+        Aro::D.say("ENV[#{kv[0]}] set successfully: #{result}")
       }
 
       invalid_defs = validate_config
