@@ -24,7 +24,7 @@ class Aro::Dom::Menu < ActiveRecord::Base
   end
 
   def directory
-    Aro::Dom::DataBase::Directory.find_by(uuid: uuid)
+    @directory ||= Aro::Dom::DataBase::Directory.find_by(uuid: uuid)
   end
 
   def generate_new_item(localized_name, for_type: :user)
@@ -50,9 +50,9 @@ class Aro::Dom::Menu < ActiveRecord::Base
 
       i.aro_file.write!(
         Aro::Dom::Store.build_exec_oss_om_params!(
+          k,
           Aro::Dom::Ma_ain,
-          "exec_#{k}!",
-          k
+          "exec_#{k}!"
         )
       )
     }
@@ -67,9 +67,9 @@ class Aro::Dom::Menu < ActiveRecord::Base
 
       i.aro_file.write!(
         Aro::Dom::Store.build_exec_oss_om_params!(
+          k,
           Aro::Dom::Oss_OpenMenu,
-          "open_#{k}!",
-          k
+          "open_#{k}!"
         )
       )
     }

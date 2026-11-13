@@ -234,9 +234,9 @@ module Aro
         Aro::P.say("oss_om_method '#{selected_method_name}' selected")
 
         menu_item.store.save_exec_oss_om_params!(
+          menu_item.localized_name,
           selected_const_name.constantize,
-          selected_method_name,
-          menu_item.localized_name
+          selected_method_name
         )
       end
 

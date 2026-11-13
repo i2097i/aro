@@ -353,6 +353,10 @@ module Aro
       Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:DEVELOPMENT].to_s
     end
 
+    def self.is_production?
+      Aro::Cor.ivar(:ENV) == Aro::Cor::ENVS[:PRODUCTION].to_s
+    end
+
     # out vars
     def self.ovar(suffix)
       Aro::Cor::DEF[suffix][:value]
@@ -547,9 +551,9 @@ module Aro
         cor_menu.rename_item(menu_item, method_name) unless existing_item.nil?
         menu_item.aro_file.write!(
           Aro::Dom::Store.build_exec_oss_om_params!(
+            "#{:cor} #{method_name}",
             self,
-            method_name,
-            "#{:cor} #{method_name}"
+            method_name
           )
         )
         # clear existing item var

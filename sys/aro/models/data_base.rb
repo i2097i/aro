@@ -61,9 +61,9 @@ class Aro::Dom::DataBase < ActiveRecord::Base
     # for user-created menu items
     menu_item.aro_file.write!(
       Aro::Dom::Store.build_exec_oss_om_params!(
+        menu_item.localized_name,
         Aro::Dom::Oss_OpenMenu,
-        :name, # defaults to Aro::Dom::Oss_OpenMenu.name
-        menu_item.localized_name
+        :name # oss_om_class_method defaults to Aro::Dom::Oss_OpenMenu.name
       )
     )
   end
@@ -141,9 +141,9 @@ class Aro::Dom::DataBase < ActiveRecord::Base
 
       menu_item.aro_file.write!(
         Aro::Dom::Store.build_exec_oss_om_params!(
+          "#{@@data_base_directory.unix_path} #{method_name}",
           oss_om_const_for_exec,
-          method_name,
-          "#{@@data_base_directory.unix_path} #{method_name}"
+          method_name
         )
       )
     }

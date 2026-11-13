@@ -15,7 +15,7 @@ class Aro::Dom::DataBase::Directory < ActiveRecord::Base
   self.table_name = :data_base_directories
   belongs_to :data_base, class_name: "Aro::Dom::DataBase"
 
-  has_many :data_base_files, class_name: "Aro::Dom::DataBase::File"
+  has_many :data_base_files, class_name: "Aro::Dom::DataBase::File", foreign_key: :data_base_directory_id
 
   after_create :sync
   after_commit :sync

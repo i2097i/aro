@@ -98,7 +98,8 @@ class Aro::Dom::MenuItem < ActiveRecord::Base
         Aro::Dom::Action::TYPES.keys.select{|k|
           k == action_storage_key
         }.first,
-        store.safe_get_key("action_params")
+        store.safe_get_key("action_params"),
+        store.safe_get_key("action_data")
       )
     else
       Aro::Dom::Ma_ain.sane_backtrace!

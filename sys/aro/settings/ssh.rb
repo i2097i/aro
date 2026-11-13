@@ -23,6 +23,12 @@ module Aro
         Aro::Dom::Ma_ain.open!(:ssh)
       end
 
+      def self.encryption_installed?
+        ::File.exist?(id_key_path) &&
+          ::File.exist?("#{id_key_path}.pub") &&
+          !encrypt!({not: :equal}).kind_of?(Hash)
+      end
+
       def self.print_public_key
         Aro::P.less(::File.read("#{id_key_path}.pub"))
       end

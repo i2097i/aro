@@ -39,10 +39,8 @@ class Aro::Dom::Store
     puts :todo_validate_updates_or_depricate
     puts __method__
 
-
     store_instance = Aro::Dom::Ma_ain.instance.get_store_for(aro_file)
     updates.each{|k, v|
-
       store_instance.save_key_value_pair(k, v)
       Aro::P.say([
         "reading in #{k} after setting to #{v} in #{aro_file.aro_file_path}",
@@ -55,33 +53,58 @@ class Aro::Dom::Store
     set_key(k, v)
   end
 
-  def save_exec_oss_om_params!(oss_om_const, oss_om_method, label)
+  def save_exec_oss_om_params!(
+    label,
+    oss_om_const,
+    oss_om_method,
+    oss_om_params = [],
+    oss_om_data = {}
+  )
     Aro::P.say(__method__)
     Aro::Dom::Ma_ain.instance.store_mutex.synchronize do
-      built = self.class.build_exec_oss_om_params!(oss_om_const, oss_om_method, label)
+      built = self.class.build_exec_oss_om_params!(
+        label,
+        oss_om_const,
+        oss_om_method,
+        oss_om_params,
+        oss_om_data
+      )
       built.each{|k, v| self.set_key(k, v)}
     end
   end
 
-  def self.build_exec_oss_om_params!(oss_om_const, oss_om_method, label)
+  def self.build_exec_oss_om_params!(
+    label,
+    oss_om_const,
+    oss_om_method,
+    oss_om_params = [],
+    oss_om_data = {}
+  )
     Aro::P.say(__method__)
     # {
     #   action_name:,
     #   action_key: Aro::Dom::Action::TYPES[:OSS_OM][:key],
     #   action_params: {
     #     aro_class_name:,
-    #     aro_class_method:
+    #     aro_class_method:,
+    #     aro_call_params:,
     #   }
+    #   action_data:
     # }
     raise "invalid oss_om_const!" unless Aro::Dom::Oss_OpenMenu::EXEC_CLASSES.include?(oss_om_const.name)
     raise "invalid oss_om_method! #{oss_om_method}" unless oss_om_const.methods.include?(oss_om_method.to_sym)
+
+    # todo: validate oss_om_params && oss_om_data
+
     {
       action_name: label,
       action_key: :exec_oss_om,
       action_params: {
         aro_class_name: oss_om_const.name,
-        aro_class_method: oss_om_method
-      }
+        aro_class_method: oss_om_method,
+        aro_call_params: oss_om_params || []
+      },
+      action_data: oss_om_data
     }
   end
 

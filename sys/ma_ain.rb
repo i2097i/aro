@@ -86,11 +86,17 @@ module Aro
       end
 
       def self.sane_backtrace!
+        return if Aro::Cor.is_production?
+
         backtrace = Thread.current.backtrace[Aro::Mancy::S..].reverse.map{|l|
           l.gsub("#{Reiquire.gem_dir}", "").gsub(Aro::Mancy.root_dir, "")
         }.last(Aro::Mancy::V).join("\n")
 
-        Aro::Cor.is_development? ? Aro::P.less(backtrace) : puts(backtrace)
+        if Aro::Cor.ivar(:VERBOSE).to_s == :true.to_s
+          Aro::P.less(backtrace)
+        else
+          puts(backtrace)
+        end
       end
 
       def self.init!
@@ -101,7 +107,7 @@ module Aro
       end
 
       def self.is_encrypted?
-        !Aro::Cor.ivar(:oss_om_ssh_key).nil? &&
+        Aro::Dom::Ssh.encryption_installed? &&
           !self.instance.valid_security.nil?
       end
 
@@ -131,8 +137,18 @@ module Aro
         super(domain)
       end
 
+      def self.navigate_to!(menu)
+        raise "invalid menu!" if menu.nil? || !menu.kind_of?(Aro::Dom::Menu)
+        raise "invalid directory for #{menu.inspect}!" if menu.directory.nil?
+        data_base = menu.directory.data_base
+        raise "invalid data_base!" if data_base.nil?
+
+        open_menu(menu)
+      end
+
       def self.open!(data_base = :ma_ain)
         Aro::P.say("Aro::Dom::DataBase.open_menu(#{data_base})")
+
         staged_menu = nil
         begin
           staged_menu = Aro::Dom::DataBase.open_menu(data_base)
@@ -140,10 +156,10 @@ module Aro
           raise "#{self.name} error opening data_base '#{data_base}'! #{e.inspect}"
         end
 
-        if data_base == :ma_ain && self.instance.valid_security.nil?
+        if data_base.to_sym == :ma_ain && self.instance.valid_security.nil?
           self.instance.valid_security = staged_menu.uuid
         end
-        self.instance.current_menu = staged_menu
+        open_menu(staged_menu)
       end
 
       def self.toggle_run_mode
@@ -191,6 +207,16 @@ module Aro
         return Aro::Dom::Ma_ain.instance.stores[aro_file.uuid]
       end
 
+      private
+
+      def self.open_menu(menu)
+        puts TTY::Font.new(:standard).write(
+          "f.#{menu.localized_name}",
+          letter_spacing: 2
+        )
+
+        self.instance.current_menu = menu
+      end
     end
   end
 end

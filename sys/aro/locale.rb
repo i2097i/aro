@@ -75,7 +75,7 @@ module Aro
 
       def self.i18n_valuify_text(text)
         # gsub non-word characters with " "
-        text.to_s.gsub(/[\W]/, " ")
+        text.to_s.gsub(/[\W]/, " ")&.strip
       end
 
       private

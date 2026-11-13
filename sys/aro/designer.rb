@@ -13,9 +13,7 @@
 module Aro
   module Dom
     class Designer
-      ACTION_LJUST = 27
-      VALUE_LJUST = 27
-      CLASS_LJUST = 27
+      ITEM_TITLE_JUSTIFY = 28
 
       def self.design_oss_om
         oss_home_path = File.expand_path(Dir.pwd)
@@ -127,9 +125,9 @@ module Aro
 
         item_mapper = Proc.new{|mi|
           {
-            name: "(edit_item)".ljust(ACTION_LJUST) +
-              "#{mi.localized_name}".ljust(VALUE_LJUST) +
-              "#{mi.class.name}(#{mi.id})".ljust(CLASS_LJUST),
+            name: "(edit_item)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{mi.localized_name}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{mi.class.name}(#{mi.id})".ljust(ITEM_TITLE_JUSTIFY),
             value: mi.uuid
           }
         }
@@ -141,20 +139,20 @@ module Aro
             value: :back
           },
           {
-            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) toggle_run_mode".ljust(ACTION_LJUST) +
-              ":#{Aro::Dom::Ma_ain::RUN_MODES[Aro::Dom::Ma_ain.instance.run_mode || Aro::Mancy::O]}".ljust(VALUE_LJUST) +
-              "available_modes: #{Aro::Dom::Ma_ain::RUN_MODES.to_s}".ljust(CLASS_LJUST),
+            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) toggle_run_mode".ljust(ITEM_TITLE_JUSTIFY) +
+              ":#{Aro::Dom::Ma_ain::RUN_MODES[Aro::Dom::Ma_ain.instance.run_mode || Aro::Mancy::O]}".ljust(ITEM_TITLE_JUSTIFY) +
+              "available_modes: #{Aro::Dom::Ma_ain::RUN_MODES.to_s}".ljust(ITEM_TITLE_JUSTIFY),
             value: :toggle_run_mode
           },
           {
-            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) open_shell".ljust(ACTION_LJUST) +
-              "open a bash session".ljust(VALUE_LJUST),
+            name: "(#{Aro::Dom::Ma_ain::UNICODE_KEYS[:yinyang]}) open_shell".ljust(ITEM_TITLE_JUSTIFY) +
+              "open a bash session".ljust(ITEM_TITLE_JUSTIFY),
             value: :open_shell
           },
           {
-            name: "(edit_title)".ljust(ACTION_LJUST) +
-              "#{menu.localized_name}".ljust(VALUE_LJUST) +
-              "#{menu.class.name}(#{menu.id})".ljust(CLASS_LJUST),
+            name: "(edit_title)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu.localized_name}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu.class.name}(#{menu.id})".ljust(ITEM_TITLE_JUSTIFY),
             value: :edit_title
           }
         ] +
@@ -162,9 +160,9 @@ module Aro
           menu.menu_items.select{|mi| mi.system?}.map{|mi| item_mapper.call(mi)} +
         [
           {
-            name: "(create_item)".ljust(ACTION_LJUST) +
-              "add new item to #{menu.localized_name}".ljust(VALUE_LJUST) +
-              "#{Aro::Dom::MenuItem.name}(+)".ljust(CLASS_LJUST),
+            name: "(create_item)".ljust(ITEM_TITLE_JUSTIFY) +
+              "add new item to #{menu.localized_name}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{Aro::Dom::MenuItem.name}(+)".ljust(ITEM_TITLE_JUSTIFY),
             value: :create_item
           }
         ]
@@ -217,15 +215,15 @@ module Aro
             value: :back
           },
           {
-            name: "(edit_title)".ljust(ACTION_LJUST) +
-              "#{menu_item.localized_name}".ljust(VALUE_LJUST) +
-              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST),
+            name: "(edit_title)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.localized_name}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(ITEM_TITLE_JUSTIFY),
             value: :edit_title
           },
           {
-            name: "(edit_action)".ljust(ACTION_LJUST) +
-              "#{menu_item.action_display_text}".ljust(VALUE_LJUST) +
-              "Aro::Dom::MenuItem::Action(+)".ljust(CLASS_LJUST),
+            name: "(edit_action)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.action_display_text}".ljust(ITEM_TITLE_JUSTIFY) +
+              "Aro::Dom::MenuItem::Action(+)".ljust(ITEM_TITLE_JUSTIFY),
             value: :edit_action
           }
         ]
@@ -270,15 +268,15 @@ module Aro
             value: :back
           },
           {
-            name: "(edit_type)".ljust(ACTION_LJUST) +
-              "#{menu_item.action_storage_key}".ljust(VALUE_LJUST) +
-              "#{Aro::Dom::Action.name}(#{action_name})".ljust(CLASS_LJUST),
+            name: "(edit_type)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.action_storage_key}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{Aro::Dom::Action.name}(#{action_name})".ljust(ITEM_TITLE_JUSTIFY),
             value: :edit_type
           },
           {
-            name: "(edit_method)".ljust(ACTION_LJUST) +
-              "#{menu_item.action_display_text}".ljust(VALUE_LJUST) +
-              "Aro::Dom::MenuItem::Action(#{action_name})".ljust(CLASS_LJUST),
+            name: "(edit_method)".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.action_display_text}".ljust(ITEM_TITLE_JUSTIFY) +
+              "Aro::Dom::MenuItem::Action(#{action_name})".ljust(ITEM_TITLE_JUSTIFY),
             value: :edit_method
           }
         ]
@@ -308,9 +306,9 @@ module Aro
           }
         ] + Aro::Dom::Action::TYPES.keys.map{|k|
           {
-            name: "(#{k})".ljust(ACTION_LJUST) +
-              "#{menu_item.localized_name}".ljust(VALUE_LJUST) +
-              "#{menu_item.class.name}(#{menu_item.id})".ljust(CLASS_LJUST),
+            name: "(#{k})".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.localized_name}".ljust(ITEM_TITLE_JUSTIFY) +
+              "#{menu_item.class.name}(#{menu_item.id})".ljust(ITEM_TITLE_JUSTIFY),
             value: k
           }
         }

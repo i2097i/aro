@@ -23,13 +23,14 @@ module Aro
               required: true
             },
             aro_class_method: {
-              default_value: :inspect,
-              required: false
+              default_value: :name,
+              required: true
             },
-            oss_om_ssh_key: {
-              default_value: nil,
-              required: true,
-              unique: true
+            aro_call_params: {
+              default_value: [],
+            },
+            aro_store_data: {
+              default_value: {}
             }
           }
         },
@@ -39,11 +40,6 @@ module Aro
             command_string: {
               default_value: nil,
               required: true
-            },
-            oss_om_ssh_key: {
-              default_value: nil,
-              required: true,
-              unique: true
             }
           }
         },
@@ -51,11 +47,6 @@ module Aro
           key: :exec_data_base,
           params: {
             data_base_name: {
-              default_value: nil,
-              required: true,
-              unique: true
-            },
-            oss_om_ssh_key: {
               default_value: nil,
               required: true,
               unique: true
@@ -93,6 +84,13 @@ module Aro
           valid_param_keys!(action_key, params) && valid_param_values!(action_key, params)
       end
 
+      def self.validate_data!(action_key, data)
+        Aro::P.say("validating #{action_key} action data")
+
+        raise "invalid data! (#{data})" unless data.kind_of?(Hash)
+        # todo: validate data schema here
+      end
+
       def self.validate_action_key!(action_key)
         action_key = action_key&.upcase.to_sym
         raise "invalid action! (#{action_key})" unless Aro::Dom::Action::TYPES.keys.include?(action_key)
@@ -114,18 +112,38 @@ module Aro
         end
       end
 
-      def self.perform(action_key, params = {})
+      def self.perform(action_key, params = {}, data = {})
         Aro::P.say(__method__)
         action_key = validate_action_key!(action_key)
         validate_params!(action_key, params)
+        validate_data!(action_key, data)
 
         params = params.symbolize_keys
+        data = data.symbolize_keys
         aro_action_type_def = Aro::Dom::Action::TYPES[action_key]
         case aro_action_type_def[:key]
         when :exec_oss_om
           Aro::P.say("#{params[:aro_class_name]}.#{params[:aro_class_method]}")
           begin
-            params[:aro_class_name].constantize.send(params[:aro_class_method])
+            method_call_params = []
+            if params[:aro_call_params].kind_of?(Array) &&
+              params[:aro_call_params].count > Aro::Mancy::O
+              method_call_params += params[:aro_call_params]
+            end
+
+            if data.keys.count > Aro::Mancy::O
+              method_call_params << data
+            end
+
+            oss_om_const = params[:aro_class_name].constantize
+
+            raise "invalid oss_om_const! #{oss_om_const}" if oss_om_const.nil?
+
+            if method_call_params.any?
+              oss_om_const.send(params[:aro_class_method], *method_call_params)
+            else
+              oss_om_const.send(params[:aro_class_method])
+            end
           rescue NoMethodError => e
             Aro::P.say("exec_oss_om error! #{e}")
           end
