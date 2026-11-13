@@ -90,17 +90,15 @@ module Aro
           File.basename(private_key_path) + :".pub".to_s,
         ]
         missing_required_files = required_local_files.any?{|rlf| !::File.exist?(rlf)}
-        return Aro::Dom::Git.log unless missing_required_files
+        return true unless missing_required_files
         # run the install program until setup is complete
         # return false to cancel
         while missing_required_files do
           gitconfig_path = ::File.join(key_path, ".git/config")
           Aro::P.say("checking for local .git/config at #{gitconfig_path}")
           if ::File.exist?(gitconfig_path)
-            break unless required_local_files.empty?{|rlf| !::File.exist?(rlf)}
-
             Aro::P.say("#{self.name} already installed. continuing...")
-            return Aro::Dom::Git.log
+            return true if required_local_files.all?{|rlf| ::File.exist?(rlf)}
           else
             Aro::P.say("missing local .git/config!")
             Aro::P.say("setting up local git config...")
@@ -170,7 +168,6 @@ module Aro
             default_config = {
               user_email: git_email,
               user_name: git_username,
-              init_defaultBranch: :foss_om,
               user_signingkey: "#{private_key_path}.pub",
               gpg_format: :ssh,
               commit_gpgsign: true,
@@ -181,10 +178,6 @@ module Aro
             }
           end
 
-          Aro::P.say("system(git checkout -b #{default_config[:init_defaultBranch]})")
-          system(:"git checkout -b #{default_config[:init_defaultBranch]}".to_s)
-          Aro::P.say("system(git branch -D main")
-          system(:"git branch -D main".to_s)
           Aro::P.say("system(git add .)")
           system(:"git add .".to_s)
           Aro::P.say("system(git commit -m '#{key_domain} initial commit'")
@@ -193,7 +186,7 @@ module Aro
           Aro::P.say("#{self.name} installed successfully.")
         end
 
-        return Aro::Dom::Git.log
+        return true
       end
 
       def self.create_exec_oss_om_entry_for(menu_item)

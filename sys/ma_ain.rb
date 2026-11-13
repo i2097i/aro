@@ -55,7 +55,7 @@ module Aro
       attr_accessor :data_mutex, :store_mutex
       attr_accessor :stores
       # todo: unused currently. init instance with hashing algo stuff
-      attr_accessor :valid_settings
+      attr_accessor :valid_security
       attr_accessor :run_mode
 
       def reign!
@@ -102,7 +102,7 @@ module Aro
 
       def self.is_encrypted?
         !Aro::Cor.ivar(:oss_om_ssh_key).nil? &&
-          !self.instance.valid_settings.nil?
+          !self.instance.valid_security.nil?
       end
 
       def self.domain
@@ -139,13 +139,11 @@ module Aro
         rescue StandardError => e
           raise "#{self.name} error opening data_base '#{data_base}'! #{e.inspect}"
         end
-        self.instance.previous_menu = self.instance.current_menu
-        self.instance.current_menu = staged_menu
-      end
 
-      def self.back!
-        self.instance.current_menu = nil
-        open!
+        if data_base == :ma_ain && self.instance.valid_security.nil?
+          self.instance.valid_security = staged_menu.uuid
+        end
+        self.instance.current_menu = staged_menu
       end
 
       def self.toggle_run_mode
@@ -159,7 +157,7 @@ module Aro
       def self.get_current_options
         options = []
 
-        options << {back: :back, value: :back} unless self.instance.previous_menu.nil?
+        options << {back: :back, value: :back} unless self.instance.current_menu.uuid == self.instance.valid_security
 
         options << {name: "#{UNICODE_KEYS[:integral]}(#{Aro::Mancy::ARO_DIRECTORY})", value: :open_menu}
 

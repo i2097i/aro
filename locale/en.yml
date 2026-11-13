@@ -16,6 +16,7 @@ en:
       create_menu: "enter display text for the new menu"
     library:
       get_book_param: "enter %{key}"
+      new_book_select: "creating a new book"
     errors:
       invalid_i18n_path: "invalid_i18n_path"
       locale_load_error: "locale_load_error: failed to load locale %{named} library"

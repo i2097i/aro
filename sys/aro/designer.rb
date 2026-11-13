@@ -39,8 +39,7 @@ module Aro
           Aro::P.say("exiting...")
           exit
         else
-          # restarts Aro::Dom::Ma_ain.reign!
-          raise "needs install!"
+          Aro::Dom::Ma_ain.instance.reign!
         end
         design
       end
@@ -62,7 +61,7 @@ module Aro
           case selected_menu_item_uuid.to_sym
           when :back
             # todo: call_stack_bread_crumbs
-            Aro::Dom::Ma_ain.back!
+            Aro::Dom::Ma_ain.open!
           when :open_menu
             design_menu(
               Aro::Dom::Ma_ain.instance.current_menu

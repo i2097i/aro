@@ -74,7 +74,7 @@ module Aro
       end
 
       def self.id_key_path
-        ::File.join(Aro::Cor.ivar(:OSS_OM_HOME), ID_KEY_BASE.to_s)
+        ::File.join(Aro::Cor.ivar(:OSS_OM_HOME), Aro::Dom::Ssh::ID_KEY_BASE.to_s)
       end
 
       private
