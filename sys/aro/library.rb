@@ -30,31 +30,42 @@ module Aro
         Aro::Dom::Ma_ain.open!(:library)
       end
 
-      def self.navigate_to_book!(uuid = nil)
-        book_menu = Aro::Dom::Menu.find_by(uuid: uuid)
-        raise "invalid uuid! #{uuid}" if book_menu.nil?
+      def self.import_book!(book_yaml)
+        # todo: validate book_yaml
+        is_valid = true
+        raise "invalid book_yaml" unless is_valid
+
+        puts :todo_import_book_yaml
+        Aro::Dom::Ma_ain.sane_backtrace!
+      end
+
+      def self.navigate_to_book!(menu_uuid = nil)
+        book_menu = Aro::Dom::Menu.find_by(uuid: menu_uuid)
+        raise "invalid uuid! #{menu_uuid}" if book_menu.nil?
 
         Aro::Dom::Ma_ain.navigate_to!(book_menu)
       end
 
-      def self.information!(uuid = nil, data = {})
-        book_menu = Aro::Dom::Menu.find_by(uuid: uuid)
-        raise "invalid uuid! #{uuid}" if book_menu.nil?
+      def self.information!(menu_item_uuid = nil, data = {})
+        information_menu_item = Aro::Dom::MenuItem.find_by(uuid: menu_item_uuid)
+        raise "invalid uuid! #{menu_item_uuid}" if information_menu_item.nil?
 
         puts TTY::Font.new(:standard).write(
-          book_menu.localized_name,
+          information_menu_item.localized_name,
           letter_spacing: 1
         )
         Aro::P.less(JSON.pretty_generate(data))
       end
 
-      def self.table_of_contents!(uuid = nil)
-        book_menu = Aro::Dom::Menu.find_by(uuid: uuid)
-        raise "invalid uuid! #{uuid}" if book_menu.nil?
+      def self.table_of_contents!(menu_item_uuid = nil)
+        table_of_contents_menu_item = Aro::Dom::MenuItem.find_by(uuid: menu_item_uuid)
+        raise "invalid uuid! #{menu_item_uuid}" if table_of_contents_menu_item.nil?
 
-        puts "todo: load book #{__method__} here."
-        puts "open table_of_contents menu"
-        Aro::Dom::Ma_ain.sane_backtrace!
+        puts TTY::Font.new(:standard).write(
+          table_of_contents_menu_item.localized_name,
+          letter_spacing: 1
+        )
+        Aro::Dom::Book.open_table_of_contents!(table_of_contents_menu_item)
       end
 
       def self.create_book!
@@ -80,7 +91,7 @@ module Aro
           when :back
             confirmed = true
             if book_params.any?{|k, v| !v.nil?}
-              confirmed = Aro::P.p.ask("unsaved changes. go back anyway? (y/n): ").to_sym
+              confirmed = Aro::P.p.ask(I18n.t("open_menu.library.unsaved_changes_confirm")).to_sym
               confirmed = confirmed == :y
             end
             return Aro::Dom::Ma_ain.open! if confirmed
@@ -130,14 +141,14 @@ module Aro
 
       def self.open_book(book_title_sym, book_params = nil)
         # get the books directory
-        @@data_base_directory = book_data_base.data_base_directories.find_or_create_by(
+        data_base_directory = book_data_base.data_base_directories.find_or_create_by(
           unix_path: book_title_sym
         )
 
-        book_menu = Aro::Dom::Menu.find_by(uuid: @@data_base_directory.uuid)
+        book_menu = Aro::Dom::Menu.find_by(uuid: data_base_directory.uuid)
         if book_menu.nil?
           # find or create the new book_menu
-          book_menu = Aro::Dom::Menu.create(uuid: @@data_base_directory.uuid)
+          book_menu = Aro::Dom::Menu.create(uuid: data_base_directory.uuid)
           Aro::Dom::Locale.add_i18n_key(
             book_title_sym.to_s,
             new_i18n_display_key: book_menu.uuid
@@ -157,8 +168,6 @@ module Aro
       def self.generate_book_items_for!(book_menu, book_params)
         raise "invalid book_menu!" if book_menu.nil?
         return unless !book_menu.nil? && book_menu.menu_items.empty?
-        raise "invalid directory! #{@@data_base_directory}" if @@data_base_directory.nil? ||
-          @@data_base_directory.uuid != book_menu.uuid
 
         # validate book_params
         # todo: validate uniqueness of params
@@ -176,7 +185,7 @@ module Aro
               k,
               Aro::Dom::Library,
               "#{k}!",
-              [book_menu.uuid],
+              [i.uuid],
               action_data
             )
           )

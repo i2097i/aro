@@ -212,7 +212,7 @@ module Aro
       def self.open_menu(menu)
         puts TTY::Font.new(:standard).write(
           "f.#{menu.localized_name}",
-          letter_spacing: 2
+          letter_spacing: 1
         )
 
         self.instance.current_menu = menu

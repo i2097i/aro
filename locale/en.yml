@@ -14,9 +14,12 @@ en:
     edit_ivars_possible_values_select: "listing possible values for %{def_key}"
     designer:
       create_menu: "enter display text for the new menu"
+    imports:
+      confirm_import: "%{prompt_text} (selected: %{file_name}) confirm (y/n):"
     library:
       get_book_param: "enter %{key}"
       new_book_select: "creating a new book"
+      unsaved_changes_confirm: "unsaved changes. go back anyway? (y/n):"
     errors:
       invalid_i18n_path: "invalid_i18n_path"
       locale_load_error: "locale_load_error: failed to load locale %{named} library"

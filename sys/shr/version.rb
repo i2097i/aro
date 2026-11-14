@@ -14,6 +14,7 @@ module Aro
   VERSION = :"0.2.8"
   RELEASE_NOTES = [
     :basic_settings,
-    :data_base_management
+    :adds_library,
+    :adds_books,
   ].join(" | ")
 end
